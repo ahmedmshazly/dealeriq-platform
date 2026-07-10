@@ -1,0 +1,227 @@
+[
+  {
+    "series_key": "sedan:Ford:Fusion|Downtown Motors",
+    "week_index": 90,
+    "type": "spike",
+    "magnitude_multiplier": 2.383,
+    "expected_value": 20.0,
+    "injected_value": 19.0,
+    "implied_z": 7.04
+  },
+  {
+    "series_key": "sedan:Toyota:Camry|Downtown Motors",
+    "week_index": 95,
+    "type": "spike",
+    "magnitude_multiplier": 3.192,
+    "expected_value": 10.0,
+    "injected_value": 14.0,
+    "implied_z": 6.699
+  },
+  {
+    "series_key": "sedan:Nissan:Altima|Downtown Motors",
+    "week_index": 63,
+    "type": "drop",
+    "magnitude_multiplier": 0.0,
+    "expected_value": 2.0,
+    "injected_value": 0.0,
+    "implied_z": -5.009
+  },
+  {
+    "series_key": "sedan:Nissan:Altima|Airport Branch",
+    "week_index": 76,
+    "type": "spike",
+    "magnitude_multiplier": 7.268,
+    "expected_value": 6.0,
+    "injected_value": 13.0,
+    "implied_z": 5.596
+  },
+  {
+    "series_key": "sedan:Honda:Accord|Airport Branch",
+    "week_index": 86,
+    "type": "spike",
+    "magnitude_multiplier": 2.49,
+    "expected_value": 14.0,
+    "injected_value": 12.0,
+    "implied_z": 5.49
+  },
+  {
+    "series_key": "economy:Kia:Forte|Westside Auto",
+    "week_index": 52,
+    "type": "spike",
+    "magnitude_multiplier": 3.462,
+    "expected_value": 2.0,
+    "injected_value": 5.0,
+    "implied_z": 6.041
+  },
+  {
+    "series_key": "economy:Toyota:Corolla|Westside Auto",
+    "week_index": 78,
+    "type": "spike",
+    "magnitude_multiplier": 2.431,
+    "expected_value": 5.0,
+    "injected_value": 6.0,
+    "implied_z": 5.232
+  },
+  {
+    "series_key": "economy:Toyota:Corolla|Airport Branch",
+    "week_index": 54,
+    "type": "spike",
+    "magnitude_multiplier": 2.936,
+    "expected_value": 3.0,
+    "injected_value": 5.0,
+    "implied_z": 5.627
+  },
+  {
+    "series_key": "sedan:Hyundai:Sonata|Westside Auto",
+    "week_index": 82,
+    "type": "spike",
+    "magnitude_multiplier": 4.476,
+    "expected_value": 12.0,
+    "injected_value": 13.0,
+    "implied_z": 5.709
+  },
+  {
+    "series_key": "economy:Mazda:Mazda3|Westside Auto",
+    "week_index": 77,
+    "type": "spike",
+    "magnitude_multiplier": 4.728,
+    "expected_value": 4.0,
+    "injected_value": 9.0,
+    "implied_z": 5.358
+  },
+  {
+    "series_key": "sedan:Mazda:Mazda6|Westside Auto",
+    "week_index": 97,
+    "type": "spike",
+    "magnitude_multiplier": 4.702,
+    "expected_value": 5.0,
+    "injected_value": 16.0,
+    "implied_z": 5.297
+  },
+  {
+    "series_key": "economy:Honda:Civic|Westside Auto",
+    "week_index": 100,
+    "type": "spike",
+    "magnitude_multiplier": 4.637,
+    "expected_value": 3.0,
+    "injected_value": 5.0,
+    "implied_z": 6.761
+  },
+  {
+    "series_key": "suv_truck:Chevrolet:Silverado|Downtown Motors",
+    "week_index": 52,
+    "type": "spike",
+    "magnitude_multiplier": 8.182,
+    "expected_value": 2.0,
+    "injected_value": 4.0,
+    "implied_z": 6.014
+  },
+  {
+    "series_key": "economy:Nissan:Sentra|Westside Auto",
+    "week_index": 62,
+    "type": "spike",
+    "magnitude_multiplier": 4.445,
+    "expected_value": 4.0,
+    "injected_value": 5.0,
+    "implied_z": 5.71
+  },
+  {
+    "series_key": "economy:Honda:Civic|Downtown Motors",
+    "week_index": 72,
+    "type": "spike",
+    "magnitude_multiplier": 4.317,
+    "expected_value": 3.0,
+    "injected_value": 5.0,
+    "implied_z": 5.231
+  },
+  {
+    "series_key": "economy:Toyota:Corolla|Downtown Motors",
+    "week_index": 98,
+    "type": "spike",
+    "magnitude_multiplier": 1.939,
+    "expected_value": 4.0,
+    "injected_value": 7.0,
+    "implied_z": 5.461
+  },
+  {
+    "series_key": "economy:Volkswagen:Jetta|Downtown Motors",
+    "week_index": 101,
+    "type": "spike",
+    "magnitude_multiplier": 3.276,
+    "expected_value": 8.0,
+    "injected_value": 9.0,
+    "implied_z": 6.177
+  },
+  {
+    "series_key": "sedan:Hyundai:Sonata|Downtown Motors",
+    "week_index": 83,
+    "type": "spike",
+    "magnitude_multiplier": 3.08,
+    "expected_value": 0.0,
+    "injected_value": 10.0,
+    "implied_z": 5.015
+  },
+  {
+    "series_key": "economy:Volkswagen:Jetta|Westside Auto",
+    "week_index": 83,
+    "type": "spike",
+    "magnitude_multiplier": 3.747,
+    "expected_value": 5.0,
+    "injected_value": 6.0,
+    "implied_z": 5.861
+  },
+  {
+    "series_key": "economy:Hyundai:Elantra|Westside Auto",
+    "week_index": 95,
+    "type": "spike",
+    "magnitude_multiplier": 5.754,
+    "expected_value": 1.0,
+    "injected_value": 5.0,
+    "implied_z": 5.188
+  },
+  {
+    "series_key": "economy:Toyota:Corolla|Airport Branch",
+    "week_index": 61,
+    "type": "near_miss",
+    "magnitude_multiplier": 1.0,
+    "expected_value": 1.572812846499895,
+    "injected_value": 3.0,
+    "implied_z": 2.989
+  },
+  {
+    "series_key": "economy:Honda:Civic|Downtown Motors",
+    "week_index": 64,
+    "type": "near_miss",
+    "magnitude_multiplier": 1.0,
+    "expected_value": 2.361756977358801,
+    "injected_value": 4.0,
+    "implied_z": 2.856
+  },
+  {
+    "series_key": "economy:Hyundai:Elantra|Airport Branch",
+    "week_index": 63,
+    "type": "near_miss",
+    "magnitude_multiplier": 1.0,
+    "expected_value": 1.029974136998516,
+    "injected_value": 2.0,
+    "implied_z": 2.11
+  },
+  {
+    "series_key": "economy:Mazda:Mazda3|Downtown Motors",
+    "week_index": 103,
+    "type": "near_miss",
+    "magnitude_multiplier": 1.0,
+    "expected_value": 2.088472700131417,
+    "injected_value": 0.0,
+    "implied_z": -2.87
+  },
+  {
+    "series_key": "sedan:Ford:Fusion|Westside Auto",
+    "week_index": 61,
+    "type": "near_miss",
+    "magnitude_multiplier": 1.0,
+    "expected_value": 2.1360452346229595,
+    "injected_value": 0.0,
+    "implied_z": -2.229
+  }
+]

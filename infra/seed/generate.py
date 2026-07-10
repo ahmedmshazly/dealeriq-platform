@@ -211,23 +211,27 @@ def _as_datetime(day: dt.date, hour: int, minute: int = 0) -> dt.datetime:
 class CustomerPool:
     """Organically-growing customer list shared by both order and lead realization, so repeat
     purchases and repeat lead contacts land on the same people (plan.md: "~70% chance of an
-    existing customer making a repeat purchase, ~30% a new one")."""
+    existing customer making a repeat purchase, ~30% a new one"). A newly-created customer's
+    `source_channel` is set to the acquiring lead's simulated channel when one is given — without
+    this, Customer.source_channel would be statistically independent of Lead.status in the
+    database, even though `dealeriq_analytics.generator.leads` deliberately makes channel a real
+    driver of the won/lost outcome (GEN-003's whole point is a *recoverable* channel signal)."""
 
     def __init__(self, rng: np.random.Generator) -> None:
         self._rng = rng
         self.rows: list[dict[str, object]] = []
         self.ids: list[uuid.UUID] = []
 
-    def pick_or_create(self, at: dt.datetime) -> uuid.UUID:
+    def pick_or_create(self, at: dt.datetime, preferred_channel: str | None = None) -> uuid.UUID:
         if self.ids and self._rng.uniform() < REPEAT_CUSTOMER_PROBABILITY:
             return self.ids[int(self._rng.integers(0, len(self.ids)))]
-        return self._create(at)
+        return self._create(at, preferred_channel)
 
-    def _create(self, at: dt.datetime) -> uuid.UUID:
+    def _create(self, at: dt.datetime, preferred_channel: str | None) -> uuid.UUID:
         first = FIRST_NAMES[int(self._rng.integers(0, len(FIRST_NAMES)))]
         last = LAST_NAMES[int(self._rng.integers(0, len(LAST_NAMES)))]
         city = CUSTOMER_CITIES[int(self._rng.integers(0, len(CUSTOMER_CITIES)))]
-        channel = CHANNELS[int(self._rng.integers(0, len(CHANNELS)))]
+        channel = preferred_channel or CHANNELS[int(self._rng.integers(0, len(CHANNELS)))]
         n = len(self.ids)
         customer_id = _new_id()
         self.rows.append(
@@ -531,7 +535,7 @@ def _realize_leads(
             days=int(rng.integers(0, 7))
         )
         created_at = _as_datetime(created_day, int(rng.integers(8, 17)))
-        customer_id = customer_pool.pick_or_create(created_at)
+        customer_id = customer_pool.pick_or_create(created_at, preferred_channel=lead.channel)
         candidates = model_defs_by_segment.get(lead.segment) or next(
             iter(model_defs_by_segment.values())
         )
