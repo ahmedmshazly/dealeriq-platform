@@ -1,0 +1,13 @@
+title = "DealerIQ gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known-safe local-dev placeholders (not real secrets)"
+regexes = [
+  '''dealeriq:dealeriq''', # docker-compose local Postgres creds in .env.example
+]
+paths = [
+  '''\.env\.example$''',
+]

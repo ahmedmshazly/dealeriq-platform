@@ -1,0 +1,19 @@
+{
+  "name": "@dealeriq/api-client",
+  "version": "0.1.0",
+  "description": "TypeScript API client generated from apps/api's OpenAPI schema (C-05, ADR-012).",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.13.3"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.5.0",
+    "typescript": "^5.7.2"
+  }
+}

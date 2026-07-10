@@ -1,0 +1,237 @@
+/*
+  DealerIQ — Design Tokens
+  Light mode is the default (:root / [data-theme="light"]); dark mode via [data-theme="dark"].
+  Author in oklch conceptually (hue-consistent accents); shipped as hex for broad rendering + contrast-verified pairs.
+  All text-pair tokens below are WCAG 2.1 AA verified — see brand guidelines §3 for the full contrast table.
+*/
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* ---------- Neutrals (cool slate, tuned for dense data UI) ---------- */
+  --color-neutral-50:  #F7F8F9;
+  --color-neutral-100: #EEF0F2;
+  --color-neutral-200: #E1E4E7;
+  --color-neutral-300: #CBD1D5;
+  --color-neutral-400: #A6AEB4;
+  --color-neutral-500: #7C858C;
+  --color-neutral-600: #5B646B;
+  --color-neutral-700: #414B51;
+  --color-neutral-800: #29333A;
+  --color-neutral-900: #131B20;
+
+  /* ---------- Primary — "Signal" teal-blue ---------- */
+  --color-primary-50:  #EAF3F6;
+  --color-primary-100: #CFE6EC;
+  --color-primary-200: #9ECEDA;
+  --color-primary-300: #6BB2C4;
+  --color-primary-400: #3F93AB;
+  --color-primary-500: #1C6E8C;
+  --color-primary-600: #175A73;
+  --color-primary-700: #124559;
+  --color-primary-800: #0D323F;
+
+  /* ---------- Secondary — "Ember" amber (restrained; sparing use) ---------- */
+  --color-secondary-50:  #F8F0E7;
+  --color-secondary-100: #EEDCC0;
+  --color-secondary-300: #D4A464;
+  --color-secondary-500: #A8672A;
+  --color-secondary-600: #8A521F;
+  --color-secondary-700: #6B3F18;
+
+  /* ---------- Semantic ---------- */
+  --color-success-bg:     #E9F3EC;
+  --color-success-border: #BFE0C9;
+  --color-success-fg:     #1B5C32;
+
+  --color-info-bg:     #EAF0FB;
+  --color-info-border: #C3D6F2;
+  --color-info-fg:     #2554A6;
+
+  --color-warning-bg:     #FBF1DE;
+  --color-warning-border: #F0D89B;
+  --color-warning-fg:     #8A5A0A;
+
+  --color-critical-bg:     #FBEAEA;
+  --color-critical-border: #F0BFBE;
+  --color-critical-fg:     #B23B36;
+
+  /* Forecast — reserved exclusively for prediction lines / interval fans, never for UI chrome */
+  --color-forecast-line: #7C6FD1;
+  --color-forecast-text: #5B4FB5; /* AA-safe on light surfaces */
+  --color-forecast-fill-opacity: 0.16;
+
+  /* ---------- Surfaces / text ---------- */
+  --surface-canvas:  var(--color-neutral-50);
+  --surface-raised:  #FFFFFF;
+  --surface-sunken:  var(--color-neutral-100);
+  --surface-overlay: #FFFFFF;
+  --border-hairline: var(--color-neutral-200);
+  --border-strong:   var(--color-neutral-300);
+
+  --text-primary:   var(--color-neutral-900);
+  --text-secondary: var(--color-neutral-700);
+  --text-muted:     var(--color-neutral-600);
+  --text-disabled:  var(--color-neutral-500); /* large text / non-critical only, not body copy */
+  --text-on-accent: #FFFFFF;
+  --link-color:       var(--color-primary-600);
+  --link-color-hover: var(--color-primary-700);
+
+  /* ---------- Elevation (light) ---------- */
+  --shadow-1: 0 1px 2px rgba(19,27,32,0.06);
+  --shadow-2: 0 2px 8px rgba(19,27,32,0.08);
+  --shadow-3: 0 12px 32px rgba(19,27,32,0.14);
+  --elevation-border: var(--border-hairline);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-neutral-50:  #131B20;
+  --color-neutral-100: #1A242A;
+  --color-neutral-200: #29333A;
+  --color-neutral-300: #414B51;
+  --color-neutral-400: #5B646B;
+  --color-neutral-500: #7C858C;
+  --color-neutral-600: #A6AEB4;
+  --color-neutral-700: #CBD1D5;
+  --color-neutral-800: #E1E4E7;
+  --color-neutral-900: #F7F8F9;
+
+  --color-primary-50:  #0D323F;
+  --color-primary-100: #124559;
+  --color-primary-200: #175A73;
+  --color-primary-300: #1C6E8C;
+  --color-primary-400: #3F93AB;
+  --color-primary-500: #4FB6D0;
+  --color-primary-600: #6BB2C4;
+  --color-primary-700: #9ECEDA;
+  --color-primary-800: #CFE6EC;
+
+  --color-secondary-50:  #3A2A12;
+  --color-secondary-100: #55401C;
+  --color-secondary-300: #C68A46;
+  --color-secondary-500: #DDA25E;
+  --color-secondary-600: #E8B87F;
+  --color-secondary-700: #F0D3B0;
+
+  --color-success-bg:     #16281D;
+  --color-success-border: #2B4A34;
+  --color-success-fg:     #6FCB8E;
+
+  --color-info-bg:     #16233B;
+  --color-info-border: #2C4066;
+  --color-info-fg:     #7FA8E8;
+
+  --color-warning-bg:     #2E2411;
+  --color-warning-border: #55411A;
+  --color-warning-fg:     #E8B655;
+
+  --color-critical-bg:     #341715;
+  --color-critical-border: #5C2825;
+  --color-critical-fg:     #F08B85;
+
+  --color-forecast-line: #9B90E8;
+  --color-forecast-text: #9B90E8;
+  --color-forecast-fill-opacity: 0.22;
+
+  --surface-canvas:  #131B20;
+  --surface-raised:  #1A242A;
+  --surface-sunken:  #0E1518;
+  --surface-overlay: #212C33;
+  --border-hairline: #29333A;
+  --border-strong:   #414B51;
+
+  --text-primary:   #F7F8F9;
+  --text-secondary: #CBD1D5;
+  --text-muted:     #A6AEB4;
+  --text-disabled:  #7C858C;
+  --text-on-accent: #0D2129;
+  --link-color:       #6BB2C4;
+  --link-color-hover: #9ECEDA;
+
+  /* ---------- Elevation (dark) — lean on hairline borders; shadows read as pure-black depth, not softness ---------- */
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.28);
+  --shadow-2: 0 2px 10px rgba(0,0,0,0.36);
+  --shadow-3: 0 16px 40px rgba(0,0,0,0.48);
+  --elevation-border: #313C43;
+}
+
+:root {
+  /* ---------- Data visualization — categorical (Okabe–Ito, colorblind-safe for deuteranopia/protanopia) ---------- */
+  --chart-cat-1: #131B20; /* ink */
+  --chart-cat-2: #E69F00; /* orange */
+  --chart-cat-3: #56B4E9; /* sky blue */
+  --chart-cat-4: #009E73; /* bluish green */
+  --chart-cat-5: #F0E442; /* yellow */
+  --chart-cat-6: #0072B2; /* blue */
+  --chart-cat-7: #D55E00; /* vermillion */
+  --chart-cat-8: #CC79A7; /* reddish purple */
+  /* Light-surface variants: same hues, tuned lightness so strokes clear 3:1 non-text contrast on white */
+  --chart-cat-2-onlight: #B87700;
+  --chart-cat-3-onlight: #1C93C9;
+  --chart-cat-4-onlight: #00875F;
+  --chart-cat-5-onlight: #8F7A00;
+  --chart-cat-7-onlight: #BF4E00;
+  --chart-cat-8-onlight: #A85D89;
+
+  /* Sequential ramp (reuses primary scale — ties data intensity to brand hue) */
+  --chart-seq-1: #EAF3F6;
+  --chart-seq-2: #CFE6EC;
+  --chart-seq-3: #9ECEDA;
+  --chart-seq-4: #6BB2C4;
+  --chart-seq-5: #3F93AB;
+  --chart-seq-6: #1C6E8C;
+  --chart-seq-7: #124559;
+
+  /* Diverging ramp (blue ↔ neutral ↔ vermillion — colorblind-safe pair, safer than red/green) */
+  --chart-div-neg-2: #0072B2;
+  --chart-div-neg-1: #6FA9CE;
+  --chart-div-mid:   #EEF0F2;
+  --chart-div-pos-1: #E39359;
+  --chart-div-pos-2: #D55E00;
+
+  /* ---------- Spacing (4px base) ---------- */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* ---------- Radius ---------- */
+  --radius-sm: 6px;      /* chips, tags */
+  --radius-control: 8px; /* buttons, inputs, selects */
+  --radius-card: 14px;   /* cards, panels, modals */
+  --radius-full: 999px;  /* pills, avatars */
+
+  /* ---------- Typography ---------- */
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --text-2xs: 12px; --lh-2xs: 16px;
+  --text-xs:  13px; --lh-xs:  18px;
+  --text-sm:  14px; --lh-sm:  20px;
+  --text-md:  16px; --lh-md:  24px;
+  --text-lg:  18px; --lh-lg:  26px;
+  --text-xl:  20px; --lh-xl:  28px;
+  --text-2xl: 24px; --lh-2xl: 30px;
+  --text-3xl: 28px; --lh-3xl: 34px;
+  --text-4xl: 36px; --lh-4xl: 42px;
+
+  /* ---------- Motion ---------- */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard:   cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
+}

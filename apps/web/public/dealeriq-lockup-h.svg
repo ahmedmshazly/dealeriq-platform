@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" width="260" height="64" role="img" aria-label="DealerIQ">
+  
+  <g>
+    <path d="M27 33 L58 15 L58 51 Z" fill="#1C6E8C" opacity="0.16"></path>
+    <path d="M6 33 L27 33" stroke="#131B20" stroke-width="5" stroke-linecap="round"></path>
+    <path d="M27 33 L58 26" stroke="#1C6E8C" stroke-width="5" stroke-linecap="round"></path>
+    <circle cx="27" cy="33" r="5.5" fill="#131B20"></circle>
+  </g>
+  <text x="76" y="42" font-family="Inter, Helvetica, Arial, sans-serif" font-weight="700" font-size="30" letter-spacing="-0.4">
+    <tspan fill="#131B20">Dealer</tspan><tspan fill="#1C6E8C">IQ</tspan>
+  </text>
+</svg>

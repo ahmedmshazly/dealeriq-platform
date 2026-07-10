@@ -1,0 +1,21 @@
+[project]
+name = "dealeriq"
+version = "0.1.0"
+description = "DealerIQ workspace root (uv workspace) — see docs/adr/015-python-packaging.md"
+requires-python = ">=3.12"
+
+[tool.uv.workspace]
+members = ["apps/api", "packages/analytics"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["apps/api/src", "packages/analytics/src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "apps/api/src:packages/analytics/src"

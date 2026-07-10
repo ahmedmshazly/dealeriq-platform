@@ -38,3 +38,6 @@ out/
 
 # Docker volumes (bind-mounted local data, not committed)
 infra/pgdata/
+
+# Locally-fetched pinned tool binaries (gitleaks etc.) — fetched by `make bootstrap`
+.tools/
