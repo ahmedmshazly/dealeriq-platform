@@ -185,21 +185,20 @@ def test_user_creation_writes_an_audit_row(client: TestClient) -> None:
 
 
 def test_permission_matrix_reflects_seeded_grants(client: TestClient) -> None:
+    # Checks the Phase 1 (auth/RBAC) permission set specifically, as a subset — later phases
+    # (Phase 2's inventory/customers/leads/orders permissions, etc.) add more grants, and this
+    # test shouldn't need updating every time a new permission ships. Phase-specific matrix
+    # assertions live in that phase's own integration tests (e.g. test_inventory_flow.py).
     admin_token = _admin_token(client)
     resp = client.get(
         "/api/v1/permissions/matrix", headers={"Authorization": f"Bearer {admin_token}"}
     )
     assert resp.status_code == 200
     matrix = {row["role_key"]: set(row["permissions"]) for row in resp.json()}
-    assert matrix["admin"] == {
-        "users:view",
-        "users:manage",
-        "permissions:view",
-        "audit_log:view",
-    }
-    assert matrix["manager"] == {"users:view"}
-    assert matrix["sales"] == set()
-    assert matrix["analyst"] == set()
+    assert {"users:view", "users:manage", "permissions:view", "audit_log:view"} <= matrix["admin"]
+    assert {"users:view"} <= matrix["manager"]
+    assert "users:manage" not in matrix["sales"]
+    assert "users:manage" not in matrix["analyst"]
 
 
 def test_change_password_requires_correct_current_password(client: TestClient) -> None:
