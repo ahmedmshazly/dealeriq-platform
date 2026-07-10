@@ -10,7 +10,19 @@ from dealeriq_api.core.config import get_settings
 from dealeriq_api.core.errors import register_error_handlers
 from dealeriq_api.core.limiter import limiter
 from dealeriq_api.core.logging import RequestLoggingMiddleware, configure_logging
-from dealeriq_api.routes import audit_log, auth, permissions, roles, users
+from dealeriq_api.routes import (
+    audit_log,
+    auth,
+    branches,
+    customers,
+    leads,
+    orders,
+    permissions,
+    roles,
+    users,
+    vehicle_models,
+    vehicle_units,
+)
 
 
 def create_app() -> FastAPI:
@@ -47,6 +59,12 @@ def create_app() -> FastAPI:
     app.include_router(roles.router)
     app.include_router(permissions.router)
     app.include_router(audit_log.router)
+    app.include_router(branches.router)
+    app.include_router(vehicle_models.router)
+    app.include_router(vehicle_units.router)
+    app.include_router(customers.router)
+    app.include_router(leads.router)
+    app.include_router(orders.router)
 
     @app.get("/api/v1/health", tags=["system"])
     def health() -> dict[str, str]:

@@ -36,6 +36,9 @@ class Settings(BaseSettings):
     bootstrap_admin_email: str = "admin@dealeriq.dev"
     bootstrap_admin_password: str = "ChangeMe123!"
 
+    # Orders (FR-041): discount above this fraction of list price requires Manager+ approval.
+    order_approval_discount_threshold: float = 0.05
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

@@ -8,7 +8,7 @@ triggers revocation of the whole family (auth/tokens.py).
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, String
+from sqlalchemy import DateTime, ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from dealeriq_api.domain.base import Base, IdMixin
@@ -16,6 +16,7 @@ from dealeriq_api.domain.base import Base, IdMixin
 
 class RefreshToken(IdMixin, Base):
     __tablename__ = "refresh_tokens"
+    __table_args__ = (Index("ix_refresh_tokens_user_id", "user_id"),)
 
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     token_hash: Mapped[str] = mapped_column(String(64), unique=True)
