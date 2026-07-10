@@ -22,3 +22,8 @@ ignore = ["B008"]
 python_version = "3.12"
 strict = true
 mypy_path = "apps/api/src:packages/analytics/src"
+
+[[tool.mypy.overrides]]
+# statsmodels ships no py.typed marker / type stubs (ADR-018 narrows it to STL usage only).
+module = "statsmodels.*"
+ignore_missing_imports = true

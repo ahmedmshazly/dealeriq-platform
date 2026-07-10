@@ -127,9 +127,10 @@ def _negative_binomial(rng: np.random.Generator, mean: float, dispersion: float)
     return int(rng.negative_binomial(r, p))
 
 
-def simulate_series(
-    params: SeriesParams, n_weeks: int, rng: np.random.Generator
-) -> NDArray[np.int64]:
+def compute_mu(params: SeriesParams, n_weeks: int) -> NDArray[np.float64]:
+    """The NB-GLM's weekly mean mu(t) — the deterministic, noise-free trajectory a given
+    (model, branch) series is drawn around. Shared by simulate_series and by anomaly injection,
+    which needs mu(t) as the "expected value" a shock is sized relative to."""
     weeks = np.arange(n_weeks)
     log_mu = params.beta0 + params.beta_trend * (weeks / n_weeks)
     for k, (gamma_k, delta_k) in enumerate(params.fourier, start=1):
@@ -141,8 +142,14 @@ def simulate_series(
     promo_mask = np.isin(weeks, np.array(params.promo_weeks, dtype=int))
     log_mu = log_mu + params.beta_promo * promo_mask
     log_mu = log_mu + np.log(params.branch_effect)
+    result: NDArray[np.float64] = np.exp(log_mu)
+    return result
 
-    mu = np.exp(log_mu)
+
+def simulate_series(
+    params: SeriesParams, n_weeks: int, rng: np.random.Generator
+) -> NDArray[np.int64]:
+    mu = compute_mu(params, n_weeks)
     values = np.array(
         [_negative_binomial(rng, float(m), params.dispersion) for m in mu], dtype=np.int64
     )
