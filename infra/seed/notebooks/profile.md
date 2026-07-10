@@ -162,6 +162,35 @@ fit on the final series) is unambiguously anomalous. The 5 near-miss points (imp
 deliberately left unmodified) exist so Phase 5's anomaly detector has real "should NOT flag this"
 cases to validate its false-positive rate against (QA-003b), not just true positives.
 
+## Injected pricing errors (GEN-004, other half)
+
+15 ground-truth points in `infra/seed/ground_truth/pricing_errors.json`. Each forces
+`negotiated_price` on one real order down to
+`list_price * (1 - (historical_discount_fraction_mean + 5 * historical_discount_fraction_std))`
+for that order's specific vehicle model (k_inject=5 vs. DS-ANO-003's detector default k=3) —
+grouped by model, not globally, so each injected error is judged against that model's own real
+discount distribution (mean ≈ 2.8-3.0%, std ≈ 2.6-3.4% across the sampled models here).
+
+Spread across 4 of 5 segments (economy 5, sedan 5, suv_truck 2, luxury 2, commercial 1 — no
+strict quota was enforced, just >=5 historical orders per model to compute stable statistics):
+
+| Order (model) | List price | Historical discount (μ, σ) | Original price | Injected price |
+|---|---|---|---|---|
+| economy:Nissan:Sentra | $19,789.99 | 2.9%, 2.9% | $18,488.95 | $16,392.83 |
+| suv_truck:Ford:F-150 | $44,491.66 | 3.0%, 3.1% | $43,825.68 | $36,315.36 |
+| commercial:Ram:ProMaster | $44,237.54 | 2.9%, 3.4% | $41,896.22 | $35,377.81 |
+
+Cross-checked directly against Postgres for the first row: `orders.negotiated_price` for that
+order ID is exactly $16,392.83, and `orders.discount` ($3,397.16) equals
+`list_price - negotiated_price` to the cent — the injected value actually landed in the
+database, not just the ground-truth JSON.
+
+Unlike demand shocks, an injected pricing error's `order_events` trail reflects the order's
+*original* (pre-injection) discount fraction — e.g., a 3% discount that auto-approved without a
+`pending_approval` step can still end up with an anomalously deep final price. This is
+deliberate, not an oversight: a price that changed after approval without re-triggering the
+approval workflow is exactly the kind of thing DS-ANO-003's detector should flag as suspicious.
+
 ## How to reproduce
 
 ```

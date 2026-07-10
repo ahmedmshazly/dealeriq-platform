@@ -11,6 +11,7 @@ Every row still matches the exact schema/constraints those tables enforce.
 Run directly: `uv run python infra/seed/generate.py` from the repo root (wired to `make seed`).
 """
 
+import dataclasses
 import datetime as dt
 import json
 import pathlib
@@ -448,6 +449,9 @@ def _realize_orders(
                 "status": OrderStatus.DELIVERED,
                 "created_at": _as_datetime(acquisition_day, 10),
                 "updated_at": _as_datetime(deliver_day, 17),
+                # Not a real orders-table column — used to group by model for pricing-error
+                # injection (GEN-004) and stripped before the bulk insert.
+                "_model_key": model_key,
             }
         )
 
@@ -490,6 +494,86 @@ def _realize_orders(
         )
 
     return units, movements, orders, order_events
+
+
+PRICING_ERROR_K = 5.0  # DS-ANO-003: k_inject=5 vs. the detector's default k=3
+N_PRICING_ERRORS = 15
+MIN_ORDERS_FOR_PRICING_STATS = 5
+
+
+@dataclasses.dataclass(frozen=True)
+class PricingErrorRecord:
+    order_id: str
+    model_key: str
+    list_price: float
+    historical_discount_fraction_mean: float
+    historical_discount_fraction_std: float
+    k_inject: float
+    original_negotiated_price: float
+    injected_negotiated_price: float
+
+
+def _inject_pricing_errors(
+    orders: list[dict[str, object]],
+    model_by_key: dict[str, ModelDef],
+    rng: np.random.Generator,
+    n_errors: int = N_PRICING_ERRORS,
+) -> list[PricingErrorRecord]:
+    """GEN-004's other half: forces `negotiated_price` on a handful of orders below
+    `list_price - k*sigma(historical discount fractions for that model)`, k=5 vs. the real
+    detector's default k=3 (DS-ANO-003) — comfortably past threshold, not a coin-flip."""
+    orders_by_model: dict[str, list[int]] = {}
+    for i, order in enumerate(orders):
+        orders_by_model.setdefault(cast(str, order["_model_key"]), []).append(i)
+
+    candidates = [
+        model_key
+        for model_key, indices in orders_by_model.items()
+        if len(indices) >= MIN_ORDERS_FOR_PRICING_STATS
+    ]
+    rng.shuffle(candidates)
+
+    records: list[PricingErrorRecord] = []
+    used_orders: set[int] = set()
+    for model_key in candidates:
+        if len(records) >= n_errors:
+            break
+        list_price = float(model_by_key[model_key].list_price)
+        indices = orders_by_model[model_key]
+        fractions = [1.0 - cast(float, orders[i]["negotiated_price"]) / list_price for i in indices]
+        mean = float(np.mean(fractions))
+        std = float(np.std(fractions))
+        if std <= 0:
+            continue
+
+        available = [i for i in indices if i not in used_orders]
+        if not available:
+            continue
+        idx = available[int(rng.integers(0, len(available)))]
+        order = orders[idx]
+
+        injected_fraction = min(mean + PRICING_ERROR_K * std, 0.9)
+        original_price = cast(float, order["negotiated_price"])
+        injected_price = round(list_price * (1.0 - injected_fraction), 2)
+
+        order["negotiated_price"] = injected_price
+        order["discount"] = round(list_price - injected_price, 2)
+        used_orders.add(idx)
+
+        records.append(
+            PricingErrorRecord(
+                order_id=str(order["id"]),
+                model_key=model_key,
+                list_price=list_price,
+                historical_discount_fraction_mean=round(mean, 4),
+                historical_discount_fraction_std=round(std, 4),
+                k_inject=PRICING_ERROR_K,
+                original_negotiated_price=original_price,
+                injected_negotiated_price=injected_price,
+            )
+        )
+
+    return records
 
 
 def _walk_lead_funnel(won: bool, rng: np.random.Generator) -> list[tuple[LeadStatus, LeadStatus]]:
@@ -585,6 +669,7 @@ def _write_ground_truth(
     config: GeneratorConfig,
     shock_records: list[AnomalyRecord],
     near_miss_records: list[AnomalyRecord],
+    pricing_error_records: list[PricingErrorRecord],
     n_leads: int,
 ) -> None:
     GROUND_TRUTH_DIR.mkdir(parents=True, exist_ok=True)
@@ -634,6 +719,9 @@ def _write_ground_truth(
     anomalies = [asdict(r) for r in shock_records] + [asdict(r) for r in near_miss_records]
     (GROUND_TRUTH_DIR / "anomalies.json").write_text(json.dumps(anomalies, indent=2))
 
+    pricing_errors = [asdict(r) for r in pricing_error_records]
+    (GROUND_TRUTH_DIR / "pricing_errors.json").write_text(json.dumps(pricing_errors, indent=2))
+
 
 def _sbc_class_counts(series_by_key: dict[tuple[str, str], np.ndarray]) -> dict[str, int]:
     counts: dict[str, int] = {}
@@ -649,8 +737,8 @@ def _sbc_class_counts(series_by_key: dict[tuple[str, str], np.ndarray]) -> dict[
 def main() -> None:
     config = GeneratorConfig()
     master_seq = np.random.SeedSequence(config.seed)
-    rng_anomaly, rng_near_miss, rng_leads, rng_realize, rng_customers = (
-        np.random.default_rng(s) for s in master_seq.spawn(5)
+    rng_anomaly, rng_near_miss, rng_leads, rng_realize, rng_customers, rng_pricing = (
+        np.random.default_rng(s) for s in master_seq.spawn(6)
     )
 
     print("Generating demand series...")
@@ -720,6 +808,11 @@ def main() -> None:
             leads, model_defs_by_segment, model_ids, sales_user_ids, customer_pool, rng_leads
         )
 
+        pricing_error_records = _inject_pricing_errors(orders, model_by_key, rng_pricing)
+        print(f"  {len(pricing_error_records)} injected pricing errors")
+        for order in orders:
+            del order["_model_key"]
+
         print(f"  {len(customer_pool.rows)} distinct customers")
         conn.execute(insert(_table(Customer)), customer_pool.rows)
 
@@ -736,7 +829,9 @@ def main() -> None:
         _bulk_insert(conn, _table(LeadEvent), lead_event_rows)
 
     print("Writing ground-truth artifacts...")
-    _write_ground_truth(demand, config, shock_records, near_miss_records, N_LEADS)
+    _write_ground_truth(
+        demand, config, shock_records, near_miss_records, pricing_error_records, N_LEADS
+    )
 
     print("Done.")
 
