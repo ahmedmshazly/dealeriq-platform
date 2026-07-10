@@ -504,6 +504,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/inventory/abc-xyz": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Heatmap Route */
+        get: operations["heatmap_route_api_v1_inventory_abc_xyz_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inventory/models/{model_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Model Detail Route */
+        get: operations["model_detail_route_api_v1_inventory_models__model_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inventory/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Unit Risk List Route */
+        get: operations["unit_risk_list_route_api_v1_inventory_units_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/anomalies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Anomaly List Route */
+        get: operations["anomaly_list_route_api_v1_anomalies_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -570,6 +638,46 @@ export interface components {
             metrics: {
                 [key: string]: unknown;
             };
+        };
+        /** AnomalyListResponse */
+        AnomalyListResponse: {
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /** Anomalies */
+            anomalies: components["schemas"]["AnomalyResponse"][];
+        };
+        /** AnomalyResponse */
+        AnomalyResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Scope */
+            scope: string;
+            /** Entity Key */
+            entity_key: string;
+            /** Display Name */
+            display_name: string;
+            /** Week Start */
+            week_start: string | null;
+            /** Observed */
+            observed: number;
+            /** Expected */
+            expected: number;
+            /** Score */
+            score: number;
+            /** Method */
+            method: string;
+            /** Severity */
+            severity: number;
+            /** Esd Confirmed */
+            esd_confirmed: boolean | null;
+            /** Status */
+            status: string;
         };
         /** AuditLogEntryResponse */
         AuditLogEntryResponse: {
@@ -685,6 +793,39 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HeatmapCell */
+        HeatmapCell: {
+            /** Abc */
+            abc: string;
+            /** Xyz */
+            xyz: string;
+            /** Models */
+            models: components["schemas"]["HeatmapCellEntry"][];
+        };
+        /** HeatmapCellEntry */
+        HeatmapCellEntry: {
+            /**
+             * Model Id
+             * Format: uuid
+             */
+            model_id: string;
+            /** Model Name */
+            model_name: string;
+            /** Revenue Share */
+            revenue_share: number;
+            /** Demand Cv */
+            demand_cv: number;
+        };
+        /** HeatmapResponse */
+        HeatmapResponse: {
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /** Cells */
+            cells: components["schemas"]["HeatmapCell"][];
         };
         /** LeadCreateRequest */
         LeadCreateRequest: {
@@ -807,6 +948,29 @@ export interface components {
             coverage80: number;
             /** Is Champion */
             is_champion: boolean;
+        };
+        /** ModelDetailResponse */
+        ModelDetailResponse: {
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /**
+             * Model Id
+             * Format: uuid
+             */
+            model_id: string;
+            /** Model Name */
+            model_name: string;
+            /** Abc */
+            abc: string;
+            /** Xyz */
+            xyz: string;
+            /** Reorder Points */
+            reorder_points: components["schemas"]["ReorderPointEntry"][];
+            /** At Risk Units */
+            at_risk_units: components["schemas"]["UnitRiskResponse"][];
         };
         /** OrderCancelRequest */
         OrderCancelRequest: {
@@ -976,6 +1140,24 @@ export interface components {
             /** Permissions */
             permissions: string[];
         };
+        /** ReorderPointEntry */
+        ReorderPointEntry: {
+            /**
+             * Branch Id
+             * Format: uuid
+             */
+            branch_id: string;
+            /** Branch Name */
+            branch_name: string;
+            /** Reorder Point */
+            reorder_point: number | null;
+            /** Safety Stock */
+            safety_stock: number | null;
+            /** Service Level */
+            service_level: number | null;
+            /** Skipped Reason */
+            skipped_reason: string | null;
+        };
         /** RoleResponse */
         RoleResponse: {
             /**
@@ -1026,6 +1208,48 @@ export interface components {
             token_type: string;
             /** Must Change Password */
             must_change_password: boolean;
+        };
+        /** UnitRiskListResponse */
+        UnitRiskListResponse: {
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /** Units */
+            units: components["schemas"]["UnitRiskResponse"][];
+        };
+        /** UnitRiskResponse */
+        UnitRiskResponse: {
+            /**
+             * Unit Id
+             * Format: uuid
+             */
+            unit_id: string;
+            /** Vin */
+            vin: string;
+            /**
+             * Model Id
+             * Format: uuid
+             */
+            model_id: string;
+            /** Model Name */
+            model_name: string;
+            /**
+             * Branch Id
+             * Format: uuid
+             */
+            branch_id: string;
+            /** Branch Name */
+            branch_name: string;
+            /** Days On Lot */
+            days_on_lot: number;
+            /** Is Aging */
+            is_aging: boolean;
+            /** P Sale 30D */
+            p_sale_30d: number | null;
+            /** Risk Decile */
+            risk_decile: number | null;
         };
         /**
          * UnitStatus
@@ -2268,6 +2492,137 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeriesDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    heatmap_route_api_v1_inventory_abc_xyz_get: {
+        parameters: {
+            query?: {
+                run_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HeatmapResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    model_detail_route_api_v1_inventory_models__model_id__get: {
+        parameters: {
+            query?: {
+                run_id?: string | null;
+            };
+            header?: never;
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unit_risk_list_route_api_v1_inventory_units_get: {
+        parameters: {
+            query?: {
+                run_id?: string | null;
+                aging_only?: boolean;
+                worst_decile_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnitRiskListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    anomaly_list_route_api_v1_anomalies_get: {
+        parameters: {
+            query?: {
+                run_id?: string | null;
+                scope?: string | null;
+                min_severity?: number | null;
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnomalyListResponse"];
                 };
             };
             /** @description Validation Error */

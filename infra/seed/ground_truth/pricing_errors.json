@@ -1,6 +1,6 @@
 [
   {
-    "order_id": "a8828074-5d6f-4678-9e37-80b2330f4933",
+    "order_id": "e18cbfe6-5cf6-4405-9627-3c153d2cd4e2",
     "model_key": "economy:Nissan:Sentra",
     "list_price": 19789.99,
     "historical_discount_fraction_mean": 0.0288,
@@ -10,7 +10,7 @@
     "injected_negotiated_price": 16392.83
   },
   {
-    "order_id": "b4a4ec9f-c273-4a9a-9e95-1930db8977df",
+    "order_id": "23138c47-c9e2-41db-b310-57a94fd35e0d",
     "model_key": "suv_truck:Ford:F-150",
     "list_price": 44491.66,
     "historical_discount_fraction_mean": 0.03,
@@ -20,7 +20,7 @@
     "injected_negotiated_price": 36315.36
   },
   {
-    "order_id": "6ded6047-bb76-4a5e-af8b-e88d8094b31b",
+    "order_id": "32a62378-1064-4093-9c5f-1e4bf2040330",
     "model_key": "commercial:Ram:ProMaster",
     "list_price": 44237.54,
     "historical_discount_fraction_mean": 0.0285,
@@ -30,7 +30,7 @@
     "injected_negotiated_price": 35377.81
   },
   {
-    "order_id": "08827de0-05a6-4d50-bcd1-58e91fc7541d",
+    "order_id": "f30d183f-74c9-4a68-8060-a0a63243a1d9",
     "model_key": "luxury:Audi:A6",
     "list_price": 66255.36,
     "historical_discount_fraction_mean": 0.0291,
@@ -40,7 +40,7 @@
     "injected_negotiated_price": 55726.38
   },
   {
-    "order_id": "c60548a7-ae82-490e-9431-f9de085202e6",
+    "order_id": "11687727-d19f-42f3-92b6-fbedfc915d59",
     "model_key": "sedan:Ford:Fusion",
     "list_price": 28698.14,
     "historical_discount_fraction_mean": 0.0298,
@@ -50,7 +50,7 @@
     "injected_negotiated_price": 23595.14
   },
   {
-    "order_id": "9e9a4296-ba2d-483b-ac7f-921b5acf527c",
+    "order_id": "18a744d1-e344-4455-89db-91731bdffb86",
     "model_key": "sedan:Mazda:Mazda6",
     "list_price": 24883.28,
     "historical_discount_fraction_mean": 0.0294,
@@ -60,7 +60,7 @@
     "injected_negotiated_price": 20403.34
   },
   {
-    "order_id": "40667307-5386-4f9a-b3e4-ed100c0f5cd7",
+    "order_id": "d629c748-cf15-43df-a2d5-f3191d8bea6a",
     "model_key": "sedan:Toyota:Camry",
     "list_price": 31675.1,
     "historical_discount_fraction_mean": 0.0287,
@@ -70,7 +70,7 @@
     "injected_negotiated_price": 26230.75
   },
   {
-    "order_id": "fb41c3b8-cb69-470f-a696-29773ad13c66",
+    "order_id": "27df22cb-5976-4f39-baba-0659f5b19ab5",
     "model_key": "economy:Honda:Civic",
     "list_price": 20716.39,
     "historical_discount_fraction_mean": 0.0303,
@@ -80,7 +80,7 @@
     "injected_negotiated_price": 17051.5
   },
   {
-    "order_id": "89cbde4c-aa45-4a5f-86e6-853e48e22e10",
+    "order_id": "5ad84a22-0b4c-43a4-aff0-5d97644ff4f6",
     "model_key": "economy:Hyundai:Elantra",
     "list_price": 21560.59,
     "historical_discount_fraction_mean": 0.0315,
@@ -90,7 +90,7 @@
     "injected_negotiated_price": 17482.27
   },
   {
-    "order_id": "b48c8418-0c46-4135-8898-a5129650101a",
+    "order_id": "204d5bf6-74ab-4401-a8bd-310f319eb1af",
     "model_key": "sedan:Nissan:Altima",
     "list_price": 25123.67,
     "historical_discount_fraction_mean": 0.03,
@@ -100,7 +100,7 @@
     "injected_negotiated_price": 20636.93
   },
   {
-    "order_id": "89409924-918b-4fca-ab47-1c3afdaf0cd7",
+    "order_id": "d9acc3d9-6038-48b4-bbdb-f9880d9a0557",
     "model_key": "economy:Mazda:Mazda3",
     "list_price": 16262.82,
     "historical_discount_fraction_mean": 0.0294,
@@ -110,7 +110,7 @@
     "injected_negotiated_price": 13288.72
   },
   {
-    "order_id": "b9999a55-3ba8-4ff2-910e-2c63b17b4fa3",
+    "order_id": "807dc2f0-f4d6-4926-ad46-409ba129bf1b",
     "model_key": "suv_truck:Toyota:RAV4",
     "list_price": 33832.48,
     "historical_discount_fraction_mean": 0.0306,
@@ -120,7 +120,7 @@
     "injected_negotiated_price": 27376.42
   },
   {
-    "order_id": "27fd5818-3af5-4d5d-8380-8225a3f4b789",
+    "order_id": "90e2969f-1bf3-4a74-b70e-d6180c248062",
     "model_key": "sedan:Honda:Accord",
     "list_price": 23894.71,
     "historical_discount_fraction_mean": 0.0308,
@@ -130,7 +130,7 @@
     "injected_negotiated_price": 19446.02
   },
   {
-    "order_id": "255985f3-8ebb-43a4-ab46-1b5c6a371b2a",
+    "order_id": "02292e6b-3121-4bf1-b02e-ac78cb10e9a5",
     "model_key": "luxury:BMW:5 Series",
     "list_price": 67158.0,
     "historical_discount_fraction_mean": 0.0314,
@@ -140,7 +140,7 @@
     "injected_negotiated_price": 53130.08
   },
   {
-    "order_id": "67d92f14-1f69-400c-9c1e-c71212a7805f",
+    "order_id": "f45ec3ad-4687-4efc-ae19-2aefe06eb0fe",
     "model_key": "economy:Toyota:Corolla",
     "list_price": 20184.21,
     "historical_discount_fraction_mean": 0.0329,

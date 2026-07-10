@@ -2,7 +2,11 @@
 
 import pandas as pd
 
-from dealeriq_analytics.forecasting.series import build_weekly_series, compute_week_start
+from dealeriq_analytics.forecasting.series import (
+    build_weekly_mean_series,
+    build_weekly_series,
+    compute_week_start,
+)
 
 WEEK_START = pd.Timestamp("2023-07-17")  # a Monday
 N_WEEKS = 8
@@ -72,3 +76,45 @@ def test_build_weekly_series_key_with_partial_data_still_gets_full_calendar() ->
     assert len(series[("m1", "b1")]) == N_WEEKS
     assert len(series[("m2", "b2")]) == N_WEEKS
     assert (series[("m2", "b2")] == 0).all()
+
+
+def test_build_weekly_mean_series_averages_and_forward_fills_gaps() -> None:
+    rows = pd.DataFrame(
+        {
+            "seg": ["s1", "s1", "s1"],
+            "at": [
+                WEEK_START,
+                WEEK_START,
+                WEEK_START + pd.Timedelta(weeks=3),
+            ],
+            "discount": [10.0, 20.0, 40.0],
+        }
+    )
+    series = build_weekly_mean_series(
+        rows,
+        group_cols=["seg"],
+        date_col="at",
+        value_col="discount",
+        keys=[("s1",)],
+        week_start=WEEK_START,
+        n_weeks=N_WEEKS,
+    )
+    result = series[("s1",)]
+    assert result.iloc[0] == 15.0  # mean(10,20)
+    assert result.iloc[1] == 15.0  # forward-filled from week 0 (no data week 1)
+    assert result.iloc[2] == 15.0  # forward-filled
+    assert result.iloc[3] == 40.0
+
+
+def test_build_weekly_mean_series_key_with_no_data_is_all_nan() -> None:
+    rows = pd.DataFrame({"seg": [], "at": [], "discount": []})
+    series = build_weekly_mean_series(
+        rows,
+        group_cols=["seg"],
+        date_col="at",
+        value_col="discount",
+        keys=[("s1",)],
+        week_start=WEEK_START,
+        n_weeks=N_WEEKS,
+    )
+    assert series[("s1",)].isna().all()

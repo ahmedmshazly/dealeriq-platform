@@ -53,3 +53,44 @@ def build_weekly_series(
                 sub.set_index("_week")["count"].reindex(calendar, fill_value=0).astype("int64")
             )
     return series
+
+
+def build_weekly_mean_series(
+    rows: pd.DataFrame,
+    group_cols: list[str],
+    date_col: str,
+    value_col: str,
+    keys: list[tuple[str, ...]],
+    week_start: pd.Timestamp,
+    n_weeks: int,
+) -> dict[tuple[str, ...], pd.Series]:
+    """Like `build_weekly_series` but averages `value_col` per week instead of counting rows
+    (used for DS-ANO-001's average-discount/average-margin monitored series). A week with no
+    rows is forward-filled from the most recent week that had data (never zero-filled — an
+    average of nothing is undefined, not 0, and STL needs a complete series to decompose). If a
+    key has no data at all across the whole window, every week is NaN — callers must handle that
+    (the anomaly detector's `UnstableSeriesError` path already treats zero-variance/NaN-heavy
+    series as unusable, per the module-level convention every anomaly-input series follows)."""
+    calendar = pd.date_range(week_start, periods=n_weeks, freq="W-MON")
+
+    if rows.empty:
+        return {key: pd.Series(float("nan"), index=calendar) for key in keys}
+
+    df = rows.copy()
+    df["_week"] = compute_week_start(df[date_col])
+    means = df.groupby([*group_cols, "_week"])[value_col].mean().rename("mean").reset_index()
+
+    grouped = dict(iter(means.groupby(group_cols)))
+    normalized: dict[tuple[str, ...], pd.DataFrame] = {
+        (key if isinstance(key, tuple) else (key,)): sub for key, sub in grouped.items()
+    }
+
+    series: dict[tuple[str, ...], pd.Series] = {}
+    for key in keys:
+        sub = normalized.get(key)
+        if sub is None:
+            series[key] = pd.Series(float("nan"), index=calendar)
+        else:
+            reindexed = sub.set_index("_week")["mean"].reindex(calendar)
+            series[key] = reindexed.ffill().bfill()
+    return series

@@ -32,3 +32,8 @@ ignore_missing_imports = true
 # statsforecast (ADR-005/018) and pandas ship no type stubs either.
 module = ["statsforecast.*", "pandas.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# lifelines (ADR-017) and scipy ship no py.typed marker / type stubs either.
+module = ["lifelines.*", "scipy.*"]
+ignore_missing_imports = true
