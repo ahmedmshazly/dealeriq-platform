@@ -7,6 +7,7 @@ which phase would naturally pick it up if prioritized later.
 | Requirement | Priority | Deferred from phase | Rationale |
 |---|---|---|---|
 | FR-007 (TOTP 2FA for Admins) | P2 | 1 | Real added complexity (secret provisioning, QR, recovery codes) for low value at this stage. |
+| FR-082 (admin settings console) | P1 | 1 (unassigned in SRS §13) | SRS never assigns this to a phase. FR-081 (audit browse) was folded into Phase 1 since the exit demo needs it; FR-082 has no such forcing dependency. Natural home is alongside Phase 6 (alert rule params, FR-065) or Phase 9 hardening — revisit then. |
 | FR-025 (CSV import dry-run w/ row-level validation) | P1 | 2 | Export ships; import with row-level validation is a genuine scope trap. Revisit alongside admin console work. |
 | FR-034 (bulk lead reassignment) | P2 | 2 | Nice-to-have UI convenience, not load-bearing for any downstream phase. |
 | GEN-005 (persona-driven discount variation) | P1 | 3 | Addable later as a generator version bump without breaking reproducibility of earlier runs. |

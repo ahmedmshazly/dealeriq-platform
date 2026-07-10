@@ -1,34 +1,33 @@
-import { render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { render, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const replace = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace, push: vi.fn() }),
+  usePathname: () => "/",
+}));
+
+const useAuthMock = vi.fn();
+vi.mock("@/lib/auth-context", () => ({
+  useAuth: () => useAuthMock(),
+}));
+
 import Home from "@/app/page";
 
-describe("Home page", () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
+describe("Home", () => {
+  beforeEach(() => {
+    replace.mockClear();
   });
 
-  it("renders the DealerIQ wordmark and an online status when the API is healthy", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ status: "ok" }),
-      }),
-    );
-
-    const ui = await Home();
-    render(ui);
-
-    expect(screen.getByAltText("DealerIQ")).toBeInTheDocument();
-    expect(screen.getByText(/API status: online/i)).toBeInTheDocument();
+  it("redirects to /dashboard once the auth check has settled", async () => {
+    useAuthMock.mockReturnValue({ isLoading: false });
+    render(<Home />);
+    await waitFor(() => expect(replace).toHaveBeenCalledWith("/dashboard"));
   });
 
-  it("renders an offline status when the API is unreachable", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("connection refused")));
-
-    const ui = await Home();
-    render(ui);
-
-    expect(screen.getByText(/API status: offline/i)).toBeInTheDocument();
+  it("does not redirect while the auth check is still in flight", () => {
+    useAuthMock.mockReturnValue({ isLoading: true });
+    render(<Home />);
+    expect(replace).not.toHaveBeenCalled();
   });
 });

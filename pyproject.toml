@@ -14,6 +14,9 @@ src = ["apps/api/src", "packages/analytics/src"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+# B008: FastAPI's `Depends(...)` in argument defaults is the framework's own required idiom
+# for dependency injection, not the mutable-default-argument bug this rule otherwise catches.
+ignore = ["B008"]
 
 [tool.mypy]
 python_version = "3.12"
