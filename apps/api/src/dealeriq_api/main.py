@@ -15,6 +15,8 @@ from dealeriq_api.routes import (
     auth,
     branches,
     customers,
+    forecasts,
+    jobs,
     leads,
     orders,
     permissions,
@@ -65,6 +67,8 @@ def create_app() -> FastAPI:
     app.include_router(customers.router)
     app.include_router(leads.router)
     app.include_router(orders.router)
+    app.include_router(jobs.router)
+    app.include_router(forecasts.router)
 
     @app.get("/api/v1/health", tags=["system"])
     def health() -> dict[str, str]:

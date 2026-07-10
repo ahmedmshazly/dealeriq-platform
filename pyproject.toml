@@ -27,3 +27,8 @@ mypy_path = "apps/api/src:packages/analytics/src"
 # statsmodels ships no py.typed marker / type stubs (ADR-018 narrows it to STL usage only).
 module = "statsmodels.*"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# statsforecast (ADR-005/018) and pandas ship no type stubs either.
+module = ["statsforecast.*", "pandas.*"]
+ignore_missing_imports = true

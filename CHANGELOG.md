@@ -7,6 +7,37 @@ NFR-009).
 
 ## [Unreleased]
 
+### Phase 4 — Forecasting Engine
+
+- `packages/analytics/forecasting`: rolling-origin (expanding-window) cross-validation over an
+  8-method statsforecast pool (Naive, SeasonalNaive, auto-tuned Simple Exponential Smoothing,
+  AutoETS, AutoARIMA, CrostonClassic, CrostonSBA, TSB) with a fold count derived from each
+  series' actual length rather than hardcoded; MASE/sMAPE/pinball-loss/80%-coverage metrics
+  validated against hand-computed fixtures before ever being wired into the pipeline; per-series
+  champion selection (lowest mean CV MASE, must beat Seasonal Naive or Seasonal Naive itself is
+  champion) with a full-history refit for the persisted 12-week forecast + interval.
+- `apps/api`: `AnalyticsRun`/`SeriesProfile`/`Forecast`/`ForecastMetric` schema; an on-demand
+  `POST /jobs/forecast/run` (admin-only, 409 on concurrent trigger) plus `GET
+  /jobs/forecast/runs`; `GET /forecasts` (leaderboard) and `GET /forecasts/{series_key}`
+  (fan-chart detail + CV metrics).
+- `apps/web`: an Analytics workbench — leaderboard filterable by SBC pattern class with a
+  trigger button and live run-status polling, and a per-series fan chart (Recharts: actuals,
+  champion forecast, 80% interval band) with a sortable CV metrics table.
+- Full 81-series pipeline run against the real Phase 3 dataset (66 model-branch + 15
+  segment-branch series): 855.9s; 0/81 champions worse than Seasonal Naive (SC-002); champion
+  beats Seasonal Naive on 79.4% (27/34) of intermittent-class series, clearing QA-003(a)'s ≥60%
+  bar — now a CI-blocking pytest, not just a manual check.
+- Two real bugs found and fixed by actually running the pipeline: a hardcoded CV fold count
+  that silently produced all-NaN folds for any series shorter than the original 156-week
+  dataset (now derived per-run from actual series length); a pre-existing unfiltered-list
+  assumption in Phase 2's order-flow integration tests that this phase's larger synthetic
+  dataset finally broke (now filtered by `model_id`).
+- 34 new analytics tests (metrics/series/CV/champion-selection fixtures plus the QA-003(a)
+  scientific-validation gate, now CI-blocking per the constitution's Phase 4+ mandate) and 4 new
+  backend integration tests; 140 backend+analytics tests total, 95% coverage. `make ci`'s
+  wall-clock floor is now set by the QA-003(a) test alone (~10 min), a disclosed trade documented
+  in the phase report.
+
 ### Phase 3 — Synthetic Data Generator
 
 - `packages/analytics`: SBC demand-pattern classifier (ADI/CV², DS-FC-002 pulled forward); an

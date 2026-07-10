@@ -60,7 +60,7 @@ def _setup(client: TestClient, token: str, *, list_price: float = 20000.0):
     model_id = _create_model(client, token, list_price=list_price)
     unit_id = _create_unit(client, token, model_id, branch_id)
     customer_id = _create_customer(client, token)
-    return unit_id, customer_id
+    return unit_id, customer_id, model_id
 
 
 def test_low_discount_order_auto_approves_and_reserves_the_unit(client: TestClient) -> None:
@@ -68,7 +68,7 @@ def test_low_discount_order_auto_approves_and_reserves_the_unit(client: TestClie
     sales_id, sales_email, sales_password = create_user(client, token, "sales")
     sales_bearer = login(client, sales_email, sales_password).json()["access_token"]
 
-    unit_id, customer_id = _setup(client, token, list_price=20000.0)
+    unit_id, customer_id, model_id = _setup(client, token, list_price=20000.0)
 
     create_resp = client.post(
         "/api/v1/orders",
@@ -95,7 +95,9 @@ def test_low_discount_order_auto_approves_and_reserves_the_unit(client: TestClie
     assert submit_resp.json()["status"] == "approved"
 
     unit_resp = client.get(
-        "/api/v1/vehicle-units", headers={"Authorization": f"Bearer {sales_bearer}"}
+        "/api/v1/vehicle-units",
+        params={"model_id": model_id},
+        headers={"Authorization": f"Bearer {sales_bearer}"},
     )
     unit = next(u for u in unit_resp.json()["items"] if u["id"] == unit_id)
     assert unit["status"] == "reserved"
@@ -108,7 +110,9 @@ def test_low_discount_order_auto_approves_and_reserves_the_unit(client: TestClie
     assert deliver_resp.json()["status"] == "delivered"
 
     unit_resp_2 = client.get(
-        "/api/v1/vehicle-units", headers={"Authorization": f"Bearer {sales_bearer}"}
+        "/api/v1/vehicle-units",
+        params={"model_id": model_id},
+        headers={"Authorization": f"Bearer {sales_bearer}"},
     )
     unit_2 = next(u for u in unit_resp_2.json()["items"] if u["id"] == unit_id)
     assert unit_2["status"] == "sold"
@@ -121,7 +125,7 @@ def test_high_discount_order_requires_manager_approval(client: TestClient) -> No
     manager_id, manager_email, manager_password = create_user(client, token, "manager")
     manager_bearer = login(client, manager_email, manager_password).json()["access_token"]
 
-    unit_id, customer_id = _setup(client, token, list_price=20000.0)
+    unit_id, customer_id, _model_id = _setup(client, token, list_price=20000.0)
 
     create_resp = client.post(
         "/api/v1/orders",
@@ -170,7 +174,7 @@ def test_cancelling_an_approved_order_releases_the_reservation_and_requires_a_re
     token = admin_token(client)
     sales_id, sales_email, sales_password = create_user(client, token, "sales")
     sales_bearer = login(client, sales_email, sales_password).json()["access_token"]
-    unit_id, customer_id = _setup(client, token)
+    unit_id, customer_id, model_id = _setup(client, token)
 
     order_id = client.post(
         "/api/v1/orders",
@@ -204,7 +208,9 @@ def test_cancelling_an_approved_order_releases_the_reservation_and_requires_a_re
     assert cancel_resp.json()["status"] == "cancelled"
 
     unit_resp = client.get(
-        "/api/v1/vehicle-units", headers={"Authorization": f"Bearer {sales_bearer}"}
+        "/api/v1/vehicle-units",
+        params={"model_id": model_id},
+        headers={"Authorization": f"Bearer {sales_bearer}"},
     )
     unit = next(u for u in unit_resp.json()["items"] if u["id"] == unit_id)
     assert unit["status"] == "in_stock"
@@ -214,7 +220,7 @@ def test_order_timeline_records_every_status_change(client: TestClient) -> None:
     token = admin_token(client)
     sales_id, sales_email, sales_password = create_user(client, token, "sales")
     sales_bearer = login(client, sales_email, sales_password).json()["access_token"]
-    unit_id, customer_id = _setup(client, token)
+    unit_id, customer_id, _model_id = _setup(client, token)
 
     order_id = client.post(
         "/api/v1/orders",
@@ -248,7 +254,7 @@ def test_sales_cannot_create_an_order_for_someone_else(client: TestClient) -> No
     _sales_id, sales_email, sales_password = create_user(client, token, "sales")
     sales_bearer = login(client, sales_email, sales_password).json()["access_token"]
     other_id, _, _ = create_user(client, token, "sales")
-    unit_id, customer_id = _setup(client, token)
+    unit_id, customer_id, _model_id = _setup(client, token)
 
     resp = client.post(
         "/api/v1/orders",
