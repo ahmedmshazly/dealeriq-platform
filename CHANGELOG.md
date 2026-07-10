@@ -7,6 +7,26 @@ NFR-009).
 
 ## [Unreleased]
 
+### Phase 3 — Synthetic Data Generator
+
+- `packages/analytics`: SBC demand-pattern classifier (ADI/CV², DS-FC-002 pulled forward); an
+  NB-GLM weekly demand simulator (trend + Fourier seasonality + promotions + branch effect)
+  spanning all four SBC classes; a lead-funnel logit simulator with a fully signed, sign-
+  recoverable coefficient table; demand-shock injection with self-verified detectability
+  (independent STL re-decomposition, not just an analytic prediction).
+- `infra/seed/generate.py`: bulk-inserts the generated world into Postgres (3 branches, 22
+  vehicle models, ~6.4k customers, 15.2k orders with full unit/ledger/order-event trails, 6k
+  leads with legal state-machine event paths) and writes GEN-006's ground-truth JSON. Wired to
+  `make seed`, runtime ~16.5s.
+- `infra/seed/notebooks/profile.md`: a real dataset profile (SBC histogram, order volume by
+  segment/branch/payment-type, lead conversion by channel/segment, customer repeat-purchase
+  distribution, injected anomaly list) pulled from an actual seeded database.
+- Total order volume (~15.2k) deliberately exceeds GEN-001's approximate "~4-8k" estimate — see
+  ADR-021 for why reaching ≥10 series in every SBC class requires it, given the NB-GLM's
+  zero-probability math under this dataset's fixed 156-week/3-branch/~25-model shape.
+- 18 new analytics tests (SBC fixtures, generator determinism/coverage, lead sign-recovery,
+  anomaly detectability), all green; 112 backend tests (up from 95), 95% coverage.
+
 ### Phase 2 — Core Domain
 
 - `apps/api`: branches, vehicle models/units with an append-only stock-movement ledger

@@ -17,9 +17,9 @@ bootstrap:
 	@if [ ! -f .env ]; then cp .env.example .env; echo "==> Created .env from .env.example"; fi
 	@echo "==> Bootstrap complete."
 
-# Brings up infra and migrates the schema to head. The full synthetic data generator
-# (GEN-001..006) lands in Phase 3; until then this only ensures the (currently empty)
-# migration chain applies cleanly against a fresh database.
+# Brings up infra, migrates the schema to head, then runs the full synthetic data generator
+# (GEN-001..006): ~15k orders, ~6k leads/customers, 156 weeks of demand history, injected
+# anomalies — see specs/004-synthetic-data/ and docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md.
 seed:
 	@echo "==> Starting infra (postgres + mailhog)"
 	@$(COMPOSE) up -d
@@ -27,6 +27,8 @@ seed:
 	@until [ "$$($(COMPOSE) ps postgres --format '{{.Health}}')" = "healthy" ]; do sleep 1; done
 	@echo "==> Running Alembic migrations"
 	@cd apps/api && uv run --project .. alembic upgrade head
+	@echo "==> Running synthetic data generator"
+	@uv run python infra/seed/generate.py
 	@echo "==> Seed complete."
 
 # Runs infra + API (uvicorn --reload) + web (next dev) concurrently.
@@ -50,11 +52,11 @@ migrate:
 # Static quality gates (QA-006): ruff + mypy (strict on domain/analytics) + eslint + tsc --noEmit.
 lint:
 	@echo "==> ruff"
-	@uv run ruff check apps/api/src apps/api/alembic packages/analytics/src apps/api/tests packages/analytics/tests
+	@uv run ruff check apps/api/src apps/api/alembic packages/analytics/src apps/api/tests packages/analytics/tests infra/seed/generate.py
 	@echo "==> ruff format --check"
-	@uv run ruff format --check apps/api/src apps/api/alembic packages/analytics/src apps/api/tests packages/analytics/tests
+	@uv run ruff format --check apps/api/src apps/api/alembic packages/analytics/src apps/api/tests packages/analytics/tests infra/seed/generate.py
 	@echo "==> mypy (strict)"
-	@uv run mypy apps/api/src packages/analytics/src
+	@uv run mypy apps/api/src packages/analytics/src infra/seed/generate.py
 	@echo "==> eslint (apps/web)"
 	@npm run lint:web
 	@echo "==> tsc --noEmit (apps/web)"

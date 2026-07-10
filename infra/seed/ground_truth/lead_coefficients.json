@@ -1,0 +1,22 @@
+{
+  "intercept": -1.5,
+  "channel": {
+    "referral": 0.8,
+    "walk_in": 0.3,
+    "web_form": 0.0,
+    "phone": -0.2,
+    "social_ad": -0.5
+  },
+  "budget_per_level": 0.15,
+  "segment": {
+    "economy": 0.4,
+    "sedan": 0.3,
+    "suv_truck": 0.2,
+    "commercial": 0.1,
+    "luxury": 0.0
+  },
+  "days_since_creation": -0.02,
+  "interaction_count": 0.25,
+  "rfm_quintile": 0.3,
+  "season": 0.15
+}
