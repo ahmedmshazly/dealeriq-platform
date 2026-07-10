@@ -50,9 +50,9 @@ migrate:
 # Static quality gates (QA-006): ruff + mypy (strict on domain/analytics) + eslint + tsc --noEmit.
 lint:
 	@echo "==> ruff"
-	@uv run ruff check apps/api/src packages/analytics/src apps/api/tests packages/analytics/tests
+	@uv run ruff check apps/api/src apps/api/alembic packages/analytics/src apps/api/tests packages/analytics/tests
 	@echo "==> ruff format --check"
-	@uv run ruff format --check apps/api/src packages/analytics/src apps/api/tests packages/analytics/tests
+	@uv run ruff format --check apps/api/src apps/api/alembic packages/analytics/src apps/api/tests packages/analytics/tests
 	@echo "==> mypy (strict)"
 	@uv run mypy apps/api/src packages/analytics/src
 	@echo "==> eslint (apps/web)"

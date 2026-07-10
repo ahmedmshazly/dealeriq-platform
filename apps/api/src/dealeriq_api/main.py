@@ -2,9 +2,15 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 from dealeriq_api.core.config import get_settings
+from dealeriq_api.core.errors import register_error_handlers
+from dealeriq_api.core.limiter import limiter
 from dealeriq_api.core.logging import RequestLoggingMiddleware, configure_logging
+from dealeriq_api.routes import audit_log, auth, permissions, roles, users
 
 
 def create_app() -> FastAPI:
@@ -19,6 +25,14 @@ def create_app() -> FastAPI:
         docs_url="/api/v1/docs",
     )
 
+    app.state.limiter = limiter
+    # slowapi's handler type doesn't perfectly match Starlette's exception-handler stub —
+    # known friction point, not a real type mismatch.
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
+    app.add_middleware(SlowAPIMiddleware)
+
+    register_error_handlers(app)
+
     app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(
         CORSMiddleware,
@@ -27,6 +41,12 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    app.include_router(auth.router)
+    app.include_router(users.router)
+    app.include_router(roles.router)
+    app.include_router(permissions.router)
+    app.include_router(audit_log.router)
 
     @app.get("/api/v1/health", tags=["system"])
     def health() -> dict[str, str]:

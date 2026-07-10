@@ -3,12 +3,11 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+# Import every domain module that defines models here so Base.metadata is fully
+# populated before autogenerate runs.
+import dealeriq_api.domain.models  # noqa: F401,E402
 from dealeriq_api.core.config import get_settings
 from dealeriq_api.domain.base import Base
-
-# Import every domain module that defines models here so Base.metadata is fully
-# populated before autogenerate runs. Empty in Phase 0 — filled in as domain models
-# are added (Phase 1+).
 
 config = context.config
 

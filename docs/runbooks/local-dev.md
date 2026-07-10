@@ -49,6 +49,15 @@ make test     # pytest (apps/api, packages/analytics) + vitest (apps/web)
 make ci       # lint + test + next build + regenerate/compile the API client
 ```
 
+## Signing in (Phase 1+)
+
+A fresh `make seed` creates exactly one account: the bootstrap Admin from
+`BOOTSTRAP_ADMIN_EMAIL`/`BOOTSTRAP_ADMIN_PASSWORD` in `.env` (defaults:
+`admin@dealeriq.dev` / `ChangeMe123!`), with `must_change_password=true` — you'll be routed to
+`/change-password` on first login. Self-registration is disabled (FR-004); create Manager/Sales/
+Analyst accounts from `/admin/users` once signed in as Admin. Each created account's one-time
+temporary password is shown once in that page's response — there is no other way to retrieve it.
+
 ## Logs
 
 - API logs are structured JSON on stdout (one line per request: request id, method, path,

@@ -7,15 +7,26 @@ here only, never trusted from the frontend). See `docs/srs/DealerIQ-SRS.md` §5,
 
 ```
 src/dealeriq_api/
-├── auth/       # JWT, RBAC, password hashing (Phase 1+)
-├── domain/     # SQLAlchemy models, services (Phase 1+); Base declarative class lives here now
-├── routes/     # REST endpoints, versioned /api/v1 (Phase 1+)
+├── auth/       # JWT, refresh-token rotation, RBAC dependencies, password hashing (Phase 1)
+├── domain/     # SQLAlchemy models (rbac, refresh_token, audit_log so far), audit helper
+├── routes/     # REST endpoints, versioned /api/v1 (auth, users, roles, permissions, audit-log)
 ├── jobs/       # APScheduler job definitions (Phase 4+)
 ├── alerts/     # rule engine, notification dispatch (Phase 6+)
-└── core/       # config, logging, db session, errors
+└── core/       # config, logging, db session, errors, rate limiter
 alembic/        # migrations — schema changes ONLY via reviewed Alembic revisions (ADR-008)
 tests/
+├── unit/        # no DB — passwords, tokens, lockout-window arithmetic
+├── integration/  # real ephemeral Postgres via testcontainers-python (ADR-013)
+└── conftest.py
 ```
+
+## Auth (Phase 1)
+
+Deny-by-default: every route declares `Depends(require_permission("resource:action"))`. Access
+tokens are short-lived JWTs (`Authorization: Bearer`); refresh tokens are opaque, httpOnly-cookie
+values with rotation and reuse detection (ADR-019). Self-registration is disabled — the first
+Admin account is seeded by the `0001_auth_rbac` migration from `BOOTSTRAP_ADMIN_EMAIL`/
+`BOOTSTRAP_ADMIN_PASSWORD` (see `.env.example`) with `must_change_password=true`.
 
 ## Running locally
 
