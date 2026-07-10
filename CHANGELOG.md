@@ -7,6 +7,41 @@ NFR-009).
 
 ## [Unreleased]
 
+### Phase 5 — Inventory Intelligence & Anomalies
+
+- `packages/analytics`: ABC (revenue-share) × XYZ (demand-CV) classification; reorder points
+  derived from Phase 4's champion forecast quantiles (not a fixed multiplier); Kaplan-Meier
+  survival analysis (`lifelines`, ADR-017) for 30-day sale probability with correct right-
+  censoring of still-in-stock units; STL + robust z-score series anomaly detection with a
+  hand-implemented generalized ESD confirmation test, validated directly against Rosner (1983)'s
+  published 54-point worked example; transaction-level discount-outlier detection matching Phase
+  3's own pricing-error injector's discount-fraction convention exactly.
+- `apps/api`: `InventoryIntel`/`UnitRisk`/`Anomaly` schema, all reusing Phase 4's `AnalyticsRun`
+  run-tracking table; `GET /inventory/abc-xyz` (heatmap), `GET /inventory/models/{id}`
+  (drill-down), `GET /inventory/units`, `GET /anomalies` — an on-demand `job_name="inventory"`
+  trigger following Phase 4's exact orchestration pattern.
+- `apps/web`: an Inventory Intelligence workbench — a 9-cell ABC/XYZ heatmap linking into a
+  per-model drill-down (reorder points per branch, on-lot units with aging/survival status), and
+  a severity-sorted, scope-filterable anomaly list.
+- A real gap in Phase 3's synthetic data found and fixed this phase: the generator never left any
+  units "in stock" (every unit was born already sold), leaving DS-INV-003/004 nothing to compute
+  over. Fixed by adding a current-lot-inventory realization step to `infra/seed/generate.py`
+  (236 `IN_STOCK` units seeded, sized at ~3 weeks of supply per series, acquisition dates spread
+  to include genuinely-aging units).
+- QA-003(b) (anomaly detector recovers ≥80% of injected anomalies at ≤10% false-positive rate) is
+  now CI-blocking, the same treatment QA-003(a) got in Phase 4: **100% recovery, 2.0% FPR**
+  for series-level demand shocks (verified both in-memory via a dedicated pytest and directly
+  against the real seeded database); **100% recovery, ~1.8% FPR** for transaction-level pricing
+  errors (verified directly against the real database).
+- Two real bugs found and fixed while validating against real ground truth, not just unit tests:
+  the series-level detector initially monitored only (segment, branch) aggregates, diluting the
+  (model, branch)-level shocks Phase 3 actually injects — fixed by monitoring both granularities;
+  and a latent test-hygiene bug in Phase 4's own `test_forecast_job.py` (a test that silently
+  "passed" by falling back to an earlier test's stale data, because it never checked its own
+  trigger's response status) was found and fixed in the same pass.
+- 30 new analytics tests plus a CI-blocking QA-003(b) scientific-validation test, and 6 new
+  backend integration tests — all green; 95% coverage.
+
 ### Phase 4 — Forecasting Engine
 
 - `packages/analytics/forecasting`: rolling-origin (expanding-window) cross-validation over an
