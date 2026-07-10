@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.venv*/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+dist/
+build/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.turbo/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Data / analytics artifacts (ground truth under infra/seed/ground_truth/ IS committed)
+*.parquet
+!infra/seed/ground_truth/**/*.parquet
+
+# OS / editor
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+
+# Docker volumes (bind-mounted local data, not committed)
+infra/pgdata/
