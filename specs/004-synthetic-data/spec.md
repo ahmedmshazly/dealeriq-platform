@@ -101,7 +101,10 @@ inputs to future test suites, not application data).
 ## Success Criteria *(mandatory)*
 
 - **SC-001**: `make seed` (full generator) completes in a reasonable local-dev time budget and
-  produces the volumes in GEN-001.
+  produces the volumes in GEN-001, subject to the documented order-volume deviation in
+  `docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md` (SC-002's four-class coverage is
+  prioritized over GEN-001's approximate order count; actual ~15.1k orders vs. the ~4-8k
+  estimate).
 - **SC-002**: `test_generator_sbc_coverage` passes: ≥10 series per SBC class.
 - **SC-003**: A hand-fit logistic regression on generated leads recovers every ground-truth
   coefficient's sign.

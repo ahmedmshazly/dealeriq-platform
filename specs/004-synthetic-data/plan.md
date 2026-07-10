@@ -33,21 +33,28 @@ Naive stays a genuinely competitive floor once DS-FC-006 is exercised in Phase 4
 strawman). 8-15 promo windows/model, 1-3 weeks, `β_promo~Uniform(0.3,0.8)` — unflagged expected
 bumps, explicitly distinct from GEN-004's injected anomalies.
 
-Per-segment `(μ0, α)` targets, with ±20-30% per-model jitter so models within a segment aren't
-clones:
+Per-segment `(μ0, α)` targets, with ±25% per-model jitter so models within a segment aren't
+clones. The table below is the **empirically calibrated** version (not the original a priori
+guess): ADI/CV² classification turned out to be far more sensitive to μ0 than expected, and the
+μ0 bands that reliably reach smooth/erratic are materially more expensive in order-volume terms
+than intermittent/lumpy's — see `docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md` for the
+full calibration trace and the resulting, deliberate departure from GEN-001's ~4-8k estimate
+(actual: ~15.1k orders at seed=42). Model counts are imbalanced across segments for the same
+reason (more economy/sedan models to buy enough independent draws in the expensive bands):
 
-| Segment | Target SBC class | μ0 (units/wk/branch) | dispersion α |
-|---|---|---|---|
-| Economy/Compact | Smooth | 3–5 | 0.1–0.3 |
-| Sedan/Mid-size | Erratic | 2–3 | 1.0–2.5 |
-| SUV/Truck | Intermittent | 0.4–0.8 | 0.2–0.5 |
-| Luxury/Sports | Lumpy | 0.15–0.4 | 2–5 |
-| Commercial/Van | Mixed erratic↔lumpy | 0.3–1.0 | 0.5–2.0 |
+| Segment | Target SBC class | Models | μ0 (units/wk/branch) | dispersion α |
+|---|---|---|---|---|
+| Economy/Compact | Smooth | 7 | 1.65–1.85 | 0.02–0.05 |
+| Sedan/Mid-size | Erratic | 6 | 3.2–3.6 | 0.85–1.0 |
+| SUV/Truck | Intermittent | 3 | 0.3–0.5 | 0.2–0.35 |
+| Luxury/Sports | Lumpy | 3 | 0.35–0.5 | 12–20 |
+| Commercial/Van | Mixed | 3 | 0.15–0.5 | 0.5–2.0 |
 
 `packages/analytics/src/dealeriq_analytics/sbc.py` implements ADI/CV² + classification
 (ADI=1.32, CV²=0.49 cutoffs) — the DS-FC-002 algorithm, pulled forward now (see spec
 Assumptions) purely to validate this table actually produces the required spread, via
-`test_generator_sbc_coverage` (≥10 series/class) before Phase 4 begins.
+`test_generator_sbc_coverage` (≥10 series/class) before Phase 4 begins. At seed=42 this yields
+smooth=13, erratic=10, intermittent=28, lumpy=15 across 66 series (22 models × 3 branches).
 
 ## Order/inventory realization
 

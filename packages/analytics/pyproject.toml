@@ -3,7 +3,12 @@ name = "dealeriq-analytics"
 version = "0.1.0"
 description = "DealerIQ analytics library: forecasting, inventory intelligence, anomaly detection, customer analytics, benchmark harness."
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "numpy>=2.0",
+    "pandas>=2.2",
+    "statsmodels>=0.14",
+    "scikit-learn>=1.5",
+]
 
 [dependency-groups]
 dev = [
