@@ -39,7 +39,7 @@ dev:
 	@$(COMPOSE) up -d
 	@echo "==> Starting API (uvicorn --reload, :8000) and web (next dev, :3000). Ctrl+C stops both."
 	@trap 'kill 0' EXIT INT TERM; \
-	uv run uvicorn dealeriq_api.main:app --reload --host 0.0.0.0 --port 8000 & \
+	ENABLE_SCHEDULER=true uv run uvicorn dealeriq_api.main:app --reload --host 0.0.0.0 --port 8000 & \
 	npm run dev:web & \
 	wait
 

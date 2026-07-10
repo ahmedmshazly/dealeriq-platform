@@ -39,6 +39,21 @@ class Settings(BaseSettings):
     # Orders (FR-041): discount above this fraction of list price requires Manager+ approval.
     order_approval_discount_threshold: float = 0.05
 
+    # Digest email (FR-064): SMTP defaults match MailHog's own listener
+    # (infra/docker-compose.yml) — zero paid email service for local dev.
+    smtp_host: str = "localhost"
+    smtp_port: int = 1025
+    smtp_from_address: str = "alerts@dealeriq.dev"
+
+    # DS-OPS-001 cron scheduling (ADR-004). Defaults OFF: scheduled jobs open their own DB
+    # session directly from `core.db.engine`, bypassing FastAPI's `get_db` dependency-override
+    # mechanism the test suite relies on to redirect every request to the ephemeral
+    # testcontainers Postgres (ADR-013) — a real scheduler firing during a test run would hit
+    # the *real* dev database, not the test one. Only `make dev` (and real deployments) opt in
+    # via the `ENABLE_SCHEDULER=true` environment variable; the test suite never sets it, so
+    # this is safe by default rather than relying on every test file remembering to disable it.
+    enable_scheduler: bool = False
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

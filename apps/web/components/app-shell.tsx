@@ -1,13 +1,17 @@
 "use client";
 
+import { api } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+import { useQuery } from "@tanstack/react-query";
 import {
+  Bell,
   Grid3x3,
   LayoutDashboard,
   LineChart,
   LogOut,
   ShieldCheck,
   ShoppingCart,
+  SlidersHorizontal,
   Target,
   UserCog,
   Users as UsersIcon,
@@ -24,12 +28,21 @@ const NAV_ITEMS = [
   { href: "/orders", label: "Orders", icon: ShoppingCart },
 ];
 
+// alerts:view is granted to every role (SRS role table) — always shown.
+const ALERTS_NAV_ITEM = { href: "/alerts", label: "Alerts", icon: Bell };
+
 // forecasts:view / inventory-intel:view are granted to admin/manager/analyst, not sales (SRS
 // role table) — the API enforces the real check, this just hides the links cosmetically for a
 // role that would 403.
 const ANALYTICS_NAV_ITEMS = [
   { href: "/analytics", label: "Analytics", icon: LineChart },
   { href: "/inventory-intel", label: "Inventory Intel", icon: Grid3x3 },
+];
+
+// alert-rules:manage is granted to admin/manager, not analyst/sales (SRS role table) — a
+// broader group than the pure-admin section below.
+const OPS_NAV_ITEMS = [
+  { href: "/admin/alert-rules", label: "Alert Rules", icon: SlidersHorizontal },
 ];
 
 // Admin-only nav — the API enforces the real permission check (FR-011); this hides the link
@@ -44,9 +57,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
 
+  const badgeQuery = useQuery({
+    queryKey: ["alerts", "badge-count"],
+    queryFn: async () => {
+      const { data, error } = await api.GET("/api/v1/alerts", {});
+      if (error) return null;
+      return data;
+    },
+    refetchInterval: 30000,
+  });
+
   const items = [
     ...NAV_ITEMS,
+    ALERTS_NAV_ITEM,
     ...(user?.role_key !== "sales" ? ANALYTICS_NAV_ITEMS : []),
+    ...(user?.role_key === "admin" || user?.role_key === "manager" ? OPS_NAV_ITEMS : []),
     ...(user?.role_key === "admin" ? ADMIN_NAV_ITEMS : []),
   ];
 
@@ -68,6 +93,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               >
                 <Icon size={18} strokeWidth={1.5} />
                 {label}
+                {href === "/alerts" && (badgeQuery.data?.badge_count ?? 0) > 0 && (
+                  <span className="ml-auto rounded-full bg-critical-fg px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                    {badgeQuery.data?.badge_count}
+                  </span>
+                )}
               </Link>
             );
           })}

@@ -1,5 +1,8 @@
 """FastAPI application factory."""
 
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -10,7 +13,10 @@ from dealeriq_api.core.config import get_settings
 from dealeriq_api.core.errors import register_error_handlers
 from dealeriq_api.core.limiter import limiter
 from dealeriq_api.core.logging import RequestLoggingMiddleware, configure_logging
+from dealeriq_api.core.scheduler import create_scheduler
 from dealeriq_api.routes import (
+    alert_rules,
+    alerts,
     audit_log,
     auth,
     branches,
@@ -28,6 +34,18 @@ from dealeriq_api.routes import (
 )
 
 
+@asynccontextmanager
+async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
+    settings = get_settings()
+    scheduler = None
+    if settings.enable_scheduler:
+        scheduler = create_scheduler()
+        scheduler.start()
+    yield
+    if scheduler is not None:
+        scheduler.shutdown(wait=False)
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(settings.log_level)
@@ -38,6 +56,7 @@ def create_app() -> FastAPI:
         description="Dealership intelligence platform — REST API (DIQ-SRS-001).",
         openapi_url="/api/v1/openapi.json",
         docs_url="/api/v1/docs",
+        lifespan=_lifespan,
     )
 
     app.state.limiter = limiter
@@ -71,6 +90,8 @@ def create_app() -> FastAPI:
     app.include_router(jobs.router)
     app.include_router(forecasts.router)
     app.include_router(inventory_intel.router)
+    app.include_router(alerts.router)
+    app.include_router(alert_rules.router)
 
     @app.get("/api/v1/health", tags=["system"])
     def health() -> dict[str, str]:

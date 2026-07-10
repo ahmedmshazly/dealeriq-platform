@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -14,6 +15,14 @@ vi.mock("@/lib/auth-context", () => ({
 
 import AuthenticatedLayout from "@/app/(authenticated)/layout";
 
+// AppShell (rendered once authenticated) polls the alerts badge count via react-query, so any
+// render exercising the authenticated branch needs a real QueryClientProvider in the tree —
+// retries disabled so a test never hangs waiting on the (unmocked, network-less) query to settle.
+function renderWithQueryClient(ui: React.ReactElement) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
+}
+
 describe("AuthenticatedLayout route guard", () => {
   beforeEach(() => {
     replace.mockClear();
@@ -21,7 +30,7 @@ describe("AuthenticatedLayout route guard", () => {
 
   it("redirects to /login when there is no authenticated user", async () => {
     useAuthMock.mockReturnValue({ user: null, isLoading: false });
-    render(<AuthenticatedLayout>{"protected content"}</AuthenticatedLayout>);
+    renderWithQueryClient(<AuthenticatedLayout>{"protected content"}</AuthenticatedLayout>);
     await waitFor(() => expect(replace).toHaveBeenCalledWith("/login"));
   });
 
@@ -30,14 +39,14 @@ describe("AuthenticatedLayout route guard", () => {
       user: { id: "1", email: "admin@dealeriq.dev", role_key: "admin" },
       isLoading: false,
     });
-    render(<AuthenticatedLayout>protected content</AuthenticatedLayout>);
+    renderWithQueryClient(<AuthenticatedLayout>protected content</AuthenticatedLayout>);
     expect(screen.getByText("protected content")).toBeInTheDocument();
     expect(replace).not.toHaveBeenCalled();
   });
 
   it("shows a loading state and does not redirect while the session is still resolving", () => {
     useAuthMock.mockReturnValue({ user: null, isLoading: true });
-    render(<AuthenticatedLayout>protected content</AuthenticatedLayout>);
+    renderWithQueryClient(<AuthenticatedLayout>protected content</AuthenticatedLayout>);
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
     expect(replace).not.toHaveBeenCalled();
   });

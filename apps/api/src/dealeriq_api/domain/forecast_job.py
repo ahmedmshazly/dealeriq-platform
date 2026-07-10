@@ -11,7 +11,7 @@ narrows to (model, branch) for the leaderboard/fan-chart views this phase.
 
 import importlib.metadata
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 import pandas as pd
 from sqlalchemy import select
@@ -79,11 +79,21 @@ def _load_orders_frame(db: Session) -> pd.DataFrame:
     )
 
 
-def get_series_actuals(db: Session, series_key_str: str) -> pd.Series | None:
+def get_series_actuals(
+    db: Session, series_key_str: str, *, week_start: date, data_to: date
+) -> pd.Series | None:
     """Reconstructs one series' actual weekly values on demand (for the fan-chart view) — not
     persisted separately, since it's fully derivable from the orders table already. Returns
     `None` for a malformed key rather than raising, since this is reachable from user input
-    (a `series_key` path parameter)."""
+    (a `series_key` path parameter).
+
+    The calendar is built from *this series' own* orders' date range (`subset`, filtered to the
+    one model/branch or segment/branch pair), not the shared orders table's global min/max — the
+    table holds every series at once, so an unrelated order for a different model or a
+    different, unrelated run would otherwise silently widen this series' calendar with weeks
+    that were never part of it. `week_start`/`data_to` (the specific `AnalyticsRun` being
+    displayed) are only a fallback for the edge case where this series has zero orders at all,
+    since there's no series-local range to derive a calendar from in that case."""
     parts = series_key_str.split("::")
     if len(parts) != 2 or not parts[1].startswith("branch:"):
         return None
@@ -93,10 +103,6 @@ def get_series_actuals(db: Session, series_key_str: str) -> pd.Series | None:
     orders_df = _load_orders_frame(db)
     if orders_df.empty:
         return None
-    week_start = compute_week_start(pd.Series([orders_df["at"].min()])).iloc[0]
-    last_week = compute_week_start(pd.Series([orders_df["at"].max()])).iloc[0]
-    n_weeks = int((last_week - week_start).days // 7) + 1
-    calendar = pd.date_range(week_start, periods=n_weeks, freq="W-MON")
 
     if first.startswith("model:"):
         model_id = first.removeprefix("model:")
@@ -112,7 +118,16 @@ def get_series_actuals(db: Session, series_key_str: str) -> pd.Series | None:
         return None
 
     if subset.empty:
+        calendar_start = compute_week_start(pd.Series([pd.Timestamp(week_start)])).iloc[0]
+        calendar_end = compute_week_start(pd.Series([pd.Timestamp(data_to)])).iloc[0]
+        n_weeks = int((calendar_end - calendar_start).days // 7) + 1
+        calendar = pd.date_range(calendar_start, periods=n_weeks, freq="W-MON")
         return pd.Series(0, index=calendar, dtype="int64")
+
+    calendar_start = compute_week_start(pd.Series([subset["at"].min()])).iloc[0]
+    calendar_end = compute_week_start(pd.Series([subset["at"].max()])).iloc[0]
+    n_weeks = int((calendar_end - calendar_start).days // 7) + 1
+    calendar = pd.date_range(calendar_start, periods=n_weeks, freq="W-MON")
     weeks = compute_week_start(subset["at"])
     counts = weeks.value_counts()
     return counts.reindex(calendar, fill_value=0).astype("int64")

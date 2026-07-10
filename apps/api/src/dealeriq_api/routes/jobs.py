@@ -16,6 +16,10 @@ from dealeriq_api.core.errors import bad_request, conflict
 from dealeriq_api.domain.forecast_job import is_job_running
 from dealeriq_api.domain.models.analytics import AnalyticsRun
 from dealeriq_api.domain.models.rbac import User
+from dealeriq_api.jobs.alerts import JOB_NAME as ALERTS_JOB_NAME
+from dealeriq_api.jobs.alerts import run_alert_job
+from dealeriq_api.jobs.digest import JOB_NAME as DIGEST_JOB_NAME
+from dealeriq_api.jobs.digest import run_digest_job
 from dealeriq_api.jobs.forecast import JOB_NAME as FORECAST_JOB_NAME
 from dealeriq_api.jobs.forecast import run_forecast_job
 from dealeriq_api.jobs.inventory import JOB_NAME as INVENTORY_JOB_NAME
@@ -27,6 +31,8 @@ router = APIRouter(prefix="/api/v1/jobs", tags=["jobs"])
 KNOWN_JOBS: dict[str, Callable[[Session], AnalyticsRun]] = {
     FORECAST_JOB_NAME: run_forecast_job,
     INVENTORY_JOB_NAME: run_inventory_job,
+    ALERTS_JOB_NAME: run_alert_job,
+    DIGEST_JOB_NAME: run_digest_job,
 }
 
 

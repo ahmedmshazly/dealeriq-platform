@@ -37,3 +37,8 @@ ignore_missing_imports = true
 # lifelines (ADR-017) and scipy ship no py.typed marker / type stubs either.
 module = ["lifelines.*", "scipy.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# apscheduler (ADR-004) ships no py.typed marker / type stubs either.
+module = "apscheduler.*"
+ignore_missing_imports = true
