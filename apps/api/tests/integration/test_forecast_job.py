@@ -125,6 +125,13 @@ def test_concurrent_trigger_is_rejected_with_409(client: TestClient, db_session:
     resp = client.post("/api/v1/jobs/forecast/run", headers={"Authorization": f"Bearer {token}"})
     assert resp.status_code == 409
 
+    # Resolve the stuck row so it doesn't permanently block "forecast" triggers for every test
+    # that runs afterward in this shared, session-scoped container (ADR-013) -- this row would
+    # otherwise sit at status=running forever, since nothing else in this test ever completes it.
+    in_progress.status = RunStatus.FAILED
+    in_progress.finished_at = datetime.now(UTC)
+    db_session.commit()
+
 
 def test_job_that_raises_ends_failed_not_stuck_running(
     db_session: Session, monkeypatch: pytest.MonkeyPatch
@@ -160,7 +167,10 @@ def test_job_that_raises_ends_failed_not_stuck_running(
 def test_leaderboard_and_series_detail_endpoints(client: TestClient, db_session: Session) -> None:
     _seed_minimal_series(db_session)
     token = admin_token(client)
-    client.post("/api/v1/jobs/forecast/run", headers={"Authorization": f"Bearer {token}"})
+    trigger_resp = client.post(
+        "/api/v1/jobs/forecast/run", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert trigger_resp.status_code == 201
 
     leaderboard_resp = client.get("/api/v1/forecasts", headers={"Authorization": f"Bearer {token}"})
     assert leaderboard_resp.status_code == 200

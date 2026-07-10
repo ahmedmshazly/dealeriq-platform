@@ -1,9 +1,10 @@
 """POST /jobs/{job_name}/run, GET /jobs/{job_name}/runs (FR-070..072, C-03).
 
-`job_name` is a path segment (not yet an enum) since later phases register more jobs
-(inventory intelligence, alerts, ...) against the same two endpoints — this phase only knows
-about "forecast".
+`job_name` is a path segment (not yet an enum) since later phases register more jobs (alerts,
+...) against the same two endpoints — Phase 4 added "forecast", Phase 5 adds "inventory".
 """
+
+from collections.abc import Callable
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
@@ -17,11 +18,16 @@ from dealeriq_api.domain.models.analytics import AnalyticsRun
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.jobs.forecast import JOB_NAME as FORECAST_JOB_NAME
 from dealeriq_api.jobs.forecast import run_forecast_job
+from dealeriq_api.jobs.inventory import JOB_NAME as INVENTORY_JOB_NAME
+from dealeriq_api.jobs.inventory import run_inventory_job
 from dealeriq_api.schemas.forecasts import AnalyticsRunResponse
 
 router = APIRouter(prefix="/api/v1/jobs", tags=["jobs"])
 
-KNOWN_JOBS = {FORECAST_JOB_NAME: run_forecast_job}
+KNOWN_JOBS: dict[str, Callable[[Session], AnalyticsRun]] = {
+    FORECAST_JOB_NAME: run_forecast_job,
+    INVENTORY_JOB_NAME: run_inventory_job,
+}
 
 
 @router.post("/{job_name}/run", response_model=AnalyticsRunResponse, status_code=201)

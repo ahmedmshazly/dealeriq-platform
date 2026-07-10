@@ -74,6 +74,13 @@ N_LEADS = 6000
 N_SHOCKS = 20
 N_NEAR_MISS = 5
 
+CURRENT_INVENTORY_WEEKS_OF_SUPPLY = 3
+CURRENT_INVENTORY_MAX_UNITS_PER_SERIES = 6
+CURRENT_INVENTORY_ACQUISITION_WINDOW_DAYS = 150
+"""~150 days back from "today" (REFERENCE_LAST_WEEK_START + 6) deliberately spans past the
+default 90-day aging threshold (DS-INV-003), so the seeded current-inventory population includes
+both fresh and genuinely aging units rather than only fresh ones."""
+
 FIRST_NAMES = [
     "James",
     "Mary",
@@ -496,6 +503,74 @@ def _realize_orders(
     return units, movements, orders, order_events
 
 
+def _realize_current_inventory(
+    mutated_series: dict[tuple[str, str], np.ndarray],
+    branch_ids: dict[str, uuid.UUID],
+    model_ids: dict[str, uuid.UUID],
+    model_by_key: dict[str, ModelDef],
+    manager_user_ids: list[uuid.UUID],
+    rng: np.random.Generator,
+) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    """`_realize_orders` only ever creates units tied to an already-delivered order — a real
+    dealership also carries current, not-yet-sold inventory on the lot, which Phase 5's
+    DS-INV-003/004 (days-on-lot, survival-curve pricing review) needs to have anything to
+    compute over. Sizes each series' current stock at a standard "weeks of supply" heuristic
+    (`CURRENT_INVENTORY_WEEKS_OF_SUPPLY` * that series' own mean weekly demand), so higher-
+    velocity series realistically carry more lot inventory than slow ones. Acquisition dates are
+    spread over `CURRENT_INVENTORY_ACQUISITION_WINDOW_DAYS` days before "today" (deliberately
+    spanning past DS-INV-003's default 90-day aging threshold) so the seeded population includes
+    both fresh and genuinely aging units, not just fresh ones."""
+    today = REFERENCE_LAST_WEEK_START + dt.timedelta(days=6)
+    units: list[dict[str, object]] = []
+    movements: list[dict[str, object]] = []
+
+    for (model_key, branch_name), series in mutated_series.items():
+        mean_weekly_demand = float(np.mean(series))
+        if mean_weekly_demand <= 0:
+            continue
+        n_units = min(
+            CURRENT_INVENTORY_MAX_UNITS_PER_SERIES,
+            max(1, round(mean_weekly_demand * CURRENT_INVENTORY_WEEKS_OF_SUPPLY)),
+        )
+        model_def = model_by_key[model_key]
+        list_price = float(model_def.list_price)
+
+        for _ in range(n_units):
+            days_back = int(rng.integers(0, CURRENT_INVENTORY_ACQUISITION_WINDOW_DAYS))
+            acquisition_day = today - dt.timedelta(days=days_back)
+            acquisition_cost = round(list_price * float(rng.uniform(0.75, 0.85)), 2)
+            manager_id = manager_user_ids[int(rng.integers(0, len(manager_user_ids)))]
+
+            unit_id = _new_id()
+            units.append(
+                {
+                    "id": unit_id,
+                    "vin": f"DLQ{len(units) + 900_000:014d}",
+                    "model_id": model_ids[model_key],
+                    "branch_id": branch_ids[branch_name],
+                    "status": UnitStatus.IN_STOCK,
+                    "acquisition_date": acquisition_day,
+                    "acquisition_cost": acquisition_cost,
+                    "created_at": _as_datetime(acquisition_day, 9),
+                    "updated_at": _as_datetime(acquisition_day, 9),
+                }
+            )
+            movements.append(
+                {
+                    "id": _new_id(),
+                    "unit_id": unit_id,
+                    "type": MovementType.RECEIPT,
+                    "from_branch_id": None,
+                    "to_branch_id": branch_ids[branch_name],
+                    "actor_id": manager_id,
+                    "reason": "Seed generator: current lot inventory, not yet sold.",
+                    "occurred_at": _as_datetime(acquisition_day, 9),
+                }
+            )
+
+    return units, movements
+
+
 PRICING_ERROR_K = 5.0  # DS-ANO-003: k_inject=5 vs. the detector's default k=3
 N_PRICING_ERRORS = 15
 MIN_ORDERS_FOR_PRICING_STATS = 5
@@ -737,9 +812,15 @@ def _sbc_class_counts(series_by_key: dict[tuple[str, str], np.ndarray]) -> dict[
 def main() -> None:
     config = GeneratorConfig()
     master_seq = np.random.SeedSequence(config.seed)
-    rng_anomaly, rng_near_miss, rng_leads, rng_realize, rng_customers, rng_pricing = (
-        np.random.default_rng(s) for s in master_seq.spawn(6)
-    )
+    (
+        rng_anomaly,
+        rng_near_miss,
+        rng_leads,
+        rng_realize,
+        rng_customers,
+        rng_pricing,
+        rng_current_inventory,
+    ) = (np.random.default_rng(s) for s in master_seq.spawn(7))
 
     print("Generating demand series...")
     demand = generate_demand(config)
@@ -807,6 +888,19 @@ def main() -> None:
         lead_rows, lead_event_rows = _realize_leads(
             leads, model_defs_by_segment, model_ids, sales_user_ids, customer_pool, rng_leads
         )
+
+        print("Realizing current (not-yet-sold) lot inventory...")
+        current_inventory_units, current_inventory_movements = _realize_current_inventory(
+            mutated_series,
+            branch_ids,
+            model_ids,
+            model_by_key,
+            manager_user_ids,
+            rng_current_inventory,
+        )
+        units.extend(current_inventory_units)
+        movements.extend(current_inventory_movements)
+        print(f"  {len(current_inventory_units)} current-inventory units")
 
         pricing_error_records = _inject_pricing_errors(orders, model_by_key, rng_pricing)
         print(f"  {len(pricing_error_records)} injected pricing errors")

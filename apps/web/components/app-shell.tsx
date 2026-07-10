@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/lib/auth-context";
 import {
+  Grid3x3,
   LayoutDashboard,
   LineChart,
   LogOut,
@@ -23,9 +24,13 @@ const NAV_ITEMS = [
   { href: "/orders", label: "Orders", icon: ShoppingCart },
 ];
 
-// forecasts:view is granted to admin/manager/analyst, not sales (SRS role table) — the API
-// enforces the real check, this just hides the link cosmetically for a role that would 403.
-const ANALYTICS_NAV_ITEMS = [{ href: "/analytics", label: "Analytics", icon: LineChart }];
+// forecasts:view / inventory-intel:view are granted to admin/manager/analyst, not sales (SRS
+// role table) — the API enforces the real check, this just hides the links cosmetically for a
+// role that would 403.
+const ANALYTICS_NAV_ITEMS = [
+  { href: "/analytics", label: "Analytics", icon: LineChart },
+  { href: "/inventory-intel", label: "Inventory Intel", icon: Grid3x3 },
+];
 
 // Admin-only nav — the API enforces the real permission check (FR-011); this hides the link
 // cosmetically for roles that would get a 403 anyway.
