@@ -1,3 +1,10 @@
+from dealeriq_api.domain.models.analytics import (
+    AnalyticsRun,
+    Forecast,
+    ForecastMetric,
+    RunStatus,
+    SeriesProfile,
+)
 from dealeriq_api.domain.models.audit_log import AuditLog
 from dealeriq_api.domain.models.branch import Branch
 from dealeriq_api.domain.models.customer import Customer
@@ -14,9 +21,12 @@ from dealeriq_api.domain.models.vehicle import (
 )
 
 __all__ = [
+    "AnalyticsRun",
     "AuditLog",
     "Branch",
     "Customer",
+    "Forecast",
+    "ForecastMetric",
     "Lead",
     "LeadEvent",
     "LeadStatus",
@@ -29,6 +39,8 @@ __all__ = [
     "RefreshToken",
     "Role",
     "RolePermission",
+    "RunStatus",
+    "SeriesProfile",
     "StockMovement",
     "UnitStatus",
     "User",

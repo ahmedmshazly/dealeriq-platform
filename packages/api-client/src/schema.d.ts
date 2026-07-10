@@ -436,6 +436,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/jobs/{job_name}/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Trigger Job Route */
+        post: operations["trigger_job_route_api_v1_jobs__job_name__run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/jobs/{job_name}/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Job Runs Route */
+        get: operations["list_job_runs_route_api_v1_jobs__job_name__runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/forecasts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Leaderboard Route */
+        get: operations["leaderboard_route_api_v1_forecasts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/forecasts/{series_key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Series Detail Route */
+        get: operations["series_detail_route_api_v1_forecasts__series_key__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -457,6 +525,52 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActualPointResponse */
+        ActualPointResponse: {
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /** Y */
+            y: number;
+        };
+        /** AnalyticsRunResponse */
+        AnalyticsRunResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Job Name */
+            job_name: string;
+            status: components["schemas"]["RunStatus"];
+            /** Seed */
+            seed: number | null;
+            /** Code Version */
+            code_version: string;
+            /**
+             * Data From
+             * Format: date
+             */
+            data_from: string;
+            /**
+             * Data To
+             * Format: date
+             */
+            data_to: string;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Metrics */
+            metrics: {
+                [key: string]: unknown;
+            };
+        };
         /** AuditLogEntryResponse */
         AuditLogEntryResponse: {
             /**
@@ -553,6 +667,20 @@ export interface components {
             /** Source Channel */
             source_channel: string | null;
         };
+        /** ForecastPointResponse */
+        ForecastPointResponse: {
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /** Yhat */
+            yhat: number;
+            /** Yhat Lo80 */
+            yhat_lo80: number;
+            /** Yhat Hi80 */
+            yhat_hi80: number;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -624,6 +752,33 @@ export interface components {
             /** Notes */
             notes?: string | null;
         };
+        /** LeaderboardEntry */
+        LeaderboardEntry: {
+            /** Series Key */
+            series_key: string;
+            /** Display Name */
+            display_name: string;
+            /** Pattern Class */
+            pattern_class: string;
+            /** Champion Method */
+            champion_method: string;
+            /** Mase */
+            mase: number;
+            /** Smape */
+            smape: number;
+            /** Coverage80 */
+            coverage80: number;
+        };
+        /** LeaderboardResponse */
+        LeaderboardResponse: {
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /** Entries */
+            entries: components["schemas"]["LeaderboardEntry"][];
+        };
         /** LoginRequest */
         LoginRequest: {
             /**
@@ -633,6 +788,25 @@ export interface components {
             email: string;
             /** Password */
             password: string;
+        };
+        /** MethodMetricResponse */
+        MethodMetricResponse: {
+            /** Method */
+            method: string;
+            /** Mase */
+            mase: number;
+            /** Smape */
+            smape: number;
+            /** Pinball Q10 */
+            pinball_q10: number;
+            /** Pinball Q50 */
+            pinball_q50: number;
+            /** Pinball Q90 */
+            pinball_q90: number;
+            /** Coverage80 */
+            coverage80: number;
+            /** Is Champion */
+            is_champion: boolean;
         };
         /** OrderCancelRequest */
         OrderCancelRequest: {
@@ -813,6 +987,33 @@ export interface components {
             key: string;
             /** Name */
             name: string;
+        };
+        /**
+         * RunStatus
+         * @enum {string}
+         */
+        RunStatus: "running" | "succeeded" | "failed";
+        /** SeriesDetailResponse */
+        SeriesDetailResponse: {
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /** Series Key */
+            series_key: string;
+            /** Display Name */
+            display_name: string;
+            /** Pattern Class */
+            pattern_class: string;
+            /** Champion Method */
+            champion_method: string;
+            /** Actuals */
+            actuals: components["schemas"]["ActualPointResponse"][];
+            /** Forecast */
+            forecast: components["schemas"]["ForecastPointResponse"][];
+            /** Metrics By Method */
+            metrics_by_method: components["schemas"]["MethodMetricResponse"][];
         };
         /** TokenResponse */
         TokenResponse: {
@@ -1940,6 +2141,133 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["OrderResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trigger_job_route_api_v1_jobs__job_name__run_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsRunResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_job_runs_route_api_v1_jobs__job_name__runs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyticsRunResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    leaderboard_route_api_v1_forecasts_get: {
+        parameters: {
+            query?: {
+                run_id?: string | null;
+                pattern_class?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeaderboardResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    series_detail_route_api_v1_forecasts__series_key__get: {
+        parameters: {
+            query?: {
+                run_id?: string | null;
+            };
+            header?: never;
+            path: {
+                series_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SeriesDetailResponse"];
                 };
             };
             /** @description Validation Error */

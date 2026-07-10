@@ -3,6 +3,7 @@
 import { useAuth } from "@/lib/auth-context";
 import {
   LayoutDashboard,
+  LineChart,
   LogOut,
   ShieldCheck,
   ShoppingCart,
@@ -22,6 +23,10 @@ const NAV_ITEMS = [
   { href: "/orders", label: "Orders", icon: ShoppingCart },
 ];
 
+// forecasts:view is granted to admin/manager/analyst, not sales (SRS role table) — the API
+// enforces the real check, this just hides the link cosmetically for a role that would 403.
+const ANALYTICS_NAV_ITEMS = [{ href: "/analytics", label: "Analytics", icon: LineChart }];
+
 // Admin-only nav — the API enforces the real permission check (FR-011); this hides the link
 // cosmetically for roles that would get a 403 anyway.
 const ADMIN_NAV_ITEMS = [
@@ -34,7 +39,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
 
-  const items = user?.role_key === "admin" ? [...NAV_ITEMS, ...ADMIN_NAV_ITEMS] : NAV_ITEMS;
+  const items = [
+    ...NAV_ITEMS,
+    ...(user?.role_key !== "sales" ? ANALYTICS_NAV_ITEMS : []),
+    ...(user?.role_key === "admin" ? ADMIN_NAV_ITEMS : []),
+  ];
 
   return (
     <div className="flex min-h-screen">
