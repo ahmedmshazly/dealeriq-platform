@@ -157,7 +157,7 @@ def series_detail_route(
     )
     champion = next((m.method for m in metric_rows if m.is_champion), "")
 
-    actuals = get_series_actuals(db, series_key)
+    actuals = get_series_actuals(db, series_key, week_start=run.data_from, data_to=run.data_to)
     actual_points = (
         [ActualPointResponse(week_start=idx.date(), y=float(v)) for idx, v in actuals.items()]
         if actuals is not None

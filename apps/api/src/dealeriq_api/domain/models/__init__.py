@@ -1,3 +1,10 @@
+from dealeriq_api.domain.models.alerts import (
+    Alert,
+    AlertRule,
+    AlertSeverity,
+    AlertStatus,
+    Notification,
+)
 from dealeriq_api.domain.models.analytics import (
     AnalyticsRun,
     Forecast,
@@ -22,6 +29,10 @@ from dealeriq_api.domain.models.vehicle import (
 )
 
 __all__ = [
+    "Alert",
+    "AlertRule",
+    "AlertSeverity",
+    "AlertStatus",
     "AnalyticsRun",
     "Anomaly",
     "AuditLog",
@@ -30,6 +41,7 @@ __all__ = [
     "Forecast",
     "ForecastMetric",
     "InventoryIntel",
+    "Notification",
     "Lead",
     "LeadEvent",
     "LeadStatus",

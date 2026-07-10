@@ -25,7 +25,7 @@ from tests.helpers import admin_token
 N_WEEKS = 70  # >= 52 (min CV training window) + 12 (horizon), small buffer for a fast test
 
 
-def _seed_minimal_series(db: Session) -> None:
+def _seed_minimal_series(db: Session) -> VehicleModel:
     branch = Branch(name=f"Test Branch {uuid.uuid4().hex[:6]}", city="Testville")
     db.add(branch)
     model = VehicleModel(
@@ -73,6 +73,7 @@ def _seed_minimal_series(db: Session) -> None:
             )
             db.add(order)
     db.commit()
+    return model
 
 
 def test_trigger_forecast_job_succeeds_and_persists_results(
@@ -165,7 +166,12 @@ def test_job_that_raises_ends_failed_not_stuck_running(
 
 
 def test_leaderboard_and_series_detail_endpoints(client: TestClient, db_session: Session) -> None:
-    _seed_minimal_series(db_session)
+    # The shared, session-scoped testcontainers Postgres (ADR-013) means a forecast run
+    # triggered here processes every order any earlier test in this run left behind, not just
+    # this test's own 70-week series -- so the leaderboard's *first* entry is not reliably this
+    # test's own series. Build the exact expected series_key from this test's own model/branch
+    # instead of trusting entries[0].
+    model = _seed_minimal_series(db_session)
     token = admin_token(client)
     trigger_resp = client.post(
         "/api/v1/jobs/forecast/run", headers={"Authorization": f"Bearer {token}"}
@@ -177,7 +183,9 @@ def test_leaderboard_and_series_detail_endpoints(client: TestClient, db_session:
     entries = leaderboard_resp.json()["entries"]
     assert len(entries) >= 1
 
-    series_key = entries[0]["series_key"]
+    own_entries = [e for e in entries if e["series_key"].startswith(f"model:{model.id}::")]
+    assert len(own_entries) == 1
+    series_key = own_entries[0]["series_key"]
     detail_resp = client.get(
         f"/api/v1/forecasts/{series_key}", headers={"Authorization": f"Bearer {token}"}
     )

@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 from dealeriq_api.auth.ownership import assert_owner_or_permission
 from dealeriq_api.core.config import get_settings
 from dealeriq_api.core.errors import bad_request, conflict, not_found
+from dealeriq_api.domain.alert_rules import evaluate_discount_approval
 from dealeriq_api.domain.audit import write_audit_row
 from dealeriq_api.domain.models.order import Order, OrderEvent, OrderStatus, PaymentType
 from dealeriq_api.domain.models.rbac import User
@@ -132,6 +133,10 @@ def submit_order(db: Session, *, current_user: User, order_id: uuid.UUID, ip: st
         _reserve_unit(db, order=order, actor_id=current_user.id)
     else:
         order.status = OrderStatus.PENDING_APPROVAL
+        # FR-060's transactional trigger case: rule (e) fires inline, in this same
+        # transaction, reusing the exact fraction/threshold comparison above (spec.md's
+        # Assumptions) so the alert and the approval requirement can never drift apart.
+        evaluate_discount_approval(db, order, fraction)
 
     db.add(
         OrderEvent(

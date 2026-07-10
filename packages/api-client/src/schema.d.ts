@@ -572,6 +572,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Alerts Route */
+        get: operations["list_alerts_route_api_v1_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/acknowledge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Acknowledge Alert Route */
+        post: operations["acknowledge_alert_route_api_v1_alerts__alert_id__acknowledge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/{alert_id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resolve Alert Route */
+        post: operations["resolve_alert_route_api_v1_alerts__alert_id__resolve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alert-rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Alert Rules Route */
+        get: operations["list_alert_rules_route_api_v1_alert_rules_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alert-rules/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Alert Rule Route */
+        patch: operations["update_alert_rule_route_api_v1_alert_rules__key__patch"];
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -603,6 +688,76 @@ export interface components {
             /** Y */
             y: number;
         };
+        /** AlertListResponse */
+        AlertListResponse: {
+            /** Badge Count */
+            badge_count: number;
+            /** Alerts */
+            alerts: components["schemas"]["AlertResponse"][];
+        };
+        /** AlertResponse */
+        AlertResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Rule Key */
+            rule_key: string;
+            /** Dedup Key */
+            dedup_key: string;
+            severity: components["schemas"]["AlertSeverity"];
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            status: components["schemas"]["AlertStatus"];
+            /** Acknowledged By */
+            acknowledged_by: string | null;
+            /** Acknowledged At */
+            acknowledged_at: string | null;
+            /** Resolved At */
+            resolved_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** AlertRuleResponse */
+        AlertRuleResponse: {
+            /** Key */
+            key: string;
+            /** Params */
+            params: {
+                [key: string]: unknown;
+            };
+            severity: components["schemas"]["AlertSeverity"];
+            /** Enabled */
+            enabled: boolean;
+            /** Version */
+            version: number;
+        };
+        /** AlertRuleUpdateRequest */
+        AlertRuleUpdateRequest: {
+            /** Params */
+            params?: {
+                [key: string]: unknown;
+            } | null;
+            severity?: components["schemas"]["AlertSeverity"] | null;
+            /** Enabled */
+            enabled?: boolean | null;
+        };
+        /**
+         * AlertSeverity
+         * @enum {string}
+         */
+        AlertSeverity: "info" | "warning" | "critical";
+        /**
+         * AlertStatus
+         * @enum {string}
+         */
+        AlertStatus: "open" | "acknowledged" | "resolved";
         /** AnalyticsRunResponse */
         AnalyticsRunResponse: {
             /**
@@ -2623,6 +2778,155 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AnomalyListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_alerts_route_api_v1_alerts_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                severity?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    acknowledge_alert_route_api_v1_alerts__alert_id__acknowledge_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resolve_alert_route_api_v1_alerts__alert_id__resolve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alert_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_alert_rules_route_api_v1_alert_rules_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertRuleResponse"][];
+                };
+            };
+        };
+    };
+    update_alert_rule_route_api_v1_alert_rules__key__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlertRuleUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AlertRuleResponse"];
                 };
             };
             /** @description Validation Error */
