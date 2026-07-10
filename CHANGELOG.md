@@ -7,6 +7,51 @@ NFR-009).
 
 ## [Unreleased]
 
+### Phase 6 — Alerts & Notifications
+
+- `apps/api`: an alert-rule engine in the domain layer (not `packages/analytics` — every rule
+  here is a DB read against already-computed Phase 4/5 outputs compared to a threshold, not a
+  DB-free statistical computation) implementing FR-061's six built-in rules — stock at/below
+  reorder point, vehicle aging, sales anomaly (severity from DS-ANO's own score), forecast-implied
+  stockout within lead time, discount-approval-required order submission, lead idle beyond a
+  threshold (score-cutoff deferred to Phase 7, pending DS-CUST lead scoring). A shared
+  `open_alert()` helper enforces FR-062's dedup-key/no-duplicate-open-alert invariant and fans out
+  role-scoped `notifications`.
+- Rule (e) (discount approval) fires **synchronously inside `order_service.submit_order`'s own
+  transaction** — FR-060's transactional-trigger case — reusing the same threshold comparison
+  that already decided the order needs approval, so the two can never drift apart.
+- `alert_job.py` orchestrates rules (a)-(d)/(f) against the latest succeeded forecast/inventory
+  runs, skipping (and recording, per DS-OPS-002) any rule whose upstream run doesn't exist yet.
+  `digest_job.py` sends a daily HTML digest email per subscribed user via stdlib `smtplib` to
+  MailHog — no new email-service dependency.
+- `core/scheduler.py`: APScheduler's first real cron activation (forecast weekly, inventory/
+  alerts/digest daily) — Phase 4/5 only ever registered a job *name*, deferring actual scheduling
+  to this phase. Defaults **off** (`Settings.enable_scheduler=False`); only `make dev` opts in,
+  since a scheduled job opens its own DB session directly and would otherwise hit the live dev
+  database during test runs, bypassing the test suite's `get_db` override.
+- `GET/POST /alerts`, `/alerts/{id}/acknowledge`, `/alerts/{id}/resolve` (audit-logged via the
+  existing `write_audit_row`); `GET/PATCH /alert-rules` (FR-065, Manager/Admin only, versioned +
+  audit-logged). New `alert_rules`/`alerts`/`notifications` tables, seeded with the six built-in
+  rules and DS-OPS-001's stated defaults.
+- `apps/web`: a notification center (`/alerts` — live sidebar badge count, status/severity
+  filters, acknowledge→resolve lifecycle) and an FR-065 admin config page (`/admin/alert-rules`).
+- Exit demo (SRS §13: "nightly jobs → alerts → digest in MailHog") verified end-to-end against
+  the real seeded database with zero manual steps beyond the four job triggers: forecast →
+  inventory → alerts (65 stock-reorder, 91 unit-aging, 558 sales-anomaly, 11 forecast-stockout,
+  0 lead-idle — the last a genuine data characteristic, since Phase 3's lead funnel resolves every
+  seeded lead to a terminal `won`/`lost` state) → digest (4 real emails, confirmed via MailHog's
+  own HTTP API, not mocked).
+- Three real cross-test-pollution bugs (same root cause as ADR-013's shared testcontainers
+  Postgres) surfaced and fixed in the final full-suite `make ci` pass: unfiltered `Alert` lookups
+  in `test_alert_rules.py` colliding with other test files' same-`rule_key` fixtures; Phase 4's
+  `get_series_actuals` computing its calendar from the *global* orders table instead of the
+  series-specific subset; and a Phase 4 test assuming a forecast leaderboard's first entry was
+  always its own series. See the phase report's Deviations section for full detail.
+- 20 new backend integration tests (rules, lifecycle, config, a real-SMTP digest test verified
+  against MailHog's own API), 1 pre-existing frontend test updated for a new `QueryClientProvider`
+  dependency — all green; `make ci` clean end-to-end (199 pytest tests, vitest 8/8, `next build`
+  19 routes).
+
 ### Phase 5 — Inventory Intelligence & Anomalies
 
 - `packages/analytics`: ABC (revenue-share) × XYZ (demand-CV) classification; reorder points
