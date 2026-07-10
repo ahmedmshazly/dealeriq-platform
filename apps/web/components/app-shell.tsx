@@ -1,11 +1,26 @@
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
-import { LayoutDashboard, LogOut, ShieldCheck, UserCog, Users as UsersIcon } from "lucide-react";
+import {
+  LayoutDashboard,
+  LogOut,
+  ShieldCheck,
+  ShoppingCart,
+  Target,
+  UserCog,
+  Users as UsersIcon,
+  Warehouse,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const NAV_ITEMS = [{ href: "/dashboard", label: "Dashboard", icon: LayoutDashboard }];
+const NAV_ITEMS = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/inventory", label: "Inventory", icon: Warehouse },
+  { href: "/customers", label: "Customers", icon: UsersIcon },
+  { href: "/leads", label: "Leads", icon: Target },
+  { href: "/orders", label: "Orders", icon: ShoppingCart },
+];
 
 // Admin-only nav — the API enforces the real permission check (FR-011); this hides the link
 // cosmetically for roles that would get a 403 anyway.

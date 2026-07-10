@@ -7,6 +7,21 @@ NFR-009).
 
 ## [Unreleased]
 
+### Phase 2 — Core Domain
+
+- `apps/api`: branches, vehicle models/units with an append-only stock-movement ledger
+  (receipt/reservation/sale/adjustment, every status change ledgered in the same transaction);
+  customers with a non-blocking duplicate-phone/email warning; leads with a state-machine-
+  validated funnel (new→contacted→test_drive→negotiating→won/lost); the full order lifecycle
+  (draft→submit→pending_approval/approved→delivered/cancelled) with a configurable discount-
+  threshold auto-approval, atomic `SELECT...FOR UPDATE` unit reservation, and margin visible
+  only to Manager+; the FR-012 owner-or-permission mechanism shared by leads and orders.
+- `apps/web`: Inventory, Customers, Leads, and Orders (list + detail/timeline) pages, all
+  consuming only the generated API client; sidebar nav extended accordingly.
+- 95 backend tests (up from 37), 94% coverage; full order lifecycle (both the auto-approve and
+  Manager-approval paths) verified end-to-end in a real browser, including the 403 a Sales user
+  gets when attempting to approve their own pending order.
+
 ### Phase 1 — Auth & RBAC
 
 - `apps/api`: email+password login issuing a JWT access token (15 min) and a rotating opaque
