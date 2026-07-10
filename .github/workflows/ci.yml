@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+env:
+  DATABASE_URL: postgresql+psycopg://dealeriq:dealeriq@localhost:5432/dealeriq
+  NEXT_PUBLIC_API_URL: http://127.0.0.1:8123
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: dealeriq
+          POSTGRES_PASSWORD: dealeriq
+          POSTGRES_DB: dealeriq
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dealeriq -d dealeriq"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Python dependencies
+        run: uv sync --all-packages --group dev
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Fetch pinned gitleaks
+        run: ./infra/scripts/ensure-gitleaks.sh
+
+      - name: gitleaks secret scan
+        run: PATH="$PWD/.tools/bin:$PATH" gitleaks detect --source . --redact -v --config .gitleaks.toml
+
+      - name: ruff check
+        run: uv run ruff check apps/api/src packages/analytics/src apps/api/tests packages/analytics/tests
+
+      - name: ruff format --check
+        run: uv run ruff format --check apps/api/src packages/analytics/src apps/api/tests packages/analytics/tests
+
+      - name: mypy (strict)
+        run: uv run mypy apps/api/src packages/analytics/src
+
+      - name: eslint (apps/web)
+        run: npm run lint:web
+
+      - name: tsc --noEmit (apps/web)
+        run: npm run typecheck:web
+
+      - name: pytest (apps/api, packages/analytics)
+        run: uv run pytest apps/api/tests packages/analytics/tests --cov=dealeriq_api --cov=dealeriq_analytics --cov-report=term-missing
+
+      - name: vitest (apps/web)
+        run: npm run test:web
+
+      - name: next build
+        run: npm run build:web
+
+      - name: Run API standalone for client generation
+        run: |
+          uv run uvicorn dealeriq_api.main:app --host 127.0.0.1 --port 8123 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:8123/api/v1/health >/dev/null && break; sleep 0.5; done
+
+      - name: Generate + compile API client (fails build on breaking OpenAPI drift, QA-005)
+        run: |
+          npm run generate --workspace packages/api-client
+          git diff --exit-code packages/api-client/src/schema.d.ts || \
+            (echo "::error::Generated OpenAPI client schema differs from the committed version. Regenerate and commit packages/api-client/src/schema.d.ts, bumping the API version if this is an intentional breaking change (QA-005)." && exit 1)
+          npm run build --workspace packages/api-client
+
+      - name: pip-audit
+        run: uv run --with pip-audit pip-audit || true
+
+      - name: npm audit
+        run: npm audit --audit-level=high || true

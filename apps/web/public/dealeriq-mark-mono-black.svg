@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="DealerIQ mark, black">
+  <path d="M27 33 L58 15 L58 51 Z" fill="#000000" opacity="0.16"></path>
+  <path d="M6 33 L27 33" stroke="#000000" stroke-width="5" stroke-linecap="round"></path>
+  <path d="M27 33 L58 26" stroke="#000000" stroke-width="5" stroke-linecap="round"></path>
+  <circle cx="27" cy="33" r="5.5" fill="#000000"></circle>
+</svg>

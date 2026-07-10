@@ -1,0 +1,31 @@
+# DealerIQ pre-commit hooks. All hooks run against tools already provisioned by
+# `make bootstrap` (uv-managed Python venvs, npm-installed node_modules, .tools/bin/gitleaks)
+# rather than pre-commit's own isolated environments, so hook versions always match the
+# versions pinned in pyproject.toml / package.json.
+repos:
+  - repo: local
+    hooks:
+      - id: gitleaks
+        name: gitleaks (secret scan)
+        entry: bash -c 'PATH="$PWD/.tools/bin:$PATH" gitleaks protect --staged --redact -v --config .gitleaks.toml'
+        language: system
+        pass_filenames: false
+
+      - id: ruff-check
+        name: ruff check (apps/api, packages/analytics)
+        entry: uv run ruff check
+        language: system
+        types: [python]
+
+      - id: ruff-format-check
+        name: ruff format --check
+        entry: uv run ruff format --check
+        language: system
+        types: [python]
+
+      - id: eslint-web
+        name: eslint (apps/web)
+        entry: bash -c 'cd apps/web && npx eslint .'
+        language: system
+        files: ^apps/web/.*\.(ts|tsx|js|jsx)$
+        pass_filenames: false
