@@ -9,25 +9,30 @@
       InventoryIntel/Anomaly convention
 - [ ] T002 Alembic migration: `customer_rfm_profiles`, `lead_scores` tables + indices (per-run,
       per-customer/lead lookups); no new columns on `customers`/`leads` (DAT-003 separation)
-- [ ] T003 `packages/analytics/src/dealeriq_analytics/customer/rfm.py`: per-customer R/F/M
+- [x] T003 `packages/analytics/src/dealeriq_analytics/customer/rfm.py`: per-customer R/F/M
       quintile scoring (population-relative, per run) + ADR-022's four ordered segment rules +
       the explicit zero-order "New" case; pure pandas/dataclasses, no DB imports
-- [ ] T004 `packages/analytics/tests/test_rfm.py`: hand-constructed fixtures for each of ADR-022's
-      four segment rules plus the zero-order "New" edge case, boundary quintile values
-- [ ] T005 `packages/analytics/src/dealeriq_analytics/customer/psi.py`: Population Stability Index
+- [x] T004 `packages/analytics/tests/test_rfm.py`: hand-constructed fixtures for each of ADR-022's
+      four segment rules plus the zero-order "New" edge case, boundary quintile values (also
+      fixed a real bug found while writing these: the original rule order checked Loyal before
+      At Risk, so a customer who was frequent/valuable but not recent got mislabeled "Loyal" —
+      reordered so At Risk is checked first; ADR-022 updated to match)
+- [x] T005 `packages/analytics/src/dealeriq_analytics/customer/psi.py`: Population Stability Index
       — a small, hand-implemented primitive (binned-distribution divergence sum)
-- [ ] T006 `packages/analytics/tests/test_psi.py`: PSI validated against a hand-computed fixture
+- [x] T006 `packages/analytics/tests/test_psi.py`: PSI validated against a hand-computed fixture
       (known bin counts → known PSI value; an engineered shift exceeds 0.25, an unchanged
       distribution does not) before PSI is wired into the drift-alert pipeline
-- [ ] T007 `packages/analytics/src/dealeriq_analytics/customer/lead_scoring.py`: feature
+- [x] T007 `packages/analytics/src/dealeriq_analytics/customer/lead_scoring.py`: feature
       engineering (channel, budget band, model segment, days-since-creation, interaction count,
       customer RFM, cyclical seasonality) from plain records; DS-CUST-005's temporal train/val
-      split; `LogisticRegression(penalty="l2", class_weight="balanced")` wrapped in
+      split; `LogisticRegression(class_weight="balanced")` (L2 is sklearn's default; the explicit
+      `penalty="l2"` spelling is deprecated as of sklearn 1.8) wrapped in
       `CalibratedClassifierCV(method="isotonic")` (ADR-023); top-3 contribution extraction with
       human-readable feature labels (DS-CUST-004)
-- [ ] T008 `packages/analytics/tests/test_lead_scoring.py`: feature-engineering correctness,
+- [x] T008 `packages/analytics/tests/test_lead_scoring.py`: feature-engineering correctness,
       temporal-split no-leakage (a lead created after the cutoff never appears in the training
-      fold), top-3 contribution extraction against a hand-computed fixture
+      fold), top-3 contribution extraction against a hand-computed fixture; added a mypy override
+      for `sklearn.*` (no py.typed marker), matching the project's established pattern
 - [ ] T009 `apps/api/src/dealeriq_api/domain/lead_scoring_job.py`: orchestration —
       `AnalyticsRun` RUNNING → load customers/orders/leads/lead-events frames → RFM pass → lead-
       scoring pass (consumes this run's own RFM output) → PSI drift check against this run's own

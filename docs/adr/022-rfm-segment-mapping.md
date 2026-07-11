@@ -13,19 +13,20 @@ smaller table is sufficient for v1.0's UI and is easier for a Manager to act on 
 
 ## Decision
 
-Five named segments, computed from per-customer R/F/M quintile scores (1-5 each, 5 = best):
+Five named segments, computed from per-customer R/F/M quintile scores (1-5 each, 5 = best),
+evaluated in this order (first match wins):
 
-- **Champions**: `R >= 4 AND F >= 4 AND M >= 4` — recent, frequent, high-value.
-- **Loyal Customers**: `F >= 4` and not already Champions — frequent buyers regardless of
-  recency/value.
-- **At Risk**: `R <= 2 AND (F >= 3 OR M >= 3)` — used to buy often or spend a lot, but it's been a
-  while.
-- **New**: zero completed orders — RFM is undefined without at least one transaction; this is a
-  distinct, explicit segment, never a fabricated quintile score (spec.md's Edge Cases).
-- **Hibernating**: everyone else — low across the board.
-
-Rules are evaluated in the order listed (first match wins), so a customer can't satisfy two
-segments' conditions simultaneously in an ambiguous way.
+1. **Champions**: `R >= 4 AND F >= 4 AND M >= 4` — recent, frequent, high-value.
+2. **At Risk**: `R <= 2 AND (F >= 3 OR M >= 3)` — used to buy often or spend a lot, but it's been
+   a while. Checked *before* Loyal Customers: a customer who was frequent/high-value but hasn't
+   bought recently is a churn risk, and that's the more urgent, more useful label for a Manager
+   to see than "loyal" — "loyal" implies ongoing engagement that a low recency score contradicts.
+3. **Loyal Customers**: `F >= 4` and not already Champions or At Risk — frequent, still
+   reasonably recent buyers.
+4. **New**: zero completed orders — RFM is undefined without at least one transaction; this is a
+   distinct, explicit segment, never a fabricated quintile score (spec.md's Edge Cases). Checked
+   before quintile scoring even runs, not as part of this ordered chain.
+5. **Hibernating**: everyone else — low across the board.
 
 ## Consequences
 
