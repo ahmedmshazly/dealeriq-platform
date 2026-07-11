@@ -9,15 +9,20 @@
       `alembic upgrade head` + `alembic check` (empty diff) + downgrade/upgrade round-trip
 - [x] T002 `apps/api/src/dealeriq_api/core/config.py` MODIFIED: add
       `default_monthly_sales_target: float` setting
-- [ ] T003 `apps/api/src/dealeriq_api/domain/achieved_accuracy.py`: for a series, gather every
+- [x] T003 `apps/api/src/dealeriq_api/domain/achieved_accuracy.py`: for a series, gather every
       past `Forecast` row whose `week_start` has already passed, dedup to one `yhat` per week via
       the *earliest* covering run (ADR-024), reconstruct real actuals via
       `forecast_job.get_series_actuals`, call the existing
       `dealeriq_analytics.forecasting.metrics.mase`; returns `None` if no forecast is old enough
       to have real actuals yet (never a fabricated number)
-- [ ] T004 Unit test `apps/api/tests/unit/test_achieved_accuracy.py`: a hand-computed fixture —
-      known past forecasts across multiple runs (including a case where two runs both forecast
-      the same week, confirming the earliest-run dedup rule) + known actuals → a known MASE
+- [x] T004 Integration test `apps/api/tests/integration/test_achieved_accuracy.py` (corrected
+      from the plan's `tests/unit/` — this needs a live DB via `get_series_actuals`, so it
+      belongs alongside every other domain-layer test in `tests/integration/`, not the DB-free
+      `tests/unit/`): a hand-computed 53-week fixture (the minimum for `mase()`'s season-52
+      denominator to be non-empty) — two runs forecasting the same 4 weeks with different yhats
+      confirms the earliest-run dedup rule (using the later run's exactly-correct forecast would
+      give MASE=0; the test asserts the earlier run's MASE=1.0 instead); plus "no forecast old
+      enough" and "unknown series" → `None` cases
 - [ ] T005 `apps/api/src/dealeriq_api/domain/sales_summary.py`: `monthly_sales_by_branch`,
       `monthly_sales_by_salesperson` (delivery date from `OrderEvent` where
       `to_status="delivered"`, matching the existing order-timeline convention since `Order` has
