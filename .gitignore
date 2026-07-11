@@ -20,6 +20,11 @@ out/
 *.tsbuildinfo
 .turbo/
 
+# Playwright (QA-004)
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/blob-report/
+
 # Env / secrets
 .env
 .env.*

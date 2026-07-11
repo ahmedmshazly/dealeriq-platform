@@ -4,22 +4,37 @@
 
 ## Task list
 
-- [ ] T001 `apps/web/package.json` + `apps/web/playwright.config.ts` (NEW): add `@playwright/test`
+- [x] T001 `apps/web/package.json` + `apps/web/playwright.config.ts` (NEW): add `@playwright/test`
       devDependency, install browsers; `baseURL http://localhost:3000`, `webServer` disabled —
       runs against an already-running `make dev` stack, matching every prior phase's
-      real-dev-stack verification convention
-- [ ] T002 `apps/web/e2e/golden-path.spec.ts` (NEW): login (`sales1@dealeriq.dev`) → create a
-      draft order on `/orders` against a real in-stock unit with discount fraction above
-      `order_approval_discount_threshold` (0.05) → submit (confirm `pending_approval`) → log out
-      → login (`manager1@dealeriq.dev`) → approve (confirm `orders:approve` boundary is real) →
-      open `/alerts`, confirm the `discount_approval` alert referencing this specific order (by
-      order id in the payload, not just "an alert exists") → acknowledge it, confirm status
-      updates
-- [ ] T003 `Makefile` MODIFIED: add `make e2e` target (documents the `make dev` prerequisite,
+      real-dev-stack verification convention. Chromium launches without `--with-deps` (no sudo
+      available in this environment) — verified with a standalone smoke script before writing
+      the real suite.
+- [x] T002 `apps/web/e2e/golden-path.spec.ts` (NEW): login (`sales1@dealeriq.dev`) → create a
+      draft order on `/orders` against a real in-stock unit with a flat $6,000 discount (safely
+      above `order_approval_discount_threshold`=0.05 for every seeded model's list price) →
+      submit (confirm `pending_approval`) → log out → login (`manager1@dealeriq.dev`) → approve
+      (confirm `orders:approve` boundary is real) → open `/alerts` filtered to `open`, confirm
+      the topmost row is the `discount_approval` alert this submission caused (alerts are always
+      returned newest-first and this alert type is only ever created synchronously by an order
+      submission, so no scheduled job can race ahead of it) → acknowledge it, confirm status
+      updates. Real bug found and fixed during T004: the initial "match by rule text" locator
+      for the post-acknowledge assertion was ambiguous against the ~13 pre-existing open
+      `discount_approval` alerts in the seeded DB, and re-locating "first open row" after
+      acknowledging grabbed a *different* still-open alert (the acknowledged one disappears from
+      the open-filtered view) — fixed by capturing the row's unique Created timestamp before
+      acknowledging and re-locating by that timestamp under the "All" filter afterward.
+- [x] T003 `Makefile` MODIFIED: add `make e2e` target (documents the `make dev` prerequisite,
       runs `npx playwright test` in `apps/web`)
-- [ ] T004 Run `make e2e` against a real running `make dev` stack; fix whatever real issues it
-      finds (selector mismatches, timing, a genuine bug) before it's considered done — matching
-      every prior phase's "validate against the real system, not just code review" discipline
+- [x] T004 Ran `make e2e` (via a manually-started dev-stack instance, since this machine has a
+      pre-existing unrelated process on the standard :8000 — see Phase 8's own reproducibility
+      gate for the same finding) against the real seeded database: passed twice in a row
+      (~15-18s each, confirming it's safely re-runnable — it creates its own order every run).
+      Deliberately broke the Approve step (`orders:approve` → a nonexistent permission key),
+      restarted the API, reran the suite: it failed at exactly that step
+      (`expect(statusBadge).toHaveText("approved")`, actual `"pending_approval"`) — proving a
+      real regression is actually caught, not just a happy-path smoke test. Reverted (confirmed
+      via `git diff`, zero diff) and reran to green (SC-001, SC-002).
 - [ ] T005 `scripts/benchmark_api.py` (NEW): authenticates once against a real running API, then
       issues N sequential requests (configurable, default enough for a stable p95) per endpoint
       to `GET /orders`, `GET /customers`, `GET /leads`, `GET /vehicle-units`,

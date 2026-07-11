@@ -1,4 +1,4 @@
-.PHONY: bootstrap seed dev down ci test lint migrate
+.PHONY: bootstrap seed dev down ci test lint migrate e2e benchmark audit
 
 COMPOSE = docker compose -f infra/docker-compose.yml
 
@@ -85,3 +85,10 @@ ci: lint test
 	NEXT_PUBLIC_API_URL=http://127.0.0.1:8123 npm run generate --workspace packages/api-client; \
 	npm run build --workspace packages/api-client
 	@echo "==> CI checks passed."
+
+# QA-004: the golden-path E2E suite. Requires an already-running `make dev` stack (real
+# Postgres, real API, real Next.js on :3000) with the standard seed data -- this target does not
+# start one itself, matching every prior phase's "verify against the real dev stack" convention.
+e2e:
+	@echo "==> Playwright golden-path suite (requires \`make dev\` running in another terminal)"
+	@npm run e2e
