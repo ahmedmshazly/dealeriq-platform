@@ -20,6 +20,17 @@ cores. Weekly-with-annual-seasonality is a well-known expensive case for stepwis
 (the large seasonal lag inflates the seasonal-difference/seasonal-AR/MA candidate space); this
 is a genuine, documented tradeoff of search breadth for tractable on-demand runtime, not a
 silent quality cut — AutoARIMA is still a real automatic search, just over a narrower space.
+
+SES, CrostonClassic, CrostonSBA, and TSB have no native parametric prediction-interval method in
+statsforecast — unlike Naive/SeasonalNaive/AutoETS/AutoARIMA, calling `cross_validation(...,
+level=[80])` on them raises immediately ("You must pass `prediction_intervals` to compute
+them"). Found via Phase 10's benchmark harness: `cv.py::run_cross_validation`'s per-method
+`try/except Exception: continue` silently swallowed this for all four methods on every run,
+including every operational forecast job run since Phase 4 shipped — the champion-selection
+pool was silently missing every intermittent-specific method DS-FC-003 requires, on every
+series, in production. Fixed by passing `ConformalIntervals` (statsforecast's model-agnostic
+interval estimator, calibrated via `n_windows` historical windows — the library's own default of
+2) to these four models' constructors.
 """
 
 from typing import Any
@@ -34,22 +45,27 @@ from statsforecast.models import (
     SeasonalNaive,
     SimpleExponentialSmoothingOptimized,
 )
+from statsforecast.utils import ConformalIntervals
 
 SEASONAL_NAIVE_ALIAS = "SeasonalNaive"
 TSB_ALPHA_D = 0.1
 TSB_ALPHA_P = 0.1
+CONFORMAL_INTERVAL_WINDOWS = 2
 
 
-def build_method_pool(season_length: int) -> list[Any]:
+def build_method_pool(season_length: int, horizon: int) -> list[Any]:
     """One instance per DS-FC-003 method. `season_length` is 52 for the weekly-annual cycle
-    Phase 3's demand generator actually used."""
+    Phase 3's demand generator actually used. `horizon` must match the CV harness's own forecast
+    horizon (`cv.HORIZON`) — it's passed to `ConformalIntervals` for the four methods that need
+    an explicit interval estimator (see the module docstring)."""
+    conformal = ConformalIntervals(h=horizon, n_windows=CONFORMAL_INTERVAL_WINDOWS)
     return [
         Naive(),
         SeasonalNaive(season_length=season_length, alias=SEASONAL_NAIVE_ALIAS),
-        SimpleExponentialSmoothingOptimized(),
+        SimpleExponentialSmoothingOptimized(prediction_intervals=conformal),
         AutoETS(season_length=season_length),
         AutoARIMA(season_length=season_length, max_P=1, max_Q=1, nmodels=20),
-        CrostonClassic(),
-        CrostonSBA(),
-        TSB(alpha_d=TSB_ALPHA_D, alpha_p=TSB_ALPHA_P),
+        CrostonClassic(prediction_intervals=conformal),
+        CrostonSBA(prediction_intervals=conformal),
+        TSB(alpha_d=TSB_ALPHA_D, alpha_p=TSB_ALPHA_P, prediction_intervals=conformal),
     ]
