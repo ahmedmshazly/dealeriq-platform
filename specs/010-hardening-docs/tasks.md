@@ -78,12 +78,19 @@
       (`GHSA-5xrq-8626-4rwp`) from the file — `make audit` correctly failed, listing exactly that
       finding as unwaived (exit 1). Restored the entry — passed again (exit 0), listing all 6
       findings as waived with their real re-review dates.
-- [ ] T012 Verify QA-005 (OpenAPI contract-diff) still fails closed: on a throwaway, uncommitted
-      change, deliberately break a response schema; confirm the contract-diff CI/make-ci step
-      fails with its documented message; revert
-- [ ] T013 Verify QA-006 (static quality gates) still fail closed: on a throwaway, uncommitted
-      change, deliberately introduce one ruff violation and one eslint violation; confirm both
-      quality gates fail; revert
+- [x] T012 Verified QA-005 (OpenAPI contract-diff) still fails closed: on a throwaway,
+      uncommitted change, added a field to `AchievedAccuracyResponse`, regenerated the client
+      against a real live server — `git diff --exit-code packages/api-client/src/schema.d.ts`
+      correctly failed (exit 1), showing exactly the new field. Reverted and regenerated again —
+      clean, zero diff.
+- [x] T013 Verified QA-006 (static quality gates): ruff — a deliberate unused import correctly
+      failed (`F401`); reverted. eslint — **found and fixed a real gap**: a deliberate unused
+      variable was only a *warning*, and `eslint .` has no `--max-warnings` flag, so it exited
+      `0` — the "must be green" lint gate silently passed a real violation. Confirmed zero
+      pre-existing warnings across the full `apps/web` tree (safe to tighten), added
+      `--max-warnings 0` to the `lint` script, and re-verified: the same deliberate violation now
+      correctly fails the build. Reverted the violation; the tightened gate itself is a real,
+      permanent fix (not reverted).
 - [ ] T014 `apps/web/package.json` + `apps/web/eslint.config.mjs` MODIFIED: add
       `eslint-plugin-jsx-a11y`'s `recommended` config to the existing eslint config
 - [ ] T015 `apps/web/app/**/*.tsx` MODIFIED wherever T014's new rule finds a real, fixable
