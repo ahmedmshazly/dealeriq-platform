@@ -84,3 +84,14 @@ class SeriesDetailResponse(BaseModel):
     actuals: list[ActualPointResponse]
     forecast: list[ForecastPointResponse]
     metrics_by_method: list[MethodMetricResponse]
+
+
+class AchievedAccuracyResponse(BaseModel):
+    """FR-073: `None` fields mean no forecast for this series is old enough to have real actuals
+    yet — never a fabricated number."""
+
+    series_key: str
+    mase: float | None
+    n_weeks_evaluated: int
+    window_start: date | None
+    window_end: date | None

@@ -7,6 +7,43 @@ NFR-009).
 
 ## [Unreleased]
 
+### Phase 8 — Dashboards & Reports
+
+- `apps/api`: `achieved_accuracy.py` reads back Phase 4's own persisted forecasts and scores them
+  against real actuals that have since arrived — the first genuine out-of-sample forecast-quality
+  metric in the system, distinct from the training-time cross-validation `ForecastMetric` fields.
+  Dedups multiple runs' overlapping forecasts for the same week by taking the *earliest* covering
+  run (ADR-024) and reuses Phase 4's already-validated `mase()` unchanged. `sales_summary.py`
+  aggregates real delivered-order revenue/margin/top-bottom-models from `OrderEvent`.
+  `dashboard_service.py` composes both plus inventory health, open anomalies, and unacknowledged
+  alerts into `GET /dashboards/manager` and `GET /dashboards/sales` (server-side scoped to the
+  current user, never a request parameter). `monthly_report.py` composes the same building blocks
+  for one completed calendar month; `GET /reports/monthly` rejects the current in-progress month.
+- `apps/web`: the dashboard placeholder is replaced with real role-branched Manager/Sales
+  dashboards (sales-vs-forecast interval chart, top/bottom models, inventory health, leads ranked
+  by score, sales vs. target); a new achieved-accuracy diagnostic on the existing analytics detail
+  page; a new monthly report view with a month picker; PNG/CSV chart export utilities
+  (`lib/chart-export.ts`), used across both dashboards and the analytics detail page.
+- A single admin-configurable default monthly sales target (`Settings.default_monthly_sales_target`),
+  not per-salesperson quotas — a real quota-management system is unscoped expansion, recorded as a
+  P2 backlog item (ADR-024).
+- A real chart-export bug found via real-browser SC-004 verification, not caught by any automated
+  test: `querySelector("svg")` matched the first `<svg>` in the chart container — one of Recharts'
+  own 14x14 per-legend-item icon svgs, not the chart — silently exporting a near-blank thumbnail.
+  Fixed by scoping to `.recharts-wrapper > svg`, the chart's actual root element.
+- Exit demo (SRS §13: "Manager/Sales dashboards complete") verified end-to-end against the real
+  seeded database and in a real browser: cross-salesperson lead/sales isolation confirmed
+  programmatically (zero overlap between two real salespeople's open-lead sets); a hand-computed
+  independent revenue/margin calculation for a completed month matched the API exactly to the
+  cent; achieved accuracy honestly reports "not enough history yet" system-wide right now (the
+  live system's sole forecast run's entire horizon is still in the future) rather than a
+  fabricated number, with the underlying dedup/alignment logic proven against a hand-computed
+  fixture instead.
+- 4 new/extended backend integration test files, no new frontend test files (UI correctness
+  verified live in a real browser instead) — all green; `make ci` clean end-to-end (245 pytest
+  tests, up from 235 at Phase 7; vitest 8/8; `next build` 20 routes, up from 19 — `/reports`
+  added; live API-client regeneration with zero diff).
+
 ### Phase 7 — Customer Analytics
 
 - `packages/analytics`: RFM segmentation (population-relative R/F/M quintiles mapped to five

@@ -521,6 +521,78 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/forecasts/{series_key}/achieved-accuracy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Achieved Accuracy Route
+         * @description FR-073: real out-of-sample accuracy, distinct from the training-time cross-validation
+         *     metrics `SeriesDetailResponse.metrics_by_method` already reports.
+         */
+        get: operations["achieved_accuracy_route_api_v1_forecasts__series_key__achieved_accuracy_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dashboards/manager": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Manager Dashboard Route */
+        get: operations["manager_dashboard_route_api_v1_dashboards_manager_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dashboards/sales": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sales Dashboard Route */
+        get: operations["sales_dashboard_route_api_v1_dashboards_sales_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/monthly": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Monthly Report Route */
+        get: operations["monthly_report_route_api_v1_reports_monthly_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/inventory/abc-xyz": {
         parameters: {
             query?: never;
@@ -695,6 +767,23 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AchievedAccuracyResponse
+         * @description FR-073: `None` fields mean no forecast for this series is old enough to have real actuals
+         *     yet — never a fabricated number.
+         */
+        AchievedAccuracyResponse: {
+            /** Series Key */
+            series_key: string;
+            /** Mase */
+            mase: number | null;
+            /** N Weeks Evaluated */
+            n_weeks_evaluated: number;
+            /** Window Start */
+            window_start: string | null;
+            /** Window End */
+            window_end: string | null;
+        };
         /** ActualPointResponse */
         ActualPointResponse: {
             /**
@@ -770,6 +859,19 @@ export interface components {
          * @enum {string}
          */
         AlertSeverity: "info" | "warning" | "critical";
+        /** AlertStatisticsResponse */
+        AlertStatisticsResponse: {
+            /** Counts By Rule */
+            counts_by_rule: {
+                [key: string]: number;
+            };
+            /** Counts By Severity */
+            counts_by_severity: {
+                [key: string]: number;
+            };
+            /** Total */
+            total: number;
+        };
         /**
          * AlertStatus
          * @enum {string}
@@ -1149,6 +1251,30 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** ManagerDashboardResponse */
+        ManagerDashboardResponse: {
+            /**
+             * Month
+             * Format: date
+             */
+            month: string;
+            /** Sales Vs Forecast */
+            sales_vs_forecast: components["schemas"]["SalesVsForecastPointResponse"][];
+            /** Top Models */
+            top_models: components["schemas"]["ModelRevenueResponse"][];
+            /** Bottom Models */
+            bottom_models: components["schemas"]["ModelRevenueResponse"][];
+            /** Inventory Abc Xyz Counts */
+            inventory_abc_xyz_counts: {
+                [key: string]: number;
+            };
+            /** Aging Unit Count */
+            aging_unit_count: number;
+            /** Open Anomaly Count */
+            open_anomaly_count: number;
+            /** Unacknowledged Alert Count */
+            unacknowledged_alert_count: number;
+        };
         /** MethodMetricResponse */
         MethodMetricResponse: {
             /** Method */
@@ -1190,6 +1316,33 @@ export interface components {
             reorder_points: components["schemas"]["ReorderPointEntry"][];
             /** At Risk Units */
             at_risk_units: components["schemas"]["UnitRiskResponse"][];
+        };
+        /** ModelRevenueResponse */
+        ModelRevenueResponse: {
+            /**
+             * Model Id
+             * Format: uuid
+             */
+            model_id: string;
+            /** Display Name */
+            display_name: string;
+            /** Revenue */
+            revenue: number;
+        };
+        /** MonthlyReportResponse */
+        MonthlyReportResponse: {
+            /**
+             * Month
+             * Format: date
+             */
+            month: string;
+            /** Total Revenue */
+            total_revenue: number;
+            /** Total Margin */
+            total_margin: number;
+            /** Achieved Accuracy */
+            achieved_accuracy: components["schemas"]["SeriesAccuracyResponse"][];
+            alert_statistics: components["schemas"]["AlertStatisticsResponse"];
         };
         /** OrderCancelRequest */
         OrderCancelRequest: {
@@ -1359,6 +1512,32 @@ export interface components {
             /** Permissions */
             permissions: string[];
         };
+        /** RankedLeadResponse */
+        RankedLeadResponse: {
+            /**
+             * Lead Id
+             * Format: uuid
+             */
+            lead_id: string;
+            /**
+             * Customer Id
+             * Format: uuid
+             */
+            customer_id: string;
+            /** Customer Name */
+            customer_name: string;
+            /**
+             * Model Id
+             * Format: uuid
+             */
+            model_id: string;
+            /** Model Name */
+            model_name: string;
+            /** Status */
+            status: string;
+            /** Conversion Probability */
+            conversion_probability: number | null;
+        };
         /** ReorderPointEntry */
         ReorderPointEntry: {
             /**
@@ -1394,6 +1573,42 @@ export interface components {
          * @enum {string}
          */
         RunStatus: "running" | "succeeded" | "failed";
+        /** SalesDashboardResponse */
+        SalesDashboardResponse: {
+            /** Open Leads */
+            open_leads: components["schemas"]["RankedLeadResponse"][];
+            /** My Sales This Month */
+            my_sales_this_month: number;
+            /** My Target */
+            my_target: number;
+            /** Unacknowledged Alert Count */
+            unacknowledged_alert_count: number;
+        };
+        /** SalesVsForecastPointResponse */
+        SalesVsForecastPointResponse: {
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /** Actual */
+            actual: number;
+            /** Yhat */
+            yhat: number | null;
+            /** Yhat Lo80 */
+            yhat_lo80: number | null;
+            /** Yhat Hi80 */
+            yhat_hi80: number | null;
+        };
+        /** SeriesAccuracyResponse */
+        SeriesAccuracyResponse: {
+            /** Series Key */
+            series_key: string;
+            /** Mase */
+            mase: number;
+            /** N Weeks Evaluated */
+            n_weeks_evaluated: number;
+        };
         /** SeriesDetailResponse */
         SeriesDetailResponse: {
             /**
@@ -2742,6 +2957,111 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeriesDetailResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    achieved_accuracy_route_api_v1_forecasts__series_key__achieved_accuracy_get: {
+        parameters: {
+            query?: {
+                window_weeks?: number;
+            };
+            header?: never;
+            path: {
+                series_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AchievedAccuracyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    manager_dashboard_route_api_v1_dashboards_manager_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManagerDashboardResponse"];
+                };
+            };
+        };
+    };
+    sales_dashboard_route_api_v1_dashboards_sales_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SalesDashboardResponse"];
+                };
+            };
+        };
+    };
+    monthly_report_route_api_v1_reports_monthly_get: {
+        parameters: {
+            query?: {
+                /** @description YYYY-MM; defaults to last completed month */
+                month?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MonthlyReportResponse"];
                 };
             };
             /** @description Validation Error */
