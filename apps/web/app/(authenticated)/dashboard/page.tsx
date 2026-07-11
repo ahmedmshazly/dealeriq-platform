@@ -60,7 +60,11 @@ function ManagerDashboard() {
   }));
 
   function handleExportPng() {
-    const svg = chartRef.current?.querySelector("svg");
+    // Recharts also renders a 14x14 <svg> icon per legend item inside this container -- a
+    // plain `querySelector("svg")` grabs the first one of those instead of the actual chart,
+    // exporting a near-blank thumbnail. The main chart's <svg> is always the direct child of
+    // .recharts-wrapper, so scope to that.
+    const svg = chartRef.current?.querySelector<SVGSVGElement>(".recharts-wrapper > svg");
     if (svg) void exportChartAsPng(svg, `sales-vs-forecast-${d!.month}.png`);
   }
   function handleExportCsv() {
