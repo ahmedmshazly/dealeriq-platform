@@ -92,3 +92,9 @@ ci: lint test
 e2e:
 	@echo "==> Playwright golden-path suite (requires \`make dev\` running in another terminal)"
 	@npm run e2e
+
+# NFR-003: real p50/p95/mean latency for representative CRUD endpoints + the two dashboard
+# endpoints. Requires an already-running `make dev` stack, same as `make e2e`.
+benchmark:
+	@echo "==> API latency benchmark (requires \`make dev\` running in another terminal)"
+	@uv run python scripts/benchmark_api.py

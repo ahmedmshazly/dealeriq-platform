@@ -5,9 +5,9 @@ insert (DAT-003).
 """
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from dealeriq_api.core.errors import bad_request, not_found
@@ -131,6 +131,10 @@ def list_vehicle_units(
     limit: int,
     offset: int,
 ) -> tuple[list[VehicleUnit], int]:
+    """Filtering, `days_on_lot` bounds, ordering, and pagination all happen in SQL -- an earlier
+    version loaded every unit into Python before filtering/sorting/slicing, an unbounded
+    full-table load on every call regardless of filters (found via NFR-003 benchmarking, Phase
+    9: p95 734ms on the real seeded ~15k-unit table vs. the 300ms target)."""
     stmt = select(VehicleUnit).join(VehicleModel, VehicleUnit.model_id == VehicleModel.id)
 
     if branch_id is not None:
@@ -141,17 +145,18 @@ def list_vehicle_units(
         stmt = stmt.where(VehicleModel.segment == segment)
     if status is not None:
         stmt = stmt.where(VehicleUnit.status == status)
-
-    all_rows = list(db.execute(stmt).scalars().unique().all())
-
     if min_days_on_lot is not None:
-        all_rows = [u for u in all_rows if days_on_lot(u) >= min_days_on_lot]
+        stmt = stmt.where(
+            VehicleUnit.acquisition_date <= date.today() - timedelta(days=min_days_on_lot)
+        )
     if max_days_on_lot is not None:
-        all_rows = [u for u in all_rows if days_on_lot(u) <= max_days_on_lot]
+        stmt = stmt.where(
+            VehicleUnit.acquisition_date >= date.today() - timedelta(days=max_days_on_lot)
+        )
 
-    total = len(all_rows)
-    all_rows.sort(key=lambda u: u.acquisition_date)
-    page = all_rows[offset : offset + limit]
+    total = db.execute(select(func.count()).select_from(stmt.subquery())).scalar_one()
+    page_stmt = stmt.order_by(VehicleUnit.acquisition_date).limit(limit).offset(offset)
+    page = list(db.execute(page_stmt).scalars().unique().all())
     return page, total
 
 

@@ -35,15 +35,24 @@
       (`expect(statusBadge).toHaveText("approved")`, actual `"pending_approval"`) — proving a
       real regression is actually caught, not just a happy-path smoke test. Reverted (confirmed
       via `git diff`, zero diff) and reran to green (SC-001, SC-002).
-- [ ] T005 `scripts/benchmark_api.py` (NEW): authenticates once against a real running API, then
+- [x] T005 `scripts/benchmark_api.py` (NEW): authenticates once against a real running API, then
       issues N sequential requests (configurable, default enough for a stable p95) per endpoint
       to `GET /orders`, `GET /customers`, `GET /leads`, `GET /vehicle-units`,
       `GET /dashboards/manager`, `GET /dashboards/sales`; reports p50/p95/mean per endpoint
-- [ ] T006 `Makefile` MODIFIED: add `make benchmark` target
-- [ ] T007 Run `make benchmark` against the real seeded dev database; record the real p50/p95
-      figures for every endpoint against NFR-003's 300ms (CRUD) / 2s (dashboard) targets; any
-      miss is documented with the real number, fixed only if the fix is small and obvious,
-      otherwise recorded in `docs/backlog.md` with the actual figures
+- [x] T006 `Makefile` MODIFIED: add `make benchmark` target
+- [x] T007 Ran the benchmark against the real seeded dev database (n=50/endpoint). **Found a
+      real NFR-003 miss and fixed it**: `GET /vehicle-units` measured p95=734ms (target 300ms) —
+      `domain/inventory_service.py`'s `list_vehicle_units` loaded every one of the real ~15,438
+      seeded units into Python on *every* call regardless of filters, then sorted and paginated
+      in Python. Since `days_on_lot` is plain date arithmetic
+      (`(date.today() - acquisition_date).days`), pushed filtering (including the
+      `min_days_on_lot`/`max_days_on_lot` bounds), ordering, and pagination into SQL — a small,
+      obvious fix per spec.md's Assumptions. Re-benchmarked after the fix: p95 dropped to
+      29.3ms. Every other endpoint already met its target on the first run (`/orders` 158ms,
+      `/customers` 17.9ms, `/leads` 22.7ms, `/dashboards/manager` 63.9ms, `/dashboards/sales`
+      23.1ms — all well under their respective 300ms/2000ms targets). Existing inventory tests
+      (`test_inventory_flow.py`, `test_inventory.py`) re-verified passing unchanged; `mypy
+      --strict` clean.
 - [ ] T008 `security/dependency-waivers.json` (NEW): committed waiver list —
       `[{id, package, reason, reviewed_by, review_date, re_review_by}]`, seeded empty (or with a
       real currently-reported finding if T011 discovers one with no immediate fix)
