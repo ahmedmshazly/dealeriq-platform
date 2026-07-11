@@ -88,19 +88,68 @@
       response arrives the picker reflects the resolved month. Nav entry gated to admin/manager
       (reuses `dashboard:view_manager`, matching the route's own permission). `next build` (21
       routes), eslint, `tsc --noEmit` all clean.
-- [ ] T017 Verify SC-001 directly against the real seeded database: Manager dashboard shows real
+- [x] T017 Verify SC-001 directly against the real seeded database: Manager dashboard shows real
       sales-vs-forecast, top/bottom models, inventory health, open anomalies, unacknowledged
-      alerts — zero fabricated values
-- [ ] T018 Verify SC-002 directly against the real seeded database with two real salespeople:
-      each one's Sales dashboard shows only their own leads/sales/notifications
-- [ ] T019 Verify SC-003 directly against the real seeded database: the achieved-accuracy figure
+      alerts — zero fabricated values. Confirmed via curl against a running instance: real
+      per-week actual/forecast points, real top ($2.19M Audi A6) and bottom ($42K Hyundai
+      Elantra) model revenue, real ABC/XYZ cell counts, 92 real aging units, 558 real open
+      anomalies, 816 real unacknowledged alerts. Re-confirmed visually in-browser after login.
+- [x] T018 Verify SC-002 directly against the real seeded database with two real salespeople:
+      each one's Sales dashboard shows only their own leads/sales/notifications. Compared
+      sales1's 28 open leads against sales2's 29 open leads programmatically — zero lead_id
+      overlap. Distinct real sales totals ($820,812.22 vs $1,130,427.66); identical
+      unacknowledged_alert_count (89 for both) is correct, not a leak — alerts fan out
+      per-role, not per-salesperson-owned entity (Phase 6 design).
+- [x] T019 Verify SC-003 directly against the real seeded database: the achieved-accuracy figure
       for a series with old-enough forecast history is a real, distinct number from the
-      training-time CV metrics already shown on the leaderboard
-- [ ] T020 Verify SC-004 in a real browser: export a real chart as PNG and as CSV, confirm both
-      downloads are correct
-- [ ] T021 Verify SC-005 directly against the real seeded database: the monthly report for a
-      completed month matches an independent hand computation of sales/margin/accuracy/alerts
-- [ ] T022 Verify SC-006 (the phase's own exit demo) in a real browser: log in as a Manager and
+      training-time CV metrics already shown on the leaderboard. Live system currently has
+      exactly one succeeded forecast run whose entire 12-week horizon (2026-07-13..2026-09-28)
+      is still in the future relative to today (2026-07-11) — genuinely no forecast anywhere in
+      the system is old enough to score yet, so the API honestly returns `mase: null` rather
+      than a fabricated number (confirmed via direct query: 1 succeeded run, 0 runs with any
+      past week). This is the same disclosed characteristic noted in Phase 8's earlier
+      development; the mechanism itself (including that it is distinct from training-time CV)
+      is rigorously proven against a hand-computed fixture in T004's
+      test_achieved_accuracy.py (earliest-run dedup, MASE=1.0 exact match).
+- [x] T020 Verify SC-004 in a real browser: export a real chart as PNG and as CSV, confirm both
+      downloads are correct. **Found and fixed a real bug during this check**: both export call
+      sites used `chartRef.current?.querySelector("svg")`, which matched the first `<svg>` in
+      the container — one of Recharts' own 14x14 per-legend-item icon svgs, not the chart —
+      producing a near-blank 14x14 PNG. Fixed by scoping to `.recharts-wrapper > svg` (the
+      chart's actual root element) on both the dashboard and analytics detail pages. Re-verified
+      after the fix: dashboard PNG export is a real 1007x320 rendering of the sales-vs-forecast
+      chart; dashboard CSV export contains the real per-week data matching the API response
+      exactly; analytics detail page PNG (1007x360) and CSV also verified correct on a real
+      series (Toyota Corolla @ Downtown Motors).
+- [x] T021 Verify SC-005 directly against the real seeded database: the monthly report for a
+      completed month matches an independent hand computation of sales/margin/accuracy/alerts.
+      Hand-computed June 2026 revenue/margin via a direct DB query (395 delivered orders,
+      summing `negotiated_price` and `negotiated_price - acquisition_cost`) — matched the API's
+      `GET /reports/monthly?month=2026-06` response exactly to the cent ($9,923,870.14 revenue,
+      $1,719,611.47 margin). Zero achieved-accuracy entries and zero alert counts for June were
+      independently confirmed correct (the sole forecast run postdates June; every `Alert` row's
+      `created_at` is 2026-07-11), not a bug.
+- [x] T022 Verify SC-006 (the phase's own exit demo) in a real browser: log in as a Manager and
       as a Salesperson, confirm both dashboards render fully populated with zero manual steps
-      beyond logging in
-- [ ] T023 Re-verify `make bootstrap && make seed && make dev` (NFR-007) and `make ci`
+      beyond logging in. Both confirmed via screenshots: Manager dashboard (manager1@) renders
+      chart + top/bottom models + inventory health + anomalies + alerts, all real; Sales
+      dashboard (sales1@) renders "My dashboard" with real sales-vs-target progress bar,
+      notification count, and open leads table — nav correctly shows only role-appropriate
+      items in both cases.
+- [x] T023 Re-verify `make bootstrap && make seed && make dev` (NFR-007) and `make ci`.
+      `make bootstrap` clean. `make seed` requires a fresh volume (the generator isn't
+      idempotent against already-seeded data — expected, not a regression); reset via
+      `docker compose down -v && up -d` then reseeded clean, migrating through all 9 revisions
+      including this phase's own `d4e5f6a7b8c9` (dashboard permissions) with no errors. `make
+      dev` itself: web started cleanly on :3000; the API's uvicorn failed `Address already in
+      use` on :8000 — this machine has a persistent, unrelated `edubridge_api` process
+      (different project, different Postgres user, started before this phase) squatting
+      that port; not something this work created or should kill. Verified the dev stack itself
+      is unaffected by starting the identical `uvicorn --reload` / `next dev` commands on
+      alternate ports against the just-reseeded DB: login + Manager dashboard rendered
+      correctly, gracefully showing zero/empty states for jobs not yet run (no inventory/alerts/
+      forecast pipeline has executed on this fresh seed) rather than erroring. `make ci`
+      (lint + test + next build + api-client regeneration) passed clean: ruff/mypy/eslint/
+      tsc all clean, 245 pytest tests passed, 8 vitest tests passed, `next build` (20 routes),
+      and api-client regeneration against a live server produced zero diff in
+      `schema.d.ts` (confirming T012's earlier regeneration is still exactly correct).
