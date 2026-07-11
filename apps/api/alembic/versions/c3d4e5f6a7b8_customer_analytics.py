@@ -10,6 +10,11 @@ confirming a subsequent `alembic revision --autogenerate` produces an empty diff
 permissions: the customer detail page (FR-033) and the leads list's score/explanation fields
 (FR-032) both reuse the existing `customers:view`/`leads:view` permissions Phase 2 already
 established.
+
+Also seeds a seventh `alert_rules` row, `lead_score_drift` (FR-074) — reusing Phase 6's
+rule_key-agnostic `alert_rules`/`alerts`/`notifications` machinery as-is (`GET /alert-rules` and
+its admin UI are already generic over whatever rows exist, not hardcoded to the six FR-061
+rules), so no new alert-lifecycle code or permissions are needed for this phase's drift alert.
 """
 
 from collections.abc import Sequence
@@ -63,6 +68,32 @@ def upgrade() -> None:
     )
     op.create_index(
         "ix_lead_scores_run_id_lead_id", "lead_scores", ["run_id", "lead_id"], unique=False
+    )
+
+    _seed_drift_rule()
+
+
+def _seed_drift_rule() -> None:
+    import uuid
+    from datetime import UTC, datetime
+
+    conn = op.get_bind()
+    metadata = sa.MetaData()
+    alert_rules_t = sa.Table("alert_rules", metadata, autoload_with=conn)
+
+    now = datetime.now(UTC)
+    conn.execute(
+        alert_rules_t.insert().values(
+            id=uuid.uuid4(),
+            key="lead_score_drift",
+            params={"psi_threshold": 0.25, "subscribed_roles": ["admin", "manager"]},
+            severity="WARNING",
+            enabled=True,
+            version=1,
+            updated_by=None,
+            created_at=now,
+            updated_at=now,
+        )
     )
 
 
