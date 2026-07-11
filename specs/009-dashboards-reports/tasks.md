@@ -62,9 +62,10 @@
       month proven excluded; the current month returns 400, not partial data; a malformed
       `month` returns 400; the no-argument default resolves to a genuinely prior month
 - [x] T012 Regenerate `packages/api-client` against the new endpoints — `tsc --noEmit` clean
-- [ ] T013 `apps/web/lib/chart-export.ts`: `exportChartAsPng(svgElement)` (SVG→canvas→
+- [x] T013 `apps/web/lib/chart-export.ts`: `exportChartAsPng(svgElement)` (SVG→canvas→
       `toBlob`, no new dependency) and `downloadCsv(filename, rows)` (`Blob`/
-      `URL.createObjectURL`) — reusable, no chart-specific coupling
+      `URL.createObjectURL`) — reusable, no chart-specific coupling. `tsc --noEmit` and eslint
+      clean.
 - [ ] T014 `apps/web/app/(authenticated)/dashboard/page.tsx` REWRITTEN: role-branches on
       `user?.role_key` (matching `app-shell.tsx`'s existing convention) — admin/manager renders
       the Manager dashboard (sales-vs-forecast chart with interval band + export controls,
