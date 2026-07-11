@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import {
   Bell,
+  FileText,
   Grid3x3,
   LayoutDashboard,
   LineChart,
@@ -45,6 +46,9 @@ const OPS_NAV_ITEMS = [
   { href: "/admin/alert-rules", label: "Alert Rules", icon: SlidersHorizontal },
 ];
 
+// dashboard:view_manager (reused by GET /reports/monthly per FR-054) is admin/manager only.
+const REPORTS_NAV_ITEMS = [{ href: "/reports", label: "Reports", icon: FileText }];
+
 // Admin-only nav — the API enforces the real permission check (FR-011); this hides the link
 // cosmetically for roles that would get a 403 anyway.
 const ADMIN_NAV_ITEMS = [
@@ -71,7 +75,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ...NAV_ITEMS,
     ALERTS_NAV_ITEM,
     ...(user?.role_key !== "sales" ? ANALYTICS_NAV_ITEMS : []),
-    ...(user?.role_key === "admin" || user?.role_key === "manager" ? OPS_NAV_ITEMS : []),
+    ...(user?.role_key === "admin" || user?.role_key === "manager"
+      ? [...OPS_NAV_ITEMS, ...REPORTS_NAV_ITEMS]
+      : []),
     ...(user?.role_key === "admin" ? ADMIN_NAV_ITEMS : []),
   ];
 

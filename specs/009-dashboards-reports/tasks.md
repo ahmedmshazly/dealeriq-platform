@@ -81,9 +81,13 @@
       (`routes/forecasts.py`) — a route the task breakdown missed, needed to expose the
       already-built `achieved_accuracy.py` to this page; +1 integration test in
       `test_forecast_job.py`. `next build`/eslint/`tsc --noEmit` all clean.
-- [ ] T016 `apps/web/app/(authenticated)/reports/page.tsx` (NEW): monthly report view with a
+- [x] T016 `apps/web/app/(authenticated)/reports/page.tsx` (NEW): monthly report view with a
       month picker defaulting to the most recently completed month; nav entry added to
-      `app-shell.tsx`
+      `app-shell.tsx`. The picker starts empty so the server resolves the default month
+      (`most_recently_completed_month`) rather than duplicating that logic client-side; once the
+      response arrives the picker reflects the resolved month. Nav entry gated to admin/manager
+      (reuses `dashboard:view_manager`, matching the route's own permission). `next build` (21
+      routes), eslint, `tsc --noEmit` all clean.
 - [ ] T017 Verify SC-001 directly against the real seeded database: Manager dashboard shows real
       sales-vs-forecast, top/bottom models, inventory health, open anomalies, unacknowledged
       alerts — zero fabricated values
