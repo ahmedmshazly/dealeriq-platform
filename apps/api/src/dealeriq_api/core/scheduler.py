@@ -23,6 +23,7 @@ from dealeriq_api.domain.alert_job import run_alert_job
 from dealeriq_api.domain.digest_job import run_digest_job
 from dealeriq_api.domain.forecast_job import run_forecast_job
 from dealeriq_api.domain.inventory_job import run_inventory_job
+from dealeriq_api.domain.lead_scoring_job import run_lead_scoring_job
 
 logger = logging.getLogger("dealeriq_api.scheduler")
 
@@ -55,12 +56,16 @@ def _run_digest() -> None:
     _run_with_own_session(run_digest_job, "digest")
 
 
+def _run_lead_scoring() -> None:
+    _run_with_own_session(run_lead_scoring_job, "lead_scoring")
+
+
 def create_scheduler() -> BackgroundScheduler:
-    """DS-OPS-001's default schedule. Lead scoring's 04:00 slot is intentionally absent — Phase
-    7 hasn't shipped `dealeriq_api.jobs.lead_scoring` yet (spec.md Assumptions)."""
+    """DS-OPS-001's default schedule, all five jobs now registered."""
     scheduler = BackgroundScheduler()
     scheduler.add_job(_run_forecast, trigger="cron", day_of_week="mon", hour=2, id="forecast")
     scheduler.add_job(_run_inventory, trigger="cron", hour=3, id="inventory")
     scheduler.add_job(_run_alerts, trigger="cron", hour=3, minute=30, id="alerts")
+    scheduler.add_job(_run_lead_scoring, trigger="cron", hour=4, id="lead_scoring")
     scheduler.add_job(_run_digest, trigger="cron", hour=7, id="digest")
     return scheduler

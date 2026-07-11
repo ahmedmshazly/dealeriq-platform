@@ -15,6 +15,7 @@ which phase would naturally pick it up if prioritized later.
 | DS-FC-009 (per-fold CV residual diagnostics view) | P1 | 4 | Fan chart (the P0 output) ships; the deeper diagnostics view is analyst-workbench polish. |
 | DS-INV-005 (Cox proportional-hazards pricing model) | P2 | 5 | Kaplan-Meier (P1, in range) ships; Cox is an explicit stretch beyond it. |
 | FR-066 (mute a dedup key) | P2 | 6 | Convenience feature on top of the core alert lifecycle. |
+| DS-CUST-003 (HistGradientBoosting challenger + champion/challenger promotion) | P1 | 7 | SRS says the challenger "MAY be promoted" — explicitly optional. The calibrated LR baseline satisfies every P0 item in this phase's scope; revisit once real production lead volume makes a GBM's extra capacity worth the added explainability cost (permutation importance vs. LR's plain coefficients). |
 
 Add new rows here as later phases surface additional deferrals — do not build these
 opportunistically inside an unrelated phase.

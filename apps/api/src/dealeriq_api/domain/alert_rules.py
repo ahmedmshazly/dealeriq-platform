@@ -22,12 +22,15 @@ from dealeriq_api.domain.models.alerts import (
     AlertStatus,
     Notification,
 )
-from dealeriq_api.domain.models.analytics import Forecast
+from dealeriq_api.domain.models.analytics import AnalyticsRun, Forecast, RunStatus
+from dealeriq_api.domain.models.customer_analytics import LeadScore
 from dealeriq_api.domain.models.inventory_intel import Anomaly, InventoryIntel, UnitRisk
 from dealeriq_api.domain.models.lead import Lead, LeadStatus
 from dealeriq_api.domain.models.order import Order
 from dealeriq_api.domain.models.rbac import Role, User
 from dealeriq_api.domain.models.vehicle import UnitStatus, VehicleUnit
+
+LEAD_SCORING_JOB_NAME = "lead_scoring"
 
 NOTIFICATION_CHANNEL_IN_APP = "in_app"
 
@@ -264,15 +267,33 @@ def evaluate_forecast_stockout(db: Session, forecast_run_id: uuid.UUID) -> int:
     return count
 
 
+def _latest_succeeded_lead_scoring_run_id(db: Session) -> uuid.UUID | None:
+    row = db.execute(
+        select(AnalyticsRun.id)
+        .where(
+            AnalyticsRun.job_name == LEAD_SCORING_JOB_NAME,
+            AnalyticsRun.status == RunStatus.SUCCEEDED,
+        )
+        .order_by(AnalyticsRun.finished_at.desc())
+        .limit(1)
+    ).first()
+    return row[0] if row else None
+
+
 def evaluate_lead_idle(db: Session, *, as_of: datetime | None = None) -> int:
-    """Rule (f): idle-days only this phase — the score-cutoff half is deferred to Phase 7
-    (spec.md Assumptions), since DS-CUST lead scoring doesn't exist yet."""
+    """Rule (f): idle-days, plus the score-cutoff completion Phase 7 adds (spec.md's Assumptions)
+    — when `rule.params["score_cutoff"]` is configured (non-null), only idle leads whose latest
+    conversion score is *at or above* the cutoff open an alert (the SRS's literal "score above
+    cutoff": a promising lead going quiet is the urgent case, not one that was never likely to
+    convert). When `score_cutoff` is null (Phase 6's shipped default), behavior is unchanged —
+    idle-days only."""
     rule = _get_rule(db, "lead_idle")
     if rule is None:
         return 0
     as_of = as_of or datetime.now(UTC)
     threshold_days = int(rule.params.get("idle_days_threshold", 14))
     cutoff = as_of - timedelta(days=threshold_days)
+    score_cutoff = rule.params.get("score_cutoff")
 
     rows = (
         db.execute(
@@ -284,8 +305,24 @@ def evaluate_lead_idle(db: Session, *, as_of: datetime | None = None) -> int:
         .scalars()
         .all()
     )
+
+    scores_by_lead_id: dict[uuid.UUID, float] = {}
+    if score_cutoff is not None:
+        scoring_run_id = _latest_succeeded_lead_scoring_run_id(db)
+        if scoring_run_id is not None:
+            score_rows = db.execute(
+                select(LeadScore.lead_id, LeadScore.conversion_probability).where(
+                    LeadScore.run_id == scoring_run_id
+                )
+            ).all()
+            scores_by_lead_id = {row.lead_id: row.conversion_probability for row in score_rows}
+
     count = 0
     for lead in rows:
+        if score_cutoff is not None:
+            probability = scores_by_lead_id.get(lead.id)
+            if probability is None or probability < float(score_cutoff):
+                continue
         idle_days = (as_of - lead.last_activity_at).days
         alert = open_alert(
             db,
@@ -313,4 +350,26 @@ def evaluate_discount_approval(db: Session, order: Order, fraction: float) -> Al
         dedup_key=f"order:{order.id}",
         severity=rule.severity,
         payload={"order_id": str(order.id), "discount_fraction": fraction},
+    )
+
+
+def evaluate_lead_score_drift(
+    db: Session, run_id: uuid.UUID, drifted_features: dict[str, float]
+) -> Alert | None:
+    """FR-074: called by `lead_scoring_job.py` once per run with whichever features (if any)
+    exceeded the PSI drift threshold — empty `drifted_features` means the caller shouldn't call
+    this at all, but an empty dict here is handled the same as "no alert" for safety. Distinct
+    from FR-061's six built-in rules (this one lives under SRS §5.8 Analytics Operations, not
+    §5.7 Alerting), but reuses the exact same rule-lookup/dedup/fan-out machinery."""
+    if not drifted_features:
+        return None
+    rule = _get_rule(db, "lead_score_drift")
+    if rule is None:
+        return None
+    return open_alert(
+        db,
+        rule_key="lead_score_drift",
+        dedup_key=f"run:{run_id}",
+        severity=rule.severity,
+        payload={"drifted_features": drifted_features},
     )

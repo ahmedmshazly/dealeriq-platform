@@ -11,15 +11,17 @@ from sqlalchemy.orm import Session
 from dealeriq_api.domain.alert_rules import (
     evaluate_forecast_stockout,
     evaluate_lead_idle,
+    evaluate_lead_score_drift,
     evaluate_sales_anomaly,
     evaluate_stock_reorder,
     evaluate_unit_aging,
     open_alert,
 )
-from dealeriq_api.domain.models.alerts import Alert, AlertSeverity
+from dealeriq_api.domain.models.alerts import Alert, AlertRule, AlertSeverity
 from dealeriq_api.domain.models.analytics import AnalyticsRun, Forecast, RunStatus
 from dealeriq_api.domain.models.branch import Branch
 from dealeriq_api.domain.models.customer import Customer
+from dealeriq_api.domain.models.customer_analytics import LeadScore
 from dealeriq_api.domain.models.inventory_intel import Anomaly, InventoryIntel, UnitRisk
 from dealeriq_api.domain.models.lead import Lead, LeadStatus
 from dealeriq_api.domain.models.order import PaymentType
@@ -380,6 +382,111 @@ def test_discount_approval_does_not_fire_for_a_low_discount_order(db_session: Se
     existing = db_session.execute(
         select(Alert).where(
             Alert.rule_key == "discount_approval", Alert.dedup_key == f"order:{order.id}"
+        )
+    ).first()
+    assert existing is None
+
+
+def _set_lead_idle_score_cutoff(db: Session, score_cutoff: float | None) -> None:
+    rule = db.execute(select(AlertRule).where(AlertRule.key == "lead_idle")).scalar_one()
+    rule.params = {**rule.params, "score_cutoff": score_cutoff}
+    db.commit()
+
+
+def test_lead_idle_score_cutoff_only_fires_for_promising_leads(db_session: Session) -> None:
+    # lead_idle's score_cutoff is shared across the whole test suite -- restore it to Phase 6's
+    # default (null) afterward so this doesn't affect any other test in this session-scoped
+    # container (ADR-013), matching test_alert_rule_config.py's own restore-in-finally pattern.
+    model, _branch = _new_model_and_branch(db_session)
+    owner = db_session.execute(select(User).order_by(User.created_at).limit(1)).scalar_one()
+    scoring_run = _new_run(db_session, "lead_scoring")
+
+    old_activity = datetime.now(UTC) - timedelta(days=30)
+    promising_customer = Customer(name="Promising Idle Customer")
+    unpromising_customer = Customer(name="Unpromising Idle Customer")
+    db_session.add_all([promising_customer, unpromising_customer])
+    db_session.flush()
+
+    promising_lead = Lead(
+        customer_id=promising_customer.id,
+        model_id=model.id,
+        budget_band="under_20k",
+        status=LeadStatus.CONTACTED,
+        owner_id=owner.id,
+        last_activity_at=old_activity,
+    )
+    unpromising_lead = Lead(
+        customer_id=unpromising_customer.id,
+        model_id=model.id,
+        budget_band="under_20k",
+        status=LeadStatus.CONTACTED,
+        owner_id=owner.id,
+        last_activity_at=old_activity,
+    )
+    db_session.add_all([promising_lead, unpromising_lead])
+    db_session.flush()
+
+    db_session.add(
+        LeadScore(
+            run_id=scoring_run.id,
+            lead_id=promising_lead.id,
+            conversion_probability=0.8,
+            top_features=[],
+        )
+    )
+    db_session.add(
+        LeadScore(
+            run_id=scoring_run.id,
+            lead_id=unpromising_lead.id,
+            conversion_probability=0.2,
+            top_features=[],
+        )
+    )
+    db_session.commit()
+
+    _set_lead_idle_score_cutoff(db_session, 0.5)
+    try:
+        evaluate_lead_idle(db_session)
+
+        promising_alert = db_session.execute(
+            select(Alert).where(
+                Alert.rule_key == "lead_idle", Alert.dedup_key == f"lead:{promising_lead.id}"
+            )
+        ).first()
+        assert promising_alert is not None
+
+        unpromising_alert = db_session.execute(
+            select(Alert).where(
+                Alert.rule_key == "lead_idle", Alert.dedup_key == f"lead:{unpromising_lead.id}"
+            )
+        ).first()
+        assert unpromising_alert is None
+    finally:
+        _set_lead_idle_score_cutoff(db_session, None)
+
+
+def test_lead_score_drift_alert_fires_only_when_features_are_provided(db_session: Session) -> None:
+    run_id_with_drift = uuid.uuid4()
+    alert = evaluate_lead_score_drift(
+        db_session, run_id_with_drift, {"budget_level": 0.42, "customer_rfm_score": 0.31}
+    )
+    db_session.commit()
+    assert alert is not None
+    assert alert.payload["drifted_features"] == {"budget_level": 0.42, "customer_rfm_score": 0.31}
+
+    fetched = db_session.execute(
+        select(Alert).where(
+            Alert.rule_key == "lead_score_drift", Alert.dedup_key == f"run:{run_id_with_drift}"
+        )
+    ).scalar_one()
+    assert fetched.severity == AlertSeverity.WARNING
+
+    run_id_without_drift = uuid.uuid4()
+    no_alert = evaluate_lead_score_drift(db_session, run_id_without_drift, {})
+    assert no_alert is None
+    existing = db_session.execute(
+        select(Alert).where(
+            Alert.rule_key == "lead_score_drift", Alert.dedup_key == f"run:{run_id_without_drift}"
         )
     ).first()
     assert existing is None

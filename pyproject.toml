@@ -42,3 +42,8 @@ ignore_missing_imports = true
 # apscheduler (ADR-004) ships no py.typed marker / type stubs either.
 module = "apscheduler.*"
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# scikit-learn (ADR-023) ships no py.typed marker / type stubs either.
+module = "sklearn.*"
+ignore_missing_imports = true

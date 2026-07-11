@@ -281,6 +281,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/customers/{customer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Customer Route */
+        get: operations["get_customer_route_api_v1_customers__customer_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/leads": {
         parameters: {
             query?: never;
@@ -912,6 +929,41 @@ export interface components {
             /** Possible Duplicate Ids */
             possible_duplicate_ids: string[];
         };
+        /** CustomerDetailResponse */
+        CustomerDetailResponse: {
+            customer: components["schemas"]["CustomerResponse"];
+            /** Rfm Segment */
+            rfm_segment?: string | null;
+            /** Recency Score */
+            recency_score?: number | null;
+            /** Frequency Score */
+            frequency_score?: number | null;
+            /** Monetary Score */
+            monetary_score?: number | null;
+            /**
+             * Orders
+             * @default []
+             */
+            orders: components["schemas"]["CustomerOrderSummaryResponse"][];
+        };
+        /** CustomerOrderSummaryResponse */
+        CustomerOrderSummaryResponse: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Model Name */
+            model_name: string;
+            /** Negotiated Price */
+            negotiated_price: number;
+            status: components["schemas"]["OrderStatus"];
+        };
         /** CustomerResponse */
         CustomerResponse: {
             /**
@@ -929,6 +981,13 @@ export interface components {
             city: string | null;
             /** Source Channel */
             source_channel: string | null;
+        };
+        /** FeatureContributionResponse */
+        FeatureContributionResponse: {
+            /** Label */
+            label: string;
+            /** Contribution */
+            contribution: number;
         };
         /** ForecastPointResponse */
         ForecastPointResponse: {
@@ -1036,6 +1095,11 @@ export interface components {
             conversion_probability?: number | null;
             /** Rfm Segment */
             rfm_segment?: string | null;
+            /**
+             * Top Features
+             * @default []
+             */
+            top_features: components["schemas"]["FeatureContributionResponse"][];
         };
         /**
          * LeadStatus
@@ -2161,6 +2225,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CustomerCreateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_customer_route_api_v1_customers__customer_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                customer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerDetailResponse"];
                 };
             };
             /** @description Validation Error */

@@ -20,6 +20,11 @@ class LeadTransitionRequest(BaseModel):
     notes: str | None = None
 
 
+class FeatureContributionResponse(BaseModel):
+    label: str
+    contribution: float
+
+
 class LeadResponse(BaseModel):
     id: uuid.UUID
     customer_id: uuid.UUID
@@ -28,12 +33,20 @@ class LeadResponse(BaseModel):
     status: LeadStatus
     owner_id: uuid.UUID
     last_activity_at: datetime
-    # Analytics outputs (DS-CUST, Phase 7) — not populated until that phase's job has run.
+    # Analytics outputs (DS-CUST, Phase 7) — null until the lead-scoring job has run for this lead.
     conversion_probability: float | None = None
     rfm_segment: str | None = None
+    top_features: list[FeatureContributionResponse] = []
 
     @classmethod
-    def from_model(cls, lead: Lead) -> "LeadResponse":
+    def from_model(
+        cls,
+        lead: Lead,
+        *,
+        conversion_probability: float | None = None,
+        rfm_segment: str | None = None,
+        top_features: list[FeatureContributionResponse] | None = None,
+    ) -> "LeadResponse":
         return cls(
             id=lead.id,
             customer_id=lead.customer_id,
@@ -42,4 +55,7 @@ class LeadResponse(BaseModel):
             status=lead.status,
             owner_id=lead.owner_id,
             last_activity_at=lead.last_activity_at,
+            conversion_probability=conversion_probability,
+            rfm_segment=rfm_segment,
+            top_features=top_features or [],
         )

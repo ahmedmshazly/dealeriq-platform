@@ -24,6 +24,8 @@ from dealeriq_api.jobs.forecast import JOB_NAME as FORECAST_JOB_NAME
 from dealeriq_api.jobs.forecast import run_forecast_job
 from dealeriq_api.jobs.inventory import JOB_NAME as INVENTORY_JOB_NAME
 from dealeriq_api.jobs.inventory import run_inventory_job
+from dealeriq_api.jobs.lead_scoring import JOB_NAME as LEAD_SCORING_JOB_NAME
+from dealeriq_api.jobs.lead_scoring import run_lead_scoring_job
 from dealeriq_api.schemas.forecasts import AnalyticsRunResponse
 
 router = APIRouter(prefix="/api/v1/jobs", tags=["jobs"])
@@ -33,6 +35,7 @@ KNOWN_JOBS: dict[str, Callable[[Session], AnalyticsRun]] = {
     INVENTORY_JOB_NAME: run_inventory_job,
     ALERTS_JOB_NAME: run_alert_job,
     DIGEST_JOB_NAME: run_digest_job,
+    LEAD_SCORING_JOB_NAME: run_lead_scoring_job,
 }
 
 

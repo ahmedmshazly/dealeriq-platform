@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { ApiRequestError } from "@/lib/api-error";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { type FormEvent, useState } from "react";
 
 export default function CustomersPage() {
@@ -120,6 +121,7 @@ export default function CustomersPage() {
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">City</th>
               <th className="px-4 py-3">Source</th>
+              <th className="px-4 py-3">Details</th>
             </tr>
           </thead>
           <tbody>
@@ -130,6 +132,11 @@ export default function CustomersPage() {
                 <td className="px-4 py-3 font-mono text-xs">{c.email ?? "—"}</td>
                 <td className="px-4 py-3">{c.city ?? "—"}</td>
                 <td className="px-4 py-3">{c.source_channel ?? "—"}</td>
+                <td className="px-4 py-3">
+                  <Link href={`/customers/${c.id}`} className="text-xs text-primary-600 underline">
+                    Open
+                  </Link>
+                </td>
               </tr>
             ))}
           </tbody>

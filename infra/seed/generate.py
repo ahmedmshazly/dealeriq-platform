@@ -685,7 +685,18 @@ def _realize_leads(
     customer_pool: CustomerPool,
     rng: np.random.Generator,
 ) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    """Every simulated lead has a resolved (`won`/`lost`) ground-truth outcome (GEN-003's logit
+    simulation always terminates), but that doesn't mean every lead has *finished its real
+    calendar-time journey* to that outcome by "today" (`REFERENCE_LAST_WEEK_START` + 6 days, the
+    same reference `_realize_current_inventory` uses). A lead created only a few real days ago
+    can't have already walked its full funnel if that funnel's own gap-day spacing implies more
+    elapsed time than has actually passed — so its walk is truncated to however many steps would
+    plausibly have happened by today, leaving it at a genuinely open, non-terminal status. Leads
+    created long enough ago always finish their walk unchanged. Without this, every lead in the
+    seeded database resolves to won/lost and Phase 7's lead-scoring/idle-alert features would
+    have no open leads to ever operate on."""
     n_weeks = 156
+    today = REFERENCE_LAST_WEEK_START + dt.timedelta(days=6)
     lead_rows: list[dict[str, object]] = []
     event_rows: list[dict[str, object]] = []
 
@@ -701,10 +712,14 @@ def _realize_leads(
         model_key = candidates[int(rng.integers(0, len(candidates)))]
         owner_id = sales_user_ids[int(rng.integers(0, len(sales_user_ids)))]
 
-        path = _walk_lead_funnel(lead.won, rng)
-        final_status = path[-1][1] if path else LeadStatus.NEW
-        n_events = max(len(path), 1)
+        full_path = _walk_lead_funnel(lead.won, rng)
+        n_events = max(len(full_path), 1)
         gap_days = max(lead.days_since_creation // n_events, 1)
+
+        days_elapsed = max((today - created_day).days, 0)
+        steps_completed = min(len(full_path), days_elapsed // gap_days)
+        path = full_path[:steps_completed]
+        final_status = path[-1][1] if path else LeadStatus.NEW
 
         lead_id = _new_id()
         last_activity_at = created_at
