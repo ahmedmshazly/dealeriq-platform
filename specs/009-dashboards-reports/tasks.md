@@ -75,9 +75,12 @@
       same zero-parameter openapi-fetch inference gap Phase 6 found (`error` collapses to
       `never` on both new dashboard endpoints) with the established `response.ok` workaround.
       `next build` (18 routes), eslint, `tsc --noEmit` all clean.
-- [ ] T015 `apps/web/app/(authenticated)/analytics/[seriesKey]/page.tsx` MODIFIED: adds the
+- [x] T015 `apps/web/app/(authenticated)/analytics/[seriesKey]/page.tsx` MODIFIED: adds the
       achieved-accuracy diagnostic (FR-073) alongside the existing fan chart, with export
-      controls wired to T013
+      controls wired to T013. Also added `GET /forecasts/{series_key}/achieved-accuracy`
+      (`routes/forecasts.py`) — a route the task breakdown missed, needed to expose the
+      already-built `achieved_accuracy.py` to this page; +1 integration test in
+      `test_forecast_job.py`. `next build`/eslint/`tsc --noEmit` all clean.
 - [ ] T016 `apps/web/app/(authenticated)/reports/page.tsx` (NEW): monthly report view with a
       month picker defaulting to the most recently completed month; nav entry added to
       `app-shell.tsx`

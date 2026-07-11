@@ -1,12 +1,15 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { ApiRequestError } from "@/lib/api-error";
+import { downloadCsv, exportChartAsPng } from "@/lib/chart-export";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useRef } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -29,6 +32,7 @@ const PATTERN_SEVERITY: Record<string, "info" | "warning" | "success" | "critica
 export default function SeriesDetailPage() {
   const params = useParams<{ seriesKey: string }>();
   const seriesKey = decodeURIComponent(params.seriesKey);
+  const chartRef = useRef<HTMLDivElement>(null);
 
   const detailQuery = useQuery({
     queryKey: ["forecasts", "series", seriesKey],
@@ -37,6 +41,18 @@ export default function SeriesDetailPage() {
         params: { path: { series_key: seriesKey } },
       });
       if (error) throw new ApiRequestError("Failed to load this series.", response.status);
+      return data;
+    },
+  });
+
+  const accuracyQuery = useQuery({
+    queryKey: ["forecasts", "series", seriesKey, "achieved-accuracy"],
+    queryFn: async () => {
+      const { data, error, response } = await api.GET(
+        "/api/v1/forecasts/{series_key}/achieved-accuracy",
+        { params: { path: { series_key: seriesKey } } },
+      );
+      if (error) throw new ApiRequestError("Failed to load achieved accuracy.", response.status);
       return data;
     },
   });
@@ -92,6 +108,35 @@ export default function SeriesDetailPage() {
       </div>
 
       <Card className="p-6">
+        <div className="mb-4 flex justify-end gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => {
+              const svg = chartRef.current?.querySelector("svg");
+              if (svg) void exportChartAsPng(svg, `${seriesKey}-fan-chart.png`);
+            }}
+          >
+            Export PNG
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() =>
+              downloadCsv(
+                `${seriesKey}-fan-chart.csv`,
+                rows.map((r) => ({
+                  week_start: r.week,
+                  actual: r.actual ?? null,
+                  forecast: r.forecast ?? null,
+                  yhat_lo80: r.lo ?? null,
+                  yhat_hi80: r.lo != null && r.hi != null ? r.lo + r.hi : null,
+                })),
+              )
+            }
+          >
+            Export CSV
+          </Button>
+        </div>
+        <div ref={chartRef}>
         <ResponsiveContainer width="100%" height={360}>
           <ComposedChart data={rows}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-border-hairline" />
@@ -136,6 +181,28 @@ export default function SeriesDetailPage() {
             />
           </ComposedChart>
         </ResponsiveContainer>
+        </div>
+      </Card>
+
+      <Card className="p-6">
+        <h2 className="mb-2 text-sm font-semibold text-text-primary">
+          Achieved accuracy (last {accuracyQuery.data?.n_weeks_evaluated ?? 12} weeks)
+        </h2>
+        <p className="mb-3 text-xs text-text-muted">
+          Real out-of-sample accuracy — how far past forecasts were from what actually happened,
+          distinct from the training-time cross-validation metrics below (FR-073).
+        </p>
+        {accuracyQuery.data?.mase == null ? (
+          <p className="text-sm text-text-muted">
+            Not enough history yet — no forecast for this series is old enough to have real
+            actuals to compare against.
+          </p>
+        ) : (
+          <p className="text-2xl font-bold text-text-primary">
+            {accuracyQuery.data.mase.toFixed(3)}{" "}
+            <span className="text-sm font-normal text-text-muted">achieved MASE</span>
+          </p>
+        )}
       </Card>
 
       <Card className="overflow-hidden">
