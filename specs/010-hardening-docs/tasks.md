@@ -91,12 +91,22 @@
       `--max-warnings 0` to the `lint` script, and re-verified: the same deliberate violation now
       correctly fails the build. Reverted the violation; the tightened gate itself is a real,
       permanent fix (not reverted).
-- [ ] T014 `apps/web/package.json` + `apps/web/eslint.config.mjs` MODIFIED: add
-      `eslint-plugin-jsx-a11y`'s `recommended` config to the existing eslint config
-- [ ] T015 `apps/web/app/**/*.tsx` MODIFIED wherever T014's new rule finds a real, fixable
-      violation across the existing ~20 page components; any genuine false positive is suppressed
-      individually with an inline `// eslint-disable-next-line jsx-a11y/<rule> -- <reason>`
-      comment, never a rule- or file-level blanket disable; rerun to a clean pass
+- [x] T014 `apps/web/package.json` + `apps/web/eslint.config.mjs` MODIFIED: add
+      `eslint-plugin-jsx-a11y`'s `recommended` config to the existing eslint config. Real gotcha:
+      `next/core-web-vitals` already registers the `jsx-a11y` plugin itself (a `Cannot redefine
+      plugin` error on first attempt) — fixed by spreading only `flatConfigs.recommended.rules`
+      rather than the whole flat-config object.
+- [x] T015 Ran the new rule: 5 real violations, all `jsx-a11y/label-has-associated-control`
+      (admin/users, change-password ×2, login ×2) — every flagged `<label>` genuinely wraps a
+      real `<input>`, but through the codebase's `<Input>` wrapper component, which the rule
+      can't see through by default (a static-analysis gap, not an actual accessibility defect).
+      Fixed with the rule's own `controlComponents: ["Input"]` option (`eslint.config.mjs`) —
+      the correct, documented way to teach the rule about custom form-control wrappers — rather
+      than touching 5 call sites individually. Zero violations after. Also found and fixed a
+      real config conflict this surfaced: `apps/web/e2e/golden-path.spec.ts` (T002) was being
+      collected by Vitest too (`vitest.config.ts` had no `exclude`), failing on Playwright's
+      `test` global — added an `exclude` for `**/e2e/**`. Re-verified: `tsc --noEmit`, `next
+      build` (20 routes), and `vitest run` (8/8) all clean.
 - [ ] T016 `docs/runbooks/jobs-and-alerts.md` (NEW): the analytics job scheduler (the five
       DS-OPS-001 cron jobs and their schedule, `ENABLE_SCHEDULER`, triggering any job on demand
       via `POST /jobs/{name}/run`, reading an `AnalyticsRun` row to tell success/failure/
