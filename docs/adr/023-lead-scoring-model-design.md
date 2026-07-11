@@ -41,6 +41,29 @@ model artifact across runs.
    time's distribution is persisted anywhere (per point 5). A `lead_score_drift` warning alert
    opens (reusing Phase 6's rule_key-agnostic `open_alert()` machinery) when any monitored
    feature's PSI exceeds 0.25.
+7. **PSI monitoring is scoped to compositional features only** (`PSI_MONITORED_FEATURES`:
+   channel, budget band, model segment, customer RFM) — **not** `days_since_creation`,
+   `season_sin`/`season_cos`, or `interaction_count`. Running this pipeline against the real
+   seeded database (§ Consequences) showed those four features have permanent, structural PSI
+   drift under point 6's design: the training population (resolved leads spanning the full
+   history) and the scoring population (currently-open leads, which are inherently recent and
+   inherently less "walked" through their funnel) can never be distributionally similar on
+   time-since-creation, seasonality, or interaction count, regardless of any real change in
+   incoming lead quality — so monitoring them would make the alert fire on every single run,
+   which is a false-positive machine, not a useful signal.
+8. **`interaction_count` is bounded to events within `INTERACTION_COUNT_WINDOW_DAYS` (21) of a
+   lead's creation, not its full lifetime `LeadEvent` count.** Running this pipeline against the
+   real seeded database surfaced genuine label leakage: Phase 3's `_walk_lead_funnel` generator
+   makes a resolved lead's *total* event count mechanically dependent on its own won/lost outcome
+   (a won lead always completes the full state-machine path; a lost lead has a 40% chance of an
+   early exit at every step), so an unbounded lifetime count is closer to "how many steps did the
+   generator's own branching logic take" than a real engagement signal — using it inflated
+   validation ROC-AUC to an implausible ~0.97 (see § Consequences). Bounding the count to a fixed
+   early window keeps it to information that would genuinely have been available while a lead was
+   still open, for training and scoring alike; ROC-AUC against the real database dropped to a more
+   defensible ~0.89 after the fix — some residual advantage over the leakage-free synthetic
+   ceiling test (§ Consequences) likely remains from event-spacing correlating with path length,
+   disclosed rather than chased further.
 
 ## Consequences
 
@@ -53,3 +76,12 @@ model artifact across runs.
   this project's broader choice not to persist model binaries across runs.
 - The GBM challenger's deferral is recorded in `docs/backlog.md` as a P1 item, not silently
   dropped.
+- **QA-003(c)'s CI-blocking sign-recovery gate is deliberately not run against the real seeded
+  database.** `test_qa003c_lead_model_sign_recovery.py` reconstructs a clean synthetic population
+  directly from `dealeriq_analytics.generator.leads.simulate_leads` (the exact ground-truth
+  logit, feeding the model's own `interaction_count`/`days_since_creation` draws directly rather
+  than the real database's derived proxies), giving a known theoretical ceiling to test against
+  (the AUC achievable using the simulator's own true `p_won` values, ~0.68 for this seed) — the
+  real database's own `LeadEvent`-derived features remain proxies with real-world-typical noise
+  and residual structure (point 8), appropriate for the phase report's real-data validation
+  narrative but not a fair "did the model architecture correctly recover a known signal" gate.

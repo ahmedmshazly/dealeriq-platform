@@ -40,6 +40,22 @@ FEATURE_LABELS: dict[str, str] = {
     **{f"segment__{s}": f"Interested in: {s.replace('_', ' ').title()}" for s in MODEL_SEGMENTS},
 }
 
+PSI_MONITORED_FEATURES: tuple[str, ...] = (
+    *(f"channel__{c}" for c in CHANNELS if c != CHANNEL_BASELINE),
+    "budget_level",
+    *(f"segment__{s}" for s in MODEL_SEGMENTS if s != SEGMENT_BASELINE),
+    "customer_rfm_score",
+)
+"""FR-074's drift check compares this run's training population (resolved leads, spanning the
+full history) against its scoring population (currently-open leads, which are inherently recent
+by definition) -- so `days_since_creation`, `season_sin`/`season_cos`, and `interaction_count`
+are *mechanically* different between the two populations regardless of any genuine change in the
+incoming lead mix (an open lead can't have accumulated as many days or interactions as an
+already-resolved one). Monitoring those would make the drift alert fire on every single run,
+which is not a useful signal. Only the compositional features here -- what channels, budget
+tiers, vehicle segments, and customer quality leads are coming from -- are meaningfully
+exchangeable between the two populations, so drift in *those* is the actionable signal."""
+
 
 @dataclasses.dataclass(frozen=True)
 class LeadFeatureRow:
@@ -81,6 +97,10 @@ class LeadScoringResult:
     metrics: TrainingMetrics
     train_features: pd.DataFrame
     score_features: pd.DataFrame
+    explain_coefficients: dict[str, float]
+    """The interpretable `explain_model`'s fitted coefficients, by feature name — exposed for
+    QA-003(c)'s sign-recovery validation (`test_qa003c_lead_model_sign_recovery.py`) and any
+    future model-diagnostics surface; not itself the calibrated probability."""
 
 
 def build_feature_matrix(rows: list[LeadFeatureRow], *, as_of: datetime) -> pd.DataFrame:
@@ -217,6 +237,12 @@ def train_and_score(
                 )
             )
 
+    explain_coefficients = dict(zip(feature_names, explain_model.coef_[0], strict=True))
+
     return LeadScoringResult(
-        scored=scored, metrics=metrics, train_features=train_df, score_features=score_df
+        scored=scored,
+        metrics=metrics,
+        train_features=train_df,
+        score_features=score_df,
+        explain_coefficients=explain_coefficients,
     )
