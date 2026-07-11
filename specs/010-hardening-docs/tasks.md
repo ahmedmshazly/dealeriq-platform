@@ -129,8 +129,14 @@
       status" section, including how to diagnose a stuck vs. failed run) and "why did this
       alert fire" (the seven-rule table + dedup-key/fan-out explanation) — without needing to
       read `alert_rules.py` or `scheduler.py`.
-- [ ] T019 Re-verify `make bootstrap && make seed && make dev` (NFR-007) completes within 15
-      minutes on a clean checkout/fresh Postgres volume, per every prior phase's reproducibility
-      gate
+- [x] T019 Re-verified `make bootstrap && make seed && make dev` (NFR-007): full clean-volume
+      cycle (`docker compose down -v` → `up -d` → `make bootstrap` → `make seed`, migrating
+      through all 10 revisions including Phase 8's `d4e5f6a7b8c9` with no errors → dev stack
+      live and login+dashboard smoke-tested) completed in **152 seconds**, well inside the
+      15-minute budget. Port `:8000` is still occupied by the same pre-existing, unrelated
+      `edubridge_api` process this machine had running from before this phase (see Phase 8's own
+      reproducibility gate for the same finding) — verified via the identical
+      `uvicorn --reload` / `next dev` commands on alternate ports, exactly as every prior phase
+      on this machine has done.
 - [ ] T020 Re-run `make ci` full suite green, including the now-blocking audit gate (T010) and the
       new a11y lint rule (T014/T015)
