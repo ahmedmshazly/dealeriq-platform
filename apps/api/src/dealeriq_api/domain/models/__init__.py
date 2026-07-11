@@ -15,6 +15,7 @@ from dealeriq_api.domain.models.analytics import (
 from dealeriq_api.domain.models.audit_log import AuditLog
 from dealeriq_api.domain.models.branch import Branch
 from dealeriq_api.domain.models.customer import Customer
+from dealeriq_api.domain.models.customer_analytics import CustomerRfmProfile, LeadScore
 from dealeriq_api.domain.models.inventory_intel import Anomaly, InventoryIntel, UnitRisk
 from dealeriq_api.domain.models.lead import Lead, LeadEvent, LeadStatus
 from dealeriq_api.domain.models.order import Order, OrderEvent, OrderStatus, PaymentType
@@ -38,12 +39,14 @@ __all__ = [
     "AuditLog",
     "Branch",
     "Customer",
+    "CustomerRfmProfile",
     "Forecast",
     "ForecastMetric",
     "InventoryIntel",
     "Notification",
     "Lead",
     "LeadEvent",
+    "LeadScore",
     "LeadStatus",
     "MovementType",
     "Order",

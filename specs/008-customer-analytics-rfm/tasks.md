@@ -4,11 +4,14 @@
 
 ## Task list
 
-- [ ] T001 `apps/api/src/dealeriq_api/domain/models/customer_analytics.py`: `CustomerRfmProfile`,
+- [x] T001 `apps/api/src/dealeriq_api/domain/models/customer_analytics.py`: `CustomerRfmProfile`,
       `LeadScore` SQLAlchemy models, both `run_id`-tagged per the established Forecast/
       InventoryIntel/Anomaly convention
-- [ ] T002 Alembic migration: `customer_rfm_profiles`, `lead_scores` tables + indices (per-run,
-      per-customer/lead lookups); no new columns on `customers`/`leads` (DAT-003 separation)
+- [x] T002 Alembic migration: `customer_rfm_profiles`, `lead_scores` tables + indices (per-run,
+      per-customer/lead lookups); no new columns on `customers`/`leads` (DAT-003 separation); no
+      new permissions (reuses existing `customers:view`/`leads:view`); verified via
+      `alembic upgrade head` + `alembic check` (empty diff) + a downgrade/upgrade round-trip
+      against the real dev Postgres
 - [x] T003 `packages/analytics/src/dealeriq_analytics/customer/rfm.py`: per-customer R/F/M
       quintile scoring (population-relative, per run) + ADR-022's four ordered segment rules +
       the explicit zero-order "New" case; pure pandas/dataclasses, no DB imports
