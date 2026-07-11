@@ -1,0 +1,360 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{graphicx}
+
+\title{Intermittent Demand Forecasting for Automotive Retail:\\
+An Operational Benchmark on Classical and Intermittent-Specific Methods}
+\author{DealerIQ Project}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We benchmark eight classical and intermittent-demand-specific forecasting methods
+(Naive, Seasonal Naive, Simple Exponential Smoothing, automatic ETS, automatic ARIMA,
+Croston's method, the Syntetos--Boylan Approximation, and Teunter--Syntetos--Babai)
+against synthetically generated weekly vehicle-model demand spanning all four
+Syntetos--Boylan--Croston demand-pattern classes (smooth, erratic, intermittent, lumpy),
+using rolling-origin cross-validation across multiple independently-seeded datasets. We
+report scale-free (MASE), percentage (sMAPE), and probabilistic (pinball loss, 80\%
+interval coverage) accuracy per demand-pattern class, and test whether the
+per-series-champion method's advantage over the mandatory Seasonal Naive floor is
+statistically distinguishable from noise via a paired Wilcoxon signed-rank test. We then
+describe how this benchmark's own forecasting pipeline is operationally integrated into
+a real dealership-management system --- driving reorder-point computation and
+stockout-risk alerting --- and discuss the honest limitations of a synthetic-data
+benchmark for generalizing to real dealership demand.
+\end{abstract}
+
+\section{Introduction}
+
+Automotive dealership parts and vehicle inventory exhibit demand patterns that range from
+smooth, regularly-selling models to genuinely intermittent, slow-moving ones --- a
+setting where classical forecasting methods tuned for smooth demand are known to
+underperform \citep{croston1972forecasting, syntetos2005accuracy}. This work is the
+benchmark and evaluation component of DealerIQ, a dealership intelligence platform whose
+forecasting subsystem already selects, per (model, branch) series, a champion method from
+a pool spanning both classical and intermittent-specific methods, and uses that
+forecast's own predictive distribution to drive reorder-point computation and
+stockout-risk alerting.
+
+Two questions motivate this paper. First: across the full space of demand patterns a
+real dealership's catalog spans, does the champion-selection process actually produce
+better forecasts than the simplest reasonable baseline, and is that advantage real or an
+artifact of a single lucky evaluation run? Second: how does forecast quality translate
+into an operational decision (how much stock to hold, when to reorder) rather than
+remaining an abstract accuracy number? We address the first with a multi-dataset,
+statistically-tested benchmark; the second by describing the system's own, already-shipped
+integration of forecast output into inventory decisions.
+
+\section{Related Work}
+
+The Syntetos--Boylan--Croston (SBC) framework classifies demand series by their average
+inter-demand interval (ADI) and the squared coefficient of variation of nonzero demand
+(CV\textsuperscript{2}) into smooth, erratic, intermittent, and lumpy classes
+\citep{syntetos2005categorization}, motivating specialized methods for intermittent
+demand originating with \citet{croston1972forecasting} and refined by the Syntetos--Boylan
+Approximation \citep{syntetos2005accuracy} and Teunter--Syntetos--Babai
+\citep{teunter2011intermittent}. \citet{hyndman2006another} introduced the Mean Absolute
+Scaled Error (MASE) as a scale-free accuracy metric well-defined even for series with
+long runs of zero demand, unlike percentage-error metrics; we use it as our primary
+accuracy measure, following the same recommendation echoed in
+\citet{hyndman2021forecasting}. \citet{makridakis2018statistical} survey the broader
+tension between statistical and machine-learning forecasting methods and argue for
+rigorous, reproducible comparison protocols, which this benchmark follows via
+rolling-origin cross-validation. On the applied side, \citet{silver2016inventory} and
+\citet{boylan2021intermittent} connect forecast quality to inventory-control decisions
+(reorder points, safety stock) --- the same connection Section~\ref{sec:integration}
+describes for this system specifically.
+
+\section{Methodology}
+
+\subsection{Synthetic data generation}
+
+Weekly demand for each (vehicle model, branch) series is drawn from a Negative Binomial
+generalized linear model with a log link: $\log \mu = \beta_0(\text{model}) + \text{trend}
++ \text{Fourier seasonal terms (annual)} + \text{promotion effects} + \text{branch
+effect}$, with per-series dispersion tuned so the resulting series span all four SBC
+classes. Each independently-seeded dataset generates 156 weeks (three years) of history
+across the dealership's full simulated catalog. Full generator details are documented in
+the project's own specification (\texttt{specs/004-synthetic-data/}) and are not repeated
+here; this paper treats the generator as already-validated infrastructure and focuses on
+the forecasting benchmark built on top of it.
+
+\subsection{Method pool}
+
+Eight methods, all via the \texttt{statsforecast} library: Naive; Seasonal Naive (the
+mandatory champion-selection floor, described below); Simple Exponential Smoothing with
+optimized smoothing parameter; automatic ETS (searches error/trend/seasonal component
+combinations); automatic ARIMA (seasonal search space narrowed for tractable rolling-CV
+runtime); Croston's classic method; the Croston--Syntetos--Boylan Approximation (SBA); and
+Teunter--Syntetos--Babai (TSB, with commonly-cited default smoothing constants
+$\alpha_d = \alpha_p = 0.1$, following worked examples in
+\citet{teunter2011intermittent}).
+
+\subsection{Rolling-origin cross-validation and champion selection}
+
+Every method is evaluated on every series via rolling-origin (expanding-window)
+cross-validation: a minimum 52-week training window, a 4-week step between folds, and a
+12-week forecast horizon per fold. Per-series, per-method accuracy (MASE, sMAPE, pinball
+loss at the 10th/50th/90th percentiles, and empirical 80\% interval coverage) is averaged
+across folds. The champion method for a series is the one minimizing mean MASE
+\emph{among methods that beat Seasonal Naive on MASE} --- a method is never selected as
+champion unless it clears this floor, so Seasonal Naive itself becomes champion whenever
+no other method genuinely improves on it. This selection rule, and the CV/metrics
+implementation itself, are unchanged from the system's own operational forecasting
+pipeline; this benchmark composes them without modification.
+
+\subsection{Statistical comparison}
+
+For each demand-pattern class (and pooled across all four), we extract the paired
+$(\text{champion MASE}, \text{Seasonal Naive MASE})$ for every series across every
+independently-seeded dataset and run a paired Wilcoxon signed-rank test, reporting the
+test statistic, $p$-value, and the real sample size (number of paired series) alongside
+every result. A class with too few series for a meaningful test is reported as such
+rather than presented with false statistical confidence.
+
+\section{Results}
+\label{sec:results}
+
+All numbers in this section are taken directly from a $K=3$ benchmark run
+(three independently-seeded synthetic datasets, seeds 42--44) and are reproduced
+verbatim in \texttt{docs/paper/results/leaderboard.md} and
+\texttt{docs/paper/results/benchmark\_results.parquet}, which \texttt{make
+benchmark-paper} regenerates from scratch.
+
+\subsection{Dataset coverage}
+
+Across the three seeded datasets, 198 (vehicle model, branch) series were generated
+and classified, none discarded as degenerate. Table~\ref{tab:coverage} shows the
+per-class series counts. Intermittent and lumpy demand dominate the generated
+catalog (86 and 54 series respectively), with erratic the least represented (27
+series) --- a property of the generator's own tuned dispersion parameters
+(Section~\ref{sec:limitations}), not a claim about a real dealership's actual class
+mix.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lrrrrr}
+\toprule
+& Smooth & Erratic & Intermittent & Lumpy & Total \\
+\midrule
+$n$ series & 31 & 27 & 86 & 54 & 198 \\
+\bottomrule
+\end{tabular}
+\caption{Series count by SBC class, pooled across all three seeded datasets ($K=3$).}
+\label{tab:coverage}
+\end{table}
+
+\subsection{Accuracy by demand-pattern class}
+
+Tables~\ref{tab:smooth}--\ref{tab:lumpy} report mean MASE, sMAPE, pinball loss (at
+the 10th/50th/90th percentiles), and empirical 80\% interval coverage for every
+method, per SBC class. Two consistent patterns hold across all four classes.
+First, on MASE the mandatory Seasonal Naive floor and plain Naive are the worst or
+second-worst performer in every class, confirming that the champion-selection
+pool's non-trivial methods (AutoARIMA, AutoETS, SES, Croston/SBA, TSB) genuinely
+improve on the floor rather than merely matching it. AutoARIMA is the best or
+near-best method by MASE in the smooth, erratic, and lumpy classes (0.770, 0.763,
+and 0.856 respectively); TSB and SES edge it out specifically on intermittent and
+lumpy demand (TSB 0.911 on intermittent, SES 0.840 on lumpy), consistent with these
+methods' intermittent-demand design intent.
+
+Second, and disclosed honestly rather than smoothed over: the four methods with no
+native parametric interval estimator (SES, Croston, SBA, TSB --- see
+Section~\ref{sec:integration}'s discussion and this project's own ADR-025) achieve
+only 59--63\% empirical 80\% coverage under the conformal-interval calibration
+(\texttt{ConformalIntervals}, $n_{\text{windows}}=2$) used to give them intervals at
+all, versus 78--97\% for the methods with native intervals (Naive, Seasonal Naive,
+AutoETS, AutoARIMA). This is a real, measured undercoverage, not a hypothetical
+concern: $n_{\text{windows}}=2$ is a deliberately disclosed default (ADR-025), and
+this benchmark is the first measurement of its actual calibration quality. A larger
+calibration window count is a legitimate future tuning knob this result motivates,
+not a correctness bug to fix silently.
+
+\begin{table}[htbp]
+\centering\footnotesize
+\begin{tabular}{lrrrrrr}
+\toprule
+Method & MASE & sMAPE & Pinball q10 & Pinball q50 & Pinball q90 & 80\% cov.\ \\
+\midrule
+AutoARIMA & 0.770 & 75.8\% & 0.22 & 0.64 & 0.35 & 81\% \\
+AutoETS & 0.776 & 76.3\% & 0.23 & 0.65 & 0.35 & 82\% \\
+TSB & 0.784 & 76.5\% & 0.29 & 0.65 & 0.42 & 60\% \\
+CrostonClassic & 0.785 & 76.3\% & 0.30 & 0.65 & 0.42 & 60\% \\
+CrostonSBA & 0.778 & 76.8\% & 0.29 & 0.65 & 0.43 & 60\% \\
+SESOpt & 0.795 & 77.5\% & 0.30 & 0.66 & 0.42 & 60\% \\
+SeasonalNaive & 1.004 & 97.7\% & 0.41 & 0.84 & 0.42 & 78\% \\
+Naive & 1.035 & 99.2\% & 0.67 & 0.86 & 0.67 & 97\% \\
+\bottomrule
+\end{tabular}
+\caption{Smooth class ($n = 31$ series).}
+\label{tab:smooth}
+\end{table}
+
+\begin{table}[htbp]
+\centering\footnotesize
+\begin{tabular}{lrrrrrr}
+\toprule
+Method & MASE & sMAPE & Pinball q10 & Pinball q50 & Pinball q90 & 80\% cov.\ \\
+\midrule
+AutoARIMA & 0.763 & 91.1\% & 0.54 & 1.51 & 1.03 & 89\% \\
+CrostonSBA & 0.766 & 91.4\% & 0.66 & 1.52 & 1.17 & 60\% \\
+TSB & 0.779 & 91.7\% & 0.67 & 1.54 & 1.15 & 60\% \\
+AutoETS & 0.774 & 91.5\% & 0.57 & 1.53 & 1.03 & 88\% \\
+CrostonClassic & 0.780 & 91.6\% & 0.68 & 1.54 & 1.15 & 60\% \\
+SESOpt & 0.780 & 91.8\% & 0.68 & 1.54 & 1.15 & 61\% \\
+SeasonalNaive & 0.999 & 112.2\% & 1.16 & 1.98 & 1.19 & 79\% \\
+Naive & 1.013 & 112.3\% & 1.87 & 1.97 & 1.87 & 96\% \\
+\bottomrule
+\end{tabular}
+\caption{Erratic class ($n = 27$ series).}
+\label{tab:erratic}
+\end{table}
+
+\begin{table}[htbp]
+\centering\footnotesize
+\begin{tabular}{lrrrrrr}
+\toprule
+Method & MASE & sMAPE & Pinball q10 & Pinball q50 & Pinball q90 & 80\% cov.\ \\
+\midrule
+TSB & 0.911 & 147.2\% & 0.13 & 0.34 & 0.24 & 61\% \\
+SESOpt & 0.913 & 147.9\% & 0.14 & 0.34 & 0.24 & 61\% \\
+AutoARIMA & 0.916 & 146.6\% & 0.11 & 0.34 & 0.20 & 88\% \\
+AutoETS & 0.919 & 147.1\% & 0.12 & 0.34 & 0.21 & 88\% \\
+CrostonSBA & 0.924 & 146.8\% & 0.12 & 0.34 & 0.24 & 62\% \\
+CrostonClassic & 0.940 & 146.1\% & 0.12 & 0.35 & 0.24 & 62\% \\
+SeasonalNaive & 1.005 & 84.4\% & 0.23 & 0.39 & 0.24 & 80\% \\
+Naive & 1.024 & 85.8\% & 0.38 & 0.40 & 0.39 & 97\% \\
+\bottomrule
+\end{tabular}
+\caption{Intermittent class ($n = 86$ series).}
+\label{tab:intermittent}
+\end{table}
+
+\begin{table}[htbp]
+\centering\footnotesize
+\begin{tabular}{lrrrrrr}
+\toprule
+Method & MASE & sMAPE & Pinball q10 & Pinball q50 & Pinball q90 & 80\% cov.\ \\
+\midrule
+SESOpt & 0.840 & 149.2\% & 0.33 & 0.76 & 0.63 & 63\% \\
+TSB & 0.846 & 148.6\% & 0.32 & 0.76 & 0.63 & 60\% \\
+AutoARIMA & 0.856 & 145.8\% & 0.32 & 0.76 & 0.61 & 92\% \\
+CrostonSBA & 0.883 & 147.8\% & 0.29 & 0.77 & 0.63 & 62\% \\
+AutoETS & 0.885 & 148.2\% & 0.34 & 0.77 & 0.62 & 92\% \\
+CrostonClassic & 0.902 & 147.6\% & 0.29 & 0.78 & 0.63 & 62\% \\
+Naive & 0.917 & 78.2\% & 1.13 & 0.88 & 1.16 & 97\% \\
+SeasonalNaive & 0.995 & 80.3\% & 0.70 & 0.94 & 0.72 & 85\% \\
+\bottomrule
+\end{tabular}
+\caption{Lumpy class ($n = 54$ series).}
+\label{tab:lumpy}
+\end{table}
+
+\subsection{Champion vs.\ Seasonal Naive: statistical significance}
+
+Table~\ref{tab:wilcoxon} reports the paired Wilcoxon signed-rank test comparing
+each series' champion-method MASE against its Seasonal Naive MASE, per SBC class
+and pooled overall ($n = 198$ paired series). The champion beats Seasonal Naive on
+88--100\% of series in every class, and the improvement is statistically
+significant at $p < 0.0001$ in every class and overall --- this is not an artifact
+of a single evaluation run: the same result holds pooled across three
+independently-seeded datasets. Intermittent demand is the one class where the
+champion does not win universally (88.4\% win rate, versus 100\% in smooth,
+erratic, and lumpy), consistent with intermittent series' inherently higher
+forecast-difficulty and the narrower absolute MASE gap observed in
+Table~\ref{tab:intermittent} between the champion-eligible methods and the floor.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+SBC class & $n$ pairs & Champion win rate & Statistic & $p$-value \\
+\midrule
+Smooth & 31 & 100.0\% & 0.00 & $< 0.0001$ \\
+Erratic & 27 & 100.0\% & 0.00 & $< 0.0001$ \\
+Intermittent & 86 & 88.4\% & 0.00 & $< 0.0001$ \\
+Lumpy & 54 & 100.0\% & 0.00 & $< 0.0001$ \\
+\midrule
+Overall & 198 & 94.9\% & 0.00 & $< 0.0001$ \\
+\bottomrule
+\end{tabular}
+\caption{Paired Wilcoxon signed-rank test, champion MASE vs.\ Seasonal Naive MASE.}
+\label{tab:wilcoxon}
+\end{table}
+
+\section{Operational Integration}
+\label{sec:integration}
+
+Forecast output is not an isolated accuracy exercise in this system --- it directly
+drives two real, already-shipped operational behaviors.
+
+\textbf{Reorder points.} The persisted champion forecast for a series already carries
+three known points of each future week's predictive distribution: the point forecast
+(treated as the median) and the 10th/90th percentiles of its 80\% prediction interval.
+The reorder-point module uses these directly: for the default 90\% service level, the
+reorder point is simply the 90th-percentile forecast summed over the supplier lead time;
+for any other configured service level, it linearly interpolates between the three known
+anchor quantiles rather than assuming a parametric distribution the champion method may
+not actually produce. This means every reorder point in the system is a direct function
+of the same forecast this benchmark evaluates --- a more accurate forecast (lower MASE,
+better-calibrated coverage) translates immediately into a more accurate reorder point,
+not just a better-looking accuracy number.
+
+\textbf{Stockout alerting.} A separate, more urgent alert fires when current on-hand
+stock is already below the champion forecast's \emph{point estimate} of demand over the
+lead-time window --- distinct from the reorder-point signal, which uses the
+quantile-inflated (safety-stock-including) demand estimate. This means even the
+forecast's central tendency, not just its upper tail, is operationally load-bearing:
+systematic bias in the point forecast (not just poor interval calibration) would
+directly produce false or missed stockout alerts.
+
+\section{Limitations}
+\label{sec:limitations}
+
+This benchmark is built entirely on synthetically-generated demand. The generator's
+demand-generating process (Negative Binomial GLM with trend, seasonal, and promotional
+terms) is a deliberately simplified model of real dealership demand, and the SBC-class
+coverage it produces is a property of the generator's own tuned dispersion parameters,
+not empirically measured from a real dealership's sales history. A method's relative
+ranking on this synthetic benchmark is evidence about how it handles the \emph{specific
+statistical properties} the generator produces (seasonality shape, promotion-effect
+structure, the achieved ADI/CV\textsuperscript{2} distribution across series) --- it is
+not, by itself, evidence that the same ranking would hold on a real dealership's demand,
+which may have autocorrelation structure, regime changes, or demand-pattern mixes the
+generator does not reproduce. We report the real sample size behind every statistical
+claim in Section~\ref{sec:results} precisely so a reader can judge how much weight a
+given result can bear, but no result here should be read as a claim about real-world
+generalization without the caveat that only real dealership data (or, per the project's
+own stated future protocol, an incorporated public retail dataset) could establish.
+
+The champion-selection rule itself is also a specific design choice --- minimizing mean
+MASE across CV folds, subject to beating Seasonal Naive --- and a different selection
+criterion (e.g. optimizing pinball loss directly, or a class-specific rule) could produce
+different champions and different aggregate results.
+
+\section{Conclusion}
+
+We built a reproducible, multi-dataset benchmark of eight forecasting methods across all
+four Syntetos--Boylan--Croston demand-pattern classes, reusing this project's own
+already-validated, operationally-deployed forecasting pipeline unchanged, and tested
+whether champion-method selection produces a statistically real improvement over the
+Seasonal Naive floor rather than an artifact of a single evaluation run. We connected
+this benchmark to the system's real operational use of forecast output --- reorder-point
+computation and stockout alerting --- so the accuracy numbers in Section~\ref{sec:results}
+are not disconnected from what the forecasts are actually used for. The synthetic-data
+limitation in Section~\ref{sec:limitations} bounds what this benchmark can claim; a
+natural next step is incorporating real dealership or public retail sales data to test
+whether these results hold outside the generator's own assumptions.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
