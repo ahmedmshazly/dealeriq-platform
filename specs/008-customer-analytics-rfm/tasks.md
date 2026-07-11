@@ -73,16 +73,20 @@
       re-verified passing); `evaluate_lead_score_drift` opens an alert when given non-empty
       drifted features and stays silent when given none. Full `apps/api/tests/integration/`
       suite (68 tests) re-run together — no cross-test pollution.
-- [ ] T013 `apps/api/src/dealeriq_api/routes/leads.py` +
-      `apps/api/src/dealeriq_api/schemas/leads.py` MODIFIED: join the latest succeeded run's
-      `LeadScore` row to populate `LeadResponse.conversion_probability`/`rfm_segment`/
-      `top_features`; unscored leads keep the existing `None`/"not yet scored" behavior
-- [ ] T014 `apps/api/src/dealeriq_api/routes/customers.py` (NEW) +
-      `apps/api/src/dealeriq_api/schemas/customers.py` (NEW): `GET /customers/{id}` — RFM segment
-      membership (from the latest `CustomerRfmProfile`) + full order/purchase history (FR-033)
-- [ ] T015 Integration tests for T013/T014: a scored open lead's list-row shows its probability +
-      top-3 features; a customer detail response shows the correct segment and order history for
-      both a high-value repeat customer and a zero-order customer
+- [x] T013 `apps/api/src/dealeriq_api/routes/leads.py` +
+      `apps/api/src/dealeriq_api/schemas/leads.py` MODIFIED: batch-joins the latest succeeded
+      run's `LeadScore`/`CustomerRfmProfile` rows to populate
+      `LeadResponse.conversion_probability`/`rfm_segment`/`top_features` (new
+      `FeatureContributionResponse` schema); unscored leads keep the existing `None`/"not yet
+      scored" behavior
+- [x] T014 `apps/api/src/dealeriq_api/routes/customers.py` MODIFIED +
+      `apps/api/src/dealeriq_api/schemas/customers.py` MODIFIED: `GET /customers/{id}` — RFM
+      segment membership (from the latest `CustomerRfmProfile`) + full order/purchase history
+      (FR-033), reusing the existing `customers:view` permission
+- [x] T015 Integration tests `test_customer_analytics_endpoints.py` (5 tests): a scored lead's
+      list-row shows probability/segment/top-3 features; an unscored lead shows null/empty; a
+      customer detail response shows the correct segment and order history for both a repeat
+      customer and a zero-order customer; 404 for an unknown customer
 - [x] T016 `apps/api/src/dealeriq_api/jobs/lead_scoring.py`: `job_name="lead_scoring"` registry
       entry, added to `routes/jobs.py`'s `KNOWN_JOBS` (mirrors forecast/inventory/alerts/digest's
       exact pattern — no new route code needed)

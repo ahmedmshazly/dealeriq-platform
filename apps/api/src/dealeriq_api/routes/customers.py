@@ -1,20 +1,41 @@
-"""GET/POST /customers (FR-030)."""
+"""GET/POST /customers, GET /customers/{id} (FR-030, FR-033)."""
+
+import uuid
 
 from fastapi import APIRouter, Depends, Query, Request
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
+from dealeriq_api.core.errors import not_found
 from dealeriq_api.domain.customer_service import create_customer, list_customers
+from dealeriq_api.domain.models.analytics import AnalyticsRun, RunStatus
+from dealeriq_api.domain.models.customer import Customer
+from dealeriq_api.domain.models.customer_analytics import CustomerRfmProfile
+from dealeriq_api.domain.models.order import Order
 from dealeriq_api.domain.models.rbac import User
+from dealeriq_api.domain.models.vehicle import VehicleModel, VehicleUnit
 from dealeriq_api.schemas.customers import (
     CustomerCreateRequest,
     CustomerCreateResponse,
+    CustomerDetailResponse,
+    CustomerOrderSummaryResponse,
     CustomerResponse,
 )
 
 router = APIRouter(prefix="/api/v1/customers", tags=["customers"])
+
+
+def _latest_succeeded_lead_scoring_run_id(db: Session) -> uuid.UUID | None:
+    row = db.execute(
+        select(AnalyticsRun.id)
+        .where(AnalyticsRun.job_name == "lead_scoring", AnalyticsRun.status == RunStatus.SUCCEEDED)
+        .order_by(AnalyticsRun.finished_at.desc())
+        .limit(1)
+    ).first()
+    return row[0] if row else None
 
 
 @router.get("", response_model=Page[CustomerResponse])
@@ -54,4 +75,63 @@ def create_customer_route(
     return CustomerCreateResponse(
         customer=CustomerResponse.from_model(customer),
         possible_duplicate_ids=[d.id for d in duplicates],
+    )
+
+
+@router.get("/{customer_id}", response_model=CustomerDetailResponse)
+def get_customer_route(
+    customer_id: uuid.UUID,
+    _current_user: User = Depends(require_permission("customers:view")),
+    db: Session = Depends(get_db),
+) -> CustomerDetailResponse:
+    customer = db.get(Customer, customer_id)
+    if customer is None:
+        raise not_found("Customer not found.")
+
+    rfm_segment = recency_score = frequency_score = monetary_score = None
+    run_id = _latest_succeeded_lead_scoring_run_id(db)
+    if run_id is not None:
+        profile = db.execute(
+            select(CustomerRfmProfile).where(
+                CustomerRfmProfile.run_id == run_id, CustomerRfmProfile.customer_id == customer_id
+            )
+        ).scalar_one_or_none()
+        if profile is not None:
+            rfm_segment = profile.segment
+            recency_score = profile.recency_score
+            frequency_score = profile.frequency_score
+            monetary_score = profile.monetary_score
+
+    order_rows = db.execute(
+        select(
+            Order.id,
+            Order.created_at,
+            Order.negotiated_price,
+            Order.status,
+            VehicleModel.make,
+            VehicleModel.model,
+        )
+        .select_from(Order)
+        .join(VehicleUnit, VehicleUnit.id == Order.unit_id)
+        .join(VehicleModel, VehicleModel.id == VehicleUnit.model_id)
+        .where(Order.customer_id == customer_id)
+        .order_by(Order.created_at.desc())
+    ).all()
+
+    return CustomerDetailResponse(
+        customer=CustomerResponse.from_model(customer),
+        rfm_segment=rfm_segment,
+        recency_score=recency_score,
+        frequency_score=frequency_score,
+        monetary_score=monetary_score,
+        orders=[
+            CustomerOrderSummaryResponse(
+                id=row.id,
+                created_at=row.created_at,
+                model_name=f"{row.make} {row.model}",
+                negotiated_price=float(row.negotiated_price),
+                status=row.status,
+            )
+            for row in order_rows
+        ],
     )
