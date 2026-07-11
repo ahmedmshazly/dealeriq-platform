@@ -23,10 +23,12 @@
       confirms the earliest-run dedup rule (using the later run's exactly-correct forecast would
       give MASE=0; the test asserts the earlier run's MASE=1.0 instead); plus "no forecast old
       enough" and "unknown series" → `None` cases
-- [ ] T005 `apps/api/src/dealeriq_api/domain/sales_summary.py`: `monthly_sales_by_branch`,
+- [x] T005 `apps/api/src/dealeriq_api/domain/sales_summary.py`: `monthly_sales_by_branch`,
       `monthly_sales_by_salesperson` (delivery date from `OrderEvent` where
       `to_status="delivered"`, matching the existing order-timeline convention since `Order` has
-      no `delivered_at` column), `top_bottom_models`
+      no `delivered_at` column), `top_bottom_models`, `monthly_sales_and_margin`. Sanity-checked
+      against the real seeded database: per-branch totals sum exactly to the overall monthly
+      revenue; top/bottom models show real, sensible dollar figures.
 - [ ] T006 `apps/api/src/dealeriq_api/domain/dashboard_service.py`: `manager_dashboard(db, as_of)`
       and `sales_dashboard(db, user_id, as_of)`, each composing already-existing service/query
       functions (inventory heatmap/aging, anomalies, alerts, leads+scores) plus T003/T005 — no
