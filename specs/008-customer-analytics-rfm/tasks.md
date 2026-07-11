@@ -92,13 +92,21 @@
       exact pattern — no new route code needed)
 - [x] T017 `apps/api/src/dealeriq_api/core/scheduler.py` MODIFIED: adds the DS-OPS-001 04:00
       daily `lead_scoring` cron registration alongside Phase 6's four existing jobs
-- [ ] T018 Regenerate `packages/api-client` against the new/modified endpoints
-- [ ] T019 `apps/web/app/(authenticated)/customers/[id]/page.tsx` (NEW): RFM segment badge +
-      purchase-history table, following the leads/inventory pages' Card/Badge/table conventions
-- [ ] T020 `apps/web/app/(authenticated)/customers/page.tsx` MODIFIED: link each row to its new
-      detail page
-- [ ] T021 `apps/web/app/(authenticated)/leads/page.tsx` MODIFIED: expandable explanation panel
-      (top-3 contributing features) per scored lead row; render the `rfm_segment` field
+- [x] T018 Regenerate `packages/api-client` against the new/modified endpoints
+- [x] T019 `apps/web/app/(authenticated)/customers/[id]/page.tsx` (NEW): RFM segment badge +
+      purchase-history table, following the leads/inventory/orders pages' Card/Badge/table
+      conventions. Verified in a real browser (logged in as `manager1@dealeriq.dev` against the
+      real seeded database): segment badge, recency/frequency/monetary scores, and purchase
+      history render correctly for an "At Risk" customer (2/5, 2/5, 3/5; two real delivered
+      orders with correct dates/prices).
+- [x] T020 `apps/web/app/(authenticated)/customers/page.tsx` MODIFIED: an "Open" link per row to
+      its new detail page — verified in a real browser
+- [x] T021 `apps/web/app/(authenticated)/leads/page.tsx` MODIFIED: a new Segment column
+      (`rfm_segment`) and a `<details>`-based expandable explanation panel (top-3 contributing
+      features) replacing the old bare-number score cell. Verified in a real browser against real
+      seeded data: Hibernating/New/Champions/At Risk segments all render; expanding a scored
+      lead's row shows real, human-readable feature contributions (e.g. "Interested in: Economy:
+      +0.40", "Budget band: +0.29").
 - [ ] T022 Verify SC-001 directly against the real seeded database: hand-pick a known high-value
       repeat customer and a known dormant/zero-order customer, confirm their segments are correct
       and distinguishable

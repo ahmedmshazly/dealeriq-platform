@@ -166,6 +166,7 @@ export default function LeadsPage() {
           <thead className="border-b border-border-hairline bg-surface-sunken text-left font-mono text-[10.5px] uppercase text-text-muted">
             <tr>
               <th className="px-4 py-3">Customer</th>
+              <th className="px-4 py-3">Segment</th>
               <th className="px-4 py-3">Model</th>
               <th className="px-4 py-3">Budget</th>
               <th className="px-4 py-3">Status</th>
@@ -177,6 +178,7 @@ export default function LeadsPage() {
             {(leadsQuery.data?.items ?? []).map((lead) => (
               <tr key={lead.id} className="border-b border-border-hairline last:border-0">
                 <td className="px-4 py-3">{customerById.get(lead.customer_id)?.name ?? "—"}</td>
+                <td className="px-4 py-3 text-xs text-text-muted">{lead.rfm_segment ?? "—"}</td>
                 <td className="px-4 py-3">
                   {modelById.get(lead.model_id)
                     ? `${modelById.get(lead.model_id)!.make} ${modelById.get(lead.model_id)!.model}`
@@ -187,7 +189,23 @@ export default function LeadsPage() {
                   <Badge severity={STATUS_SEVERITY[lead.status]}>{lead.status}</Badge>
                 </td>
                 <td className="px-4 py-3 text-xs text-text-muted">
-                  {lead.conversion_probability == null ? "Not yet scored" : lead.conversion_probability}
+                  {lead.conversion_probability == null ? (
+                    "Not yet scored"
+                  ) : (
+                    <details>
+                      <summary className="cursor-pointer font-mono">
+                        {(lead.conversion_probability * 100).toFixed(0)}%
+                      </summary>
+                      <ul className="mt-1 flex flex-col gap-0.5 pl-3 text-[11px]">
+                        {lead.top_features.map((feature, i) => (
+                          <li key={i}>
+                            {feature.label}: {feature.contribution >= 0 ? "+" : ""}
+                            {feature.contribution.toFixed(2)}
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
                 </td>
                 <td className="flex flex-wrap gap-2 px-4 py-3">
                   {NEXT_STATUSES[lead.status]?.map((next) => (
