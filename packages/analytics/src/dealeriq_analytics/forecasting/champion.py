@@ -120,7 +120,9 @@ def _refit_champion_forecast(champion_alias: str, series: pd.Series) -> list[For
     persisted 12-week point forecast + 80% interval. The lower bound is clamped at 0 for display
     (vehicle demand can't be negative) — the raw, unclamped CV interval is what pinball loss and
     coverage were computed against, so clamping here doesn't retroactively change any metric."""
-    model = next(m for m in build_method_pool(SEASON_LENGTH) if str(m.alias) == champion_alias)
+    model = next(
+        m for m in build_method_pool(SEASON_LENGTH, HORIZON) if str(m.alias) == champion_alias
+    )
     long_df = pd.DataFrame(
         {"unique_id": "target", "ds": series.index, "y": series.to_numpy(dtype=float)}
     )

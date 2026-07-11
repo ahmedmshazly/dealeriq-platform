@@ -10,6 +10,8 @@ dependencies = [
     "scikit-learn>=1.5",
     "statsforecast>=1.7",
     "lifelines>=0.29",
+    "pyarrow>=17.0",
+    "scipy>=1.13",
 ]
 
 [dependency-groups]

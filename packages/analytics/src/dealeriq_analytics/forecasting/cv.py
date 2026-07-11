@@ -67,7 +67,7 @@ def run_cross_validation(
     n_windows = compute_n_windows(n_weeks)
 
     results: dict[str, pd.DataFrame] = {}
-    for model in build_method_pool(SEASON_LENGTH):
+    for model in build_method_pool(SEASON_LENGTH, HORIZON):
         alias = str(model.alias)
         # n_jobs=-1: fits are independent per series, and this dataset's series count (81) is
         # what dominates runtime, not per-series cost — parallelizing across all available cores

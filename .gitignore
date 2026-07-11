@@ -30,9 +30,20 @@ apps/web/blob-report/
 .env.*
 !.env.example
 
-# Data / analytics artifacts (ground truth under infra/seed/ground_truth/ IS committed)
+# Data / analytics artifacts (ground truth under infra/seed/ground_truth/ IS committed; so is
+# the benchmark harness's own results parquet, DS-OPS-004's "reproducible benchmark artifact")
 *.parquet
 !infra/seed/ground_truth/**/*.parquet
+!docs/paper/results/*.parquet
+
+# LaTeX build artifacts (docs/paper/) -- paper.tex, references.bib, and the compiled paper.pdf
+# are committed; the intermediate build files are not.
+docs/paper/*.aux
+docs/paper/*.bbl
+docs/paper/*.blg
+docs/paper/*.log
+docs/paper/*.out
+docs/paper/*.toc
 
 # OS / editor
 .DS_Store

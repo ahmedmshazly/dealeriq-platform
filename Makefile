@@ -1,4 +1,4 @@
-.PHONY: bootstrap seed dev down ci test lint migrate e2e benchmark audit
+.PHONY: bootstrap seed dev down ci test lint migrate e2e benchmark audit benchmark-paper
 
 COMPOSE = docker compose -f infra/docker-compose.yml
 
@@ -105,3 +105,15 @@ benchmark:
 audit:
 	@echo "==> Dependency audit (waiver-aware)"
 	@uv run python scripts/check_dependency_audit.py
+
+# DS-OPS-004 / SRS §15: the one-command reproduction path -- runs the multi-dataset forecasting
+# benchmark, then compiles the paper against its real output. No database, no running service.
+benchmark-paper:
+	@echo "==> Forecasting method benchmark (packages/analytics/benchmark)"
+	@uv run python -m dealeriq_analytics.benchmark --output-dir docs/paper/results
+	@echo "==> Compiling paper.tex"
+	@cd docs/paper && pdflatex -interaction=nonstopmode paper.tex >/dev/null
+	@cd docs/paper && bibtex paper >/dev/null
+	@cd docs/paper && pdflatex -interaction=nonstopmode paper.tex >/dev/null
+	@cd docs/paper && pdflatex -interaction=nonstopmode paper.tex >/dev/null
+	@echo "==> Wrote docs/paper/paper.pdf"
