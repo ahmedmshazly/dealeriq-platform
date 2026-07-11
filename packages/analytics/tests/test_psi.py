@@ -57,3 +57,22 @@ def test_report_computes_one_psi_per_named_feature() -> None:
     report = compute_psi_report(reference_df, current_df, ["a", "b", "missing"])
     assert set(report.keys()) == {"a", "b"}
     assert report["a"] < 1e-9
+
+
+def test_binary_one_hot_drift_is_detected_not_silently_zero() -> None:
+    # A real bug found while validating against the real seeded database: quantile-based binning
+    # on a 0/1 one-hot column collapses every quantile point onto the same value, producing a
+    # single (-inf, +inf) bin that reports zero PSI no matter how large the actual shift in the
+    # category's proportion is. 20% of the reference population is "1" (a realistic one-hot
+    # channel column); the current population is 100% "1" -- an unmistakable composition shift
+    # that must not vanish into a degenerate single bin.
+    reference = pd.Series([0.0] * 80 + [1.0] * 20)
+    current = pd.Series([1.0] * 100)
+    psi = compute_psi(reference, current)
+    assert psi > PSI_DRIFT_THRESHOLD
+
+
+def test_unchanged_binary_one_hot_column_stays_at_zero_psi() -> None:
+    reference = pd.Series([0.0] * 80 + [1.0] * 20)
+    current = pd.Series([0.0] * 80 + [1.0] * 20)
+    assert compute_psi(reference, current) < 1e-9

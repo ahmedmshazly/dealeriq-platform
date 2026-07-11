@@ -64,6 +64,16 @@ model artifact across runs.
    defensible ~0.89 after the fix — some residual advantage over the leakage-free synthetic
    ceiling test (§ Consequences) likely remains from event-spacing correlating with path length,
    disclosed rather than chased further.
+9. **`compute_psi` bins a low-cardinality reference (at most 10 distinct values, e.g. a 0/1
+   one-hot column) by its exact values, not by quantile edges.** Verifying SC-005 against real
+   data (engineering a deliberate channel-composition shift and confirming the drift alert
+   fires) surfaced a real bug: quantile-based binning on a binary column makes every quantile
+   point land on the same 0 or 1, collapsing to a single `(-inf, +inf)` bin — which silently
+   reports zero PSI for a channel-mix shift of *any* size, no matter how extreme. Fixed by
+   detecting low-cardinality references and binning by exact value instead (one bin per value
+   actually observed, in either population). Continuous features (`budget_level`,
+   `customer_rfm_score`) were never affected — only the four one-hot channel/segment columns in
+   `PSI_MONITORED_FEATURES` were silently blind to drift before this fix.
 
 ## Consequences
 
