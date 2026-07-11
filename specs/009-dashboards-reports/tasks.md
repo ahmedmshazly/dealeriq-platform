@@ -4,9 +4,10 @@
 
 ## Task list
 
-- [ ] T001 Alembic migration: seed `dashboard:view_manager` (admin/manager),
-      `dashboard:view_sales` (admin/manager/sales) permissions — no new tables
-- [ ] T002 `apps/api/src/dealeriq_api/core/config.py` MODIFIED: add
+- [x] T001 Alembic migration: seed `dashboard:view_manager` (admin/manager),
+      `dashboard:view_sales` (admin/manager/sales) permissions — no new tables; verified via
+      `alembic upgrade head` + `alembic check` (empty diff) + downgrade/upgrade round-trip
+- [x] T002 `apps/api/src/dealeriq_api/core/config.py` MODIFIED: add
       `default_monthly_sales_target: float` setting
 - [ ] T003 `apps/api/src/dealeriq_api/domain/achieved_accuracy.py`: for a series, gather every
       past `Forecast` row whose `week_start` has already passed, dedup to one `yhat` per week via

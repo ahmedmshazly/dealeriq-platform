@@ -45,6 +45,10 @@ class Settings(BaseSettings):
     smtp_port: int = 1025
     smtp_from_address: str = "alerts@dealeriq.dev"
 
+    # Sales dashboard "vs. target" (FR-051, ADR-024): a single default applied uniformly to
+    # every Salesperson — not a per-salesperson quota system, which is backlogged (P2).
+    default_monthly_sales_target: float = 150000.0
+
     # DS-OPS-001 cron scheduling (ADR-004). Defaults OFF: scheduled jobs open their own DB
     # session directly from `core.db.engine`, bypassing FastAPI's `get_db` dependency-override
     # mechanism the test suite relies on to redirect every request to the ephemeral
