@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import not_found
+from dealeriq_api.domain.achieved_accuracy import DEFAULT_WINDOW_WEEKS, compute_achieved_accuracy
 from dealeriq_api.domain.forecast_job import get_series_actuals
 from dealeriq_api.domain.models.analytics import (
     AnalyticsRun,
@@ -24,6 +25,7 @@ from dealeriq_api.domain.models.branch import Branch
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.domain.models.vehicle import VehicleModel
 from dealeriq_api.schemas.forecasts import (
+    AchievedAccuracyResponse,
     ActualPointResponse,
     ForecastPointResponse,
     LeaderboardEntry,
@@ -190,4 +192,31 @@ def series_detail_route(
             )
             for m in metric_rows
         ],
+    )
+
+
+@router.get("/{series_key}/achieved-accuracy", response_model=AchievedAccuracyResponse)
+def achieved_accuracy_route(
+    series_key: str,
+    window_weeks: int = Query(default=DEFAULT_WINDOW_WEEKS, ge=1, le=52),
+    _current_user: User = Depends(require_permission("forecasts:view")),
+    db: Session = Depends(get_db),
+) -> AchievedAccuracyResponse:
+    """FR-073: real out-of-sample accuracy, distinct from the training-time cross-validation
+    metrics `SeriesDetailResponse.metrics_by_method` already reports."""
+    result = compute_achieved_accuracy(db, series_key, window_weeks=window_weeks)
+    if result is None:
+        return AchievedAccuracyResponse(
+            series_key=series_key,
+            mase=None,
+            n_weeks_evaluated=0,
+            window_start=None,
+            window_end=None,
+        )
+    return AchievedAccuracyResponse(
+        series_key=result.series_key,
+        mase=result.mase,
+        n_weeks_evaluated=result.n_weeks_evaluated,
+        window_start=result.window_start,
+        window_end=result.window_end,
     )

@@ -195,3 +195,17 @@ def test_leaderboard_and_series_detail_endpoints(client: TestClient, db_session:
     assert len(detail["forecast"]) == 12  # DS-FC-007: 12-week point forecasts
     assert len(detail["actuals"]) == N_WEEKS
     assert any(m["is_champion"] for m in detail["metrics_by_method"])
+
+    # FR-073: a just-triggered run's entire 12-week horizon is still in the future, so there's
+    # no forecast old enough to have real actuals yet -- honest None fields, not a fabricated
+    # number. The alignment/dedup logic itself is validated separately, against a hand-computed
+    # fixture, in test_achieved_accuracy.py.
+    accuracy_resp = client.get(
+        f"/api/v1/forecasts/{series_key}/achieved-accuracy",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert accuracy_resp.status_code == 200
+    accuracy = accuracy_resp.json()
+    assert accuracy["series_key"] == series_key
+    assert accuracy["mase"] is None
+    assert accuracy["n_weeks_evaluated"] == 0
