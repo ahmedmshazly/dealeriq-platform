@@ -66,12 +66,15 @@
       `toBlob`, no new dependency) and `downloadCsv(filename, rows)` (`Blob`/
       `URL.createObjectURL`) — reusable, no chart-specific coupling. `tsc --noEmit` and eslint
       clean.
-- [ ] T014 `apps/web/app/(authenticated)/dashboard/page.tsx` REWRITTEN: role-branches on
+- [x] T014 `apps/web/app/(authenticated)/dashboard/page.tsx` REWRITTEN: role-branches on
       `user?.role_key` (matching `app-shell.tsx`'s existing convention) — admin/manager renders
       the Manager dashboard (sales-vs-forecast chart with interval band + export controls,
       top/bottom models, inventory health summary, open anomalies, unacknowledged alerts);
       sales renders the Sales dashboard (my leads ranked by score, my sales vs. target, my
-      notifications); analyst links into the existing `/analytics` workbench
+      notifications); analyst links into the existing `/analytics` workbench. Hit and fixed the
+      same zero-parameter openapi-fetch inference gap Phase 6 found (`error` collapses to
+      `never` on both new dashboard endpoints) with the established `response.ok` workaround.
+      `next build` (18 routes), eslint, `tsc --noEmit` all clean.
 - [ ] T015 `apps/web/app/(authenticated)/analytics/[seriesKey]/page.tsx` MODIFIED: adds the
       achieved-accuracy diagnostic (FR-073) alongside the existing fan chart, with export
       controls wired to T013
