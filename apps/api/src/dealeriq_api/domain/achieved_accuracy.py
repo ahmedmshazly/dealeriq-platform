@@ -39,12 +39,22 @@ def compute_achieved_accuracy(
     *,
     as_of: datetime | None = None,
     window_weeks: int = DEFAULT_WINDOW_WEEKS,
+    window_start: date | None = None,
+    window_end: date | None = None,
 ) -> AchievedAccuracyResult | None:
     """`None` when no forecast for this series is old enough to have real actuals yet (spec.md's
-    Edge Cases: "not enough history yet," never a fabricated number)."""
+    Edge Cases: "not enough history yet," never a fabricated number).
+
+    `window_start`/`window_end` (both optional, half-open `[window_start, window_end)`) let a
+    caller evaluate an exact prior calendar month (FR-054) instead of the default "last
+    `window_weeks` weeks up to `as_of`" (FR-073's own rolling view)."""
     as_of = as_of or datetime.now(UTC)
     today = as_of.date()
-    window_start = today - timedelta(weeks=window_weeks)
+    resolved_start = (
+        window_start if window_start is not None else today - timedelta(weeks=window_weeks)
+    )
+    resolved_end = min(window_end, today) if window_end is not None else today
+    # Never evaluate a week that hasn't happened yet, no matter what a caller passes.
 
     rows = db.execute(
         select(Forecast.week_start, Forecast.yhat, AnalyticsRun.finished_at)
@@ -57,7 +67,7 @@ def compute_achieved_accuracy(
 
     yhat_by_week: dict[date, float] = {}
     for row in rows:
-        if row.week_start >= today or row.week_start < window_start:
+        if row.week_start >= resolved_end or row.week_start < resolved_start:
             continue
         # Rows are ordered by run.finished_at ascending, so the first row seen for a given
         # week_start is from the earliest (longest-lead-time) run.
@@ -65,7 +75,7 @@ def compute_achieved_accuracy(
     if not yhat_by_week:
         return None
 
-    full_history = get_series_actuals(db, series_key, week_start=window_start, data_to=today)
+    full_history = get_series_actuals(db, series_key, week_start=resolved_start, data_to=today)
     if full_history is None or full_history.empty:
         return None
 
