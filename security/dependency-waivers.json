@@ -1,0 +1,50 @@
+[
+  {
+    "id": "GHSA-67mh-4wv8-2f99",
+    "package": "esbuild",
+    "reason": "esbuild's own dev server allows any website to send it requests. This project never runs esbuild's dev server directly -- Next.js serves the app; Vitest only uses esbuild for test-file transforms, not as a network-facing server. Fix requires bumping vitest 2.x -> 4.x, a major test-runner version migration out of this hardening phase's scope.",
+    "reviewed_by": "phase-9-hardening-docs",
+    "review_date": "2026-07-11",
+    "re_review_by": "2026-10-11"
+  },
+  {
+    "id": "GHSA-4w7w-66w2-5vf9",
+    "package": "vite",
+    "reason": "Vite path-traversal in optimized-deps .map handling -- only reachable through Vite's own dev server, which this project never runs (Vitest uses Vite as a test-transform pipeline only, not to serve the app). Fix requires bumping vitest 2.x -> 4.x; see the esbuild waiver above for the same underlying dependency chain.",
+    "reviewed_by": "phase-9-hardening-docs",
+    "review_date": "2026-07-11",
+    "re_review_by": "2026-10-11"
+  },
+  {
+    "id": "GHSA-v6wh-96g9-6wx3",
+    "package": "vite",
+    "reason": "launch-editor NTLMv2 hash disclosure via UNC path handling -- Windows-only attack surface, requires opening a file in an editor from Vite's dev server (not used; see the esbuild waiver). Fix requires the same vitest 2.x -> 4.x major bump.",
+    "reviewed_by": "phase-9-hardening-docs",
+    "review_date": "2026-07-11",
+    "re_review_by": "2026-10-11"
+  },
+  {
+    "id": "GHSA-fx2h-pf6j-xcff",
+    "package": "vite",
+    "reason": "Vite server.fs.deny bypass on Windows alternate data streams -- only reachable through Vite's own dev server, not used by this project (see the esbuild waiver). Fix requires the same vitest 2.x -> 4.x major bump.",
+    "reviewed_by": "phase-9-hardening-docs",
+    "review_date": "2026-07-11",
+    "re_review_by": "2026-10-11"
+  },
+  {
+    "id": "GHSA-5xrq-8626-4rwp",
+    "package": "vitest",
+    "reason": "Arbitrary file read/execute when Vitest's UI server is listening. This project never runs `vitest --ui` (only `vitest run`, in CI and locally) -- the vulnerable server is never started. Fix requires bumping vitest 2.x -> 4.x, a major test-runner migration out of this hardening phase's scope.",
+    "reviewed_by": "phase-9-hardening-docs",
+    "review_date": "2026-07-11",
+    "re_review_by": "2026-10-11"
+  },
+  {
+    "id": "GHSA-qx2v-qp2m-jg93",
+    "package": "postcss",
+    "reason": "Next.js 15.5.20 vendors its own internal postcss@8.4.31 inside node_modules/next/node_modules/postcss. Verified directly: an npm `overrides` entry does not remove this nested copy (Node module resolution still finds Next's own bundled version from within Next's own code), and forcing the override produces an invalid npm dependency tree (`ELSPROBLEMS`) for no actual security benefit. The XSS is in postcss's CSS stringifier and requires attacker-controlled CSS content reaching postcss; this project's own build pipeline only processes static, repository-authored Tailwind source files. Waiting on an upstream Next.js patch release that bumps its internal postcss pin.",
+    "reviewed_by": "phase-9-hardening-docs",
+    "review_date": "2026-07-11",
+    "re_review_by": "2026-09-11"
+  }
+]

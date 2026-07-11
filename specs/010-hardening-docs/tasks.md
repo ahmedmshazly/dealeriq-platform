@@ -53,20 +53,31 @@
       23.1ms — all well under their respective 300ms/2000ms targets). Existing inventory tests
       (`test_inventory_flow.py`, `test_inventory.py`) re-verified passing unchanged; `mypy
       --strict` clean.
-- [ ] T008 `security/dependency-waivers.json` (NEW): committed waiver list —
-      `[{id, package, reason, reviewed_by, review_date, re_review_by}]`, seeded empty (or with a
-      real currently-reported finding if T011 discovers one with no immediate fix)
-- [ ] T009 `scripts/check_dependency_audit.py` (NEW): runs `pip-audit --format json` and
-      `npm audit --json`, cross-references every reported id against
+- [x] T008 `security/dependency-waivers.json` (NEW): committed waiver list —
+      `[{id, package, reason, reviewed_by, review_date, re_review_by}]`. Real `pip-audit` scan:
+      0 findings across 121 packages. Real `npm audit`: 6 real GHSA findings, all seeded here
+      with individually-verified reasons — 5 are Vite/esbuild/Vitest dev-server-only attack
+      surfaces this project never exercises (no `vitest --ui`, no direct Vite dev server; Vitest
+      just uses Vite/esbuild as a test-transform pipeline), needing a vitest 2.x→4.x major bump
+      to clear; the 6th (`GHSA-qx2v-qp2m-jg93`, postcss XSS) is vendored *inside* Next.js
+      15.5.20's own `node_modules/next/node_modules/postcss` — verified an npm `overrides`
+      entry does NOT remove it (Node resolves Next's own nested copy first from within Next's
+      own code) and produces an invalid dependency tree for zero actual fix, so this is
+      genuinely not a "small, obvious" fix; waiting on an upstream Next.js patch. All six waived
+      with a 60-90 day re-review date.
+- [x] T009 `scripts/check_dependency_audit.py` (NEW): runs `pip-audit --format json` and
+      `npm audit --json` itself via subprocess, cross-references every reported id (pip-audit's
+      own vuln id; npm's GHSA id extracted from each advisory's `url`) against
       `security/dependency-waivers.json`, exits non-zero listing every real, unwaived finding by
       id and package
-- [ ] T010 `.github/workflows/ci.yml` + `Makefile` MODIFIED: replace the current
-      `pip-audit ... || true` / `npm audit ... || true` no-ops with real invocations piped
-      through `check_dependency_audit.py`; add `make audit` target
-- [ ] T011 Verify QA-007 by deliberate demonstration: confirm `make audit` fails on a real or
-      synthetic unwaived vulnerability finding; add a waiver entry with a real reason/review date;
-      confirm it then passes with that specific finding waived, and would fail again if the
-      waiver entry were removed
+- [x] T010 `.github/workflows/ci.yml` + `Makefile` MODIFIED: replaced the
+      `pip-audit ... || true` / `npm audit ... || true` no-ops with one real
+      `check_dependency_audit.py` invocation; added `make audit`, and added it as a prerequisite
+      of `make ci` (`ci: lint test audit`)
+- [x] T011 Verified QA-007 by deliberate demonstration: removed one real waiver entry
+      (`GHSA-5xrq-8626-4rwp`) from the file — `make audit` correctly failed, listing exactly that
+      finding as unwaived (exit 1). Restored the entry — passed again (exit 0), listing all 6
+      findings as waived with their real re-review dates.
 - [ ] T012 Verify QA-005 (OpenAPI contract-diff) still fails closed: on a throwaway, uncommitted
       change, deliberately break a response schema; confirm the contract-diff CI/make-ci step
       fails with its documented message; revert

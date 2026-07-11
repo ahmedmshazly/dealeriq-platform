@@ -74,7 +74,7 @@ test:
 # Starts the API standalone (no DB required to serve OpenAPI schema) just long enough to
 # regenerate the API client against it, then tears it down — mirrors what the GitHub
 # Actions workflow does with a service container.
-ci: lint test
+ci: lint test audit
 	@echo "==> next build"
 	@npm run build:web
 	@echo "==> generate + compile API client"
@@ -98,3 +98,10 @@ e2e:
 benchmark:
 	@echo "==> API latency benchmark (requires \`make dev\` running in another terminal)"
 	@uv run python scripts/benchmark_api.py
+
+# QA-007: dependency vulnerability + secret gate. pip-audit and npm audit run for real (not
+# `|| true`); any finding not covered by a reviewed entry in security/dependency-waivers.json
+# fails the build.
+audit:
+	@echo "==> Dependency audit (waiver-aware)"
+	@uv run python scripts/check_dependency_audit.py
