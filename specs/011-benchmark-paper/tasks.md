@@ -39,17 +39,18 @@
       `python -m dealeriq_analytics.benchmark [--n-datasets N] [--base-seed S] [--output-dir DIR]`
       (argparse, matching `scripts/benchmark_api.py`'s existing convention), calling
       `run_benchmark` → `build_leaderboard` → both `report.py` writers
-- [ ] T008 `Makefile` MODIFIED: add `make benchmark-paper` (runs the CLI against
+- [x] T008 `Makefile` MODIFIED: add `make benchmark-paper` (runs the CLI against
       `docs/paper/results/`, then compiles `docs/paper/paper.tex` via
       `pdflatex`/`bibtex`/`pdflatex`/`pdflatex` — the one-command reproduction path DS-OPS-004
-      and §15 both name)
+      and §15 both name). Named distinctly from Phase 9's existing `make benchmark` (the NFR-003
+      API-latency tool) to avoid a target collision.
 - [ ] T009 Run the real benchmark (`K=3`) end-to-end; inspect the real parquet and markdown
       leaderboard; confirm real, non-placeholder numbers and record any real method/series
       failures rather than passing over them (SC-001)
 - [ ] T010 Re-run with the same configuration; confirm the same seeds reproduce identical
       per-series results (SC-003's determinism claim, actually checked)
-- [ ] T011 `docs/paper/references.bib` (NEW): SRS §17's 15 references, already correctly cited
-      there
+- [x] T011 `docs/paper/references.bib` (NEW): SRS §17's 15 references, transcribed verbatim
+      (author/title/venue/year/pages) into BibTeX, not regenerated from memory
 - [ ] T012 `docs/paper/paper.tex` (NEW): the paper draft — Abstract, Introduction, Related Work,
       Methodology, Results (populated from T009's real leaderboard output, not invented while
       drafting), Operational Integration (§15 step 5), Limitations (synthetic-data bias, SC-005),
