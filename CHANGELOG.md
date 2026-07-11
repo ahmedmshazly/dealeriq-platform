@@ -5,7 +5,47 @@ All notable changes to this project are documented here. Format loosely follows
 (Conventional Commits drive the actual commit history — see `git log` for full detail;
 NFR-009).
 
-## [Unreleased]
+## [1.0.0] - 2026-07-12
+
+All ten phases (SRS §13, Phase 0 through Phase 10) are complete. This is the v1.0.0 release.
+
+### Phase 10 — Benchmark & Paper
+
+- `packages/analytics/src/dealeriq_analytics/benchmark/` (new subpackage, the repo's first
+  `__main__.py` CLI entry point, DS-OPS-004): loops the existing, unmodified
+  generate→classify→CV→champion-select pipeline across `K` independently-seeded synthetic
+  datasets (default `K=3`), aggregating every method's per-series metrics (not just the
+  champion's) into per-SBC-class summaries and a paired `scipy.stats.wilcoxon` test (champion MASE
+  vs. Seasonal Naive MASE, pooled across all `K` runs). Writes a raw parquet and a markdown
+  leaderboard. `make benchmark-paper` is the one-command reproduction path (benchmark run →
+  `pdflatex`/`bibtex`/`pdflatex`/`pdflatex`).
+- `docs/paper/` (new): a LaTeX paper (chosen over Quarto — not installed locally)
+  covering methodology, real `K=3` results (198 series, 0 degenerate, 1584 per-series-per-method
+  rows), and an Operational Integration section connecting the benchmark to this system's real
+  reorder-point and stockout-alerting code.
+- A real, previously-undetected production bug found via the benchmark itself, not code review
+  (ADR-025): 4 of DS-FC-003's 8 required methods (SES, CrostonClassic, CrostonSBA, TSB) have no
+  native `statsforecast` prediction-interval estimator, so `cross_validation(..., level=[80])`
+  raised immediately for each — silently swallowed by `cv.py`'s per-method
+  `try/except Exception: continue` on **every forecast job run since Phase 4 shipped**. Fixed via
+  `statsforecast.utils.ConformalIntervals(h=horizon, n_windows=2)`; `build_method_pool()` now
+  takes an explicit `horizon` parameter at both call sites so the CV and benchmark harnesses can
+  never drift out of sync on what horizon the calibration targets. Re-verified against the full
+  pre-existing `packages/analytics` test suite (104 passed) after the fix.
+- A second real finding, reported honestly rather than smoothed over: the four
+  conformal-interval methods achieve only 59-63% empirical 80% interval coverage versus 78-97%
+  for methods with native intervals — a genuine, measured undercoverage from the disclosed
+  `n_windows=2` default, written directly into the paper's Results section.
+- Champion beats Seasonal Naive on 88.4-100% of series per SBC class, statistically significant
+  at $p < 0.0001$ in every class and overall (Wilcoxon signed-rank, $n=198$ pooled paired series)
+  — confirmed not an artifact of a single evaluation run by re-running the identical `K=3`
+  configuration and verifying byte-identical/float-identical results.
+- The optional public retail/vehicle-sales dataset (§15 step 2) is deferred to
+  `docs/backlog.md`, per the SRS's own explicit "optionally" wording — no dataset with
+  confidently verifiable zero-cost licensing could be vendored into the repo with confidence
+  within this phase.
+- 3 new analytics tests (`test_benchmark_aggregate.py`, all passing against hand-derived and
+  scipy-cross-checked fixtures); `mypy --strict` clean on the new subpackage.
 
 ### Phase 9 — Hardening & Docs
 
