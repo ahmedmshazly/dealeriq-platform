@@ -7,6 +7,45 @@ NFR-009).
 
 ## [Unreleased]
 
+### Phase 9 — Hardening & Docs
+
+- `apps/web`: a Playwright golden-path E2E suite (QA-004) — login → create a high-discount order
+  → submit → approve (as Manager, proving `orders:approve` is a real server-enforced boundary) →
+  the resulting `discount_approval` alert appears → acknowledge — run against a real dev stack,
+  nothing mocked. `eslint-plugin-jsx-a11y`'s recommended rules, now enforced (`--max-warnings 0`
+  is also new — see below); found and fixed 5 real `label-has-associated-control` findings via
+  the rule's own `controlComponents` option.
+- `scripts/` (new top-level directory): `benchmark_api.py` — real p50/p95/mean latency for
+  representative CRUD endpoints and the two Phase 8 dashboard endpoints against the real seeded
+  database; `check_dependency_audit.py` — makes the previously-non-blocking `pip-audit`/
+  `npm audit` CI steps real, cross-referencing every finding against a committed, reviewed waiver
+  file (`security/dependency-waivers.json`).
+- New `make e2e`, `make benchmark`, `make audit` targets; `audit` is now a prerequisite of
+  `make ci`.
+- A real performance bug found via the new benchmark, not code review: `GET /vehicle-units`
+  measured p95=734ms (target 300ms) — `list_vehicle_units` loaded the entire ~15k-row units table
+  into Python on every call regardless of filters, then filtered/sorted/paginated in Python.
+  Pushed filtering, ordering, and pagination into SQL; p95 dropped to 29ms.
+- A real QA-006 enforcement gap found via deliberate demonstration: eslint warnings (e.g.
+  unused variables) never failed the build — `eslint .` had no `--max-warnings` flag. Zero
+  pre-existing warnings across `apps/web`, so tightened immediately to `--max-warnings 0`.
+- Six real npm dependency-audit findings, all reviewed and waived with individually-verified
+  reasons: five are Vite/esbuild/Vitest dev-server-only attack surfaces this project never
+  exercises (fix requires a vitest 2.x→4.x major bump); the sixth (postcss XSS) is vendored
+  inside Next.js's own bundled `node_modules` — verified directly that an npm `overrides` entry
+  cannot actually remove it and produces an invalid dependency tree for no real benefit, so
+  waited on an upstream Next.js patch instead of a fake fix. `pip-audit`: 0 findings.
+  `docs/runbooks/jobs-and-alerts.md` (new) and `infra/README.md` (new). Writing the runbook
+  surfaced a real, previously-undisclosed gap: NFR-005's "retried once with backoff" is not
+  implemented anywhere — documented the true current behavior and added the gap to
+  `docs/backlog.md` rather than claiming behavior that doesn't exist.
+- QA-005 (OpenAPI contract-diff) and QA-006 (static quality) were already fully implemented from
+  prior phases; both re-verified still failing closed via deliberate, reverted demonstrations.
+- 1 new Playwright E2E spec, no new pytest/vitest files (existing suites re-verified passing,
+  after fixing a real Vitest/Playwright file-collection conflict this phase's own new E2E spec
+  caused) — `make ci` clean end-to-end (245 pytest tests, 94% coverage; vitest 8/8; the new
+  audit gate; `next build` 20 routes).
+
 ### Phase 8 — Dashboards & Reports
 
 - `apps/api`: `achieved_accuracy.py` reads back Phase 4's own persisted forecasts and scores them
