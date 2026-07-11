@@ -37,14 +37,15 @@
       a real salesperson, real $820,812.22 this-month sales, real top models); discovered the
       forecast/inventory/alerts/digest pipeline hadn't been re-run since Phase 7's reseed —
       triggered a fresh run of all four in the background for later verification steps.
-- [ ] T007 `apps/api/src/dealeriq_api/routes/dashboards.py` +
+- [x] T007 `apps/api/src/dealeriq_api/routes/dashboards.py` +
       `apps/api/src/dealeriq_api/schemas/dashboards.py`: `GET /dashboards/manager`
       (`dashboard:view_manager`), `GET /dashboards/sales` (`dashboard:view_sales`, scoped to
       `current_user.id` server-side, never a request parameter)
-- [ ] T008 Integration tests `apps/api/tests/integration/test_dashboards.py`: Manager dashboard
-      returns real, correctly-computed values for all five FR-050 sections against hand-
-      constructed fixtures; Sales dashboard for two different salespeople never leaks one's
-      leads/orders/notifications into the other's response (SC-002's security-critical property)
+- [x] T008 Integration tests `apps/api/tests/integration/test_dashboards.py` (3 tests): Manager
+      dashboard returns real, correctly-computed values against hand-constructed fixtures; two
+      different salespeople's dashboards never leak one's leads/sales/alerts into the other's
+      response (SC-002's security-critical property, explicitly asserted both directions);
+      analyst role (no dashboard permissions) gets 403
 - [ ] T009 `apps/api/src/dealeriq_api/domain/monthly_report.py`: composes `sales_summary` +
       `achieved_accuracy` + alert counts-by-rule/severity for one completed calendar month;
       rejects the current in-progress month with a clear error (spec.md's Edge Cases)
