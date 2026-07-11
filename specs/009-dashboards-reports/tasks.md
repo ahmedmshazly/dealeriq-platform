@@ -29,10 +29,14 @@
       no `delivered_at` column), `top_bottom_models`, `monthly_sales_and_margin`. Sanity-checked
       against the real seeded database: per-branch totals sum exactly to the overall monthly
       revenue; top/bottom models show real, sensible dollar figures.
-- [ ] T006 `apps/api/src/dealeriq_api/domain/dashboard_service.py`: `manager_dashboard(db, as_of)`
-      and `sales_dashboard(db, user_id, as_of)`, each composing already-existing service/query
-      functions (inventory heatmap/aging, anomalies, alerts, leads+scores) plus T003/T005 — no
-      internal HTTP round-trips, direct in-process calls
+- [x] T006 `apps/api/src/dealeriq_api/domain/dashboard_service.py`: `manager_dashboard` and
+      `sales_dashboard`, each composing purpose-built summary queries (inventory ABC/XYZ counts +
+      aging count, open anomaly count, unacknowledged alert count mirroring `routes/alerts.py`'s
+      own per-user scoping, leads+scores ranked by probability) plus T003/T005 — no internal HTTP
+      round-trips. Sanity-checked against the real seeded database (28 real ranked open leads for
+      a real salesperson, real $820,812.22 this-month sales, real top models); discovered the
+      forecast/inventory/alerts/digest pipeline hadn't been re-run since Phase 7's reseed —
+      triggered a fresh run of all four in the background for later verification steps.
 - [ ] T007 `apps/api/src/dealeriq_api/routes/dashboards.py` +
       `apps/api/src/dealeriq_api/schemas/dashboards.py`: `GET /dashboards/manager`
       (`dashboard:view_manager`), `GET /dashboards/sales` (`dashboard:view_sales`, scoped to
