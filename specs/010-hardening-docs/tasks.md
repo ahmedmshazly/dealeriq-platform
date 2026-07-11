@@ -107,20 +107,28 @@
       collected by Vitest too (`vitest.config.ts` had no `exclude`), failing on Playwright's
       `test` global — added an `exclude` for `**/e2e/**`. Re-verified: `tsc --noEmit`, `next
       build` (20 routes), and `vitest run` (8/8) all clean.
-- [ ] T016 `docs/runbooks/jobs-and-alerts.md` (NEW): the analytics job scheduler (the five
+- [x] T016 `docs/runbooks/jobs-and-alerts.md` (NEW): the analytics job scheduler (the five
       DS-OPS-001 cron jobs and their schedule, `ENABLE_SCHEDULER`, triggering any job on demand
       via `POST /jobs/{name}/run`, reading an `AnalyticsRun` row to tell success/failure/
-      still-running, NFR-005's retry-once-with-backoff and last-successful-run-stays-served
-      guarantees) and the alert engine (the eight rules total — six FR-061 built-ins plus the two
-      customer-analytics rules, dedup-key semantics, role-based notification fan-out,
-      `/admin/alert-rules` config, verifying the daily digest via MailHog's own HTTP API)
-- [ ] T017 `infra/README.md` (NEW): what's under `infra/` — `docker-compose.yml`'s two services
-      (postgres, mailhog), `seed/generate.py` + `ground_truth/` — pointing to
-      `docs/runbooks/local-dev.md` for the actual bootstrap/seed/dev walkthrough rather than
-      duplicating it
-- [ ] T018 Verify SC-006: self-review the new runbook against "could someone unfamiliar with the
-      codebase answer, using only this document: which jobs are scheduled and how do I check if
-      the latest run succeeded, and why did this specific alert fire"
+      still-running) and the alert engine (all seven real rule keys — six FR-061 built-ins plus
+      `lead_score_drift`, FR-074 — dedup-key semantics, role-based notification fan-out,
+      `/admin/alert-rules` config, verifying the daily digest via MailHog's own HTTP API). **A
+      real, disclosed gap found while writing this**: NFR-005's "retried once with backoff" half
+      is not actually implemented anywhere (verified directly against `routes/jobs.py` and
+      `scheduler.py` — a failed job just stays `failed`) — the other half ("last successful run
+      stays served") *is* real and correctly implemented. Documented the true current behavior
+      honestly rather than the aspirational one, and added the gap to `docs/backlog.md` (P0,
+      needs its own design, out of scope for a docs/tooling phase).
+- [x] T017 `infra/README.md` (NEW): what's under `infra/` — `docker-compose.yml`'s two services
+      (postgres, mailhog), `scripts/ensure-gitleaks.sh` — pointing to the pre-existing
+      `infra/seed/README.md` for the generator (already covers it) and
+      `docs/runbooks/local-dev.md` for the actual bootstrap/seed/dev walkthrough, rather than
+      duplicating either.
+- [x] T018 Verified SC-006: the runbook directly answers both required questions — "which jobs
+      are scheduled and how do I check the latest run" (the schedule table + "Reading job
+      status" section, including how to diagnose a stuck vs. failed run) and "why did this
+      alert fire" (the seven-rule table + dedup-key/fan-out explanation) — without needing to
+      read `alert_rules.py` or `scheduler.py`.
 - [ ] T019 Re-verify `make bootstrap && make seed && make dev` (NFR-007) completes within 15
       minutes on a clean checkout/fresh Postgres volume, per every prior phase's reproducibility
       gate
