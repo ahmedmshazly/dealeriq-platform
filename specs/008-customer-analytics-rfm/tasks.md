@@ -132,4 +132,8 @@
       `manager1@dealeriq.dev`): the leads list renders calibrated scores with visible,
       human-readable explanations for every scored lead, with zero manual steps beyond the
       initial `POST /jobs/lead_scoring/run` trigger.
-- [ ] T027 Re-verify `make bootstrap && make seed && make dev` (NFR-007) and `make ci`
+- [x] T027 Re-verified: full reseed from scratch (fresh Postgres volume, `alembic upgrade head`,
+      `infra/seed/generate.py`) confirmed the Phase 3 lead-funnel fix and every migration in one
+      clean pass; scheduler startup with `ENABLE_SCHEDULER=true` registered all 5 cron jobs
+      (forecast/inventory/alerts/lead_scoring/digest) cleanly; `make ci` green end-to-end (235
+      pytest tests, vitest 8/8, `next build` 20 routes, live API-client regen with zero drift).

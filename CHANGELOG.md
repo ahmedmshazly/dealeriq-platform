@@ -7,6 +7,40 @@ NFR-009).
 
 ## [Unreleased]
 
+### Phase 7 — Customer Analytics
+
+- `packages/analytics`: RFM segmentation (population-relative R/F/M quintiles mapped to five
+  named segments — Champions/At Risk/Loyal Customers/Hibernating/New, ADR-022) and a calibrated
+  lead-conversion model (L2-regularized logistic regression, isotonic calibration via
+  `CalibratedClassifierCV`, temporal train/validation split, top-3 per-lead explanations,
+  ADR-023); a hand-implemented Population Stability Index for FR-074's drift monitoring.
+- `apps/api`: `lead_scoring_job.py` orchestrates RFM → lead scoring → drift check each run,
+  persisting `CustomerRfmProfile`/`LeadScore`; completes Phase 6's deferred `lead_idle`
+  score-cutoff; activates DS-OPS-001's 04:00 daily cron slot. `GET /leads` now surfaces
+  conversion probability, segment, and explanation; new `GET /customers/{id}` (RFM segment +
+  purchase history, FR-033).
+- `apps/web`: a new customer detail page (segment badge, R/F/M scores, purchase history) and an
+  expandable per-lead explanation panel on the leads list.
+- Four real bugs found and fixed while validating against the real seeded database, not just unit
+  tests: (1) a Phase 3 data-generation gap — every seeded lead always resolved to won/lost,
+  leaving none open for this phase to score — fixed by truncating the funnel walk to what could
+  plausibly have happened by "today"; (2) genuine label leakage in the only available
+  "interaction count" proxy (`count(LeadEvent)`, mechanically downstream of Phase 3's
+  outcome-dependent funnel-walk branching) — fixed by bounding the count to a lead's first 21
+  days, dropping an implausible ~0.97 validation ROC-AUC to a defensible ~0.89; (3) PSI drift
+  monitoring initially covered features that are mechanically non-exchangeable between the
+  training and scoring populations, guaranteeing false-positive drift alerts on every run — fixed
+  by scoping to compositional features only; (4) PSI's quantile binning silently reported zero
+  drift for any shift in a binary/one-hot column — fixed by binning low-cardinality features by
+  exact value.
+- QA-003(c) (lead-model recovers sign of ground-truth coefficients) is now CI-blocking, extending
+  Phase 3's own simulator-level check to Phase 7's actual deployed pipeline: sign recovery on
+  every checkable coefficient, discrimination/calibration graded relative to the achievable
+  ceiling and the naive baseline on a clean synthetic population (not fixed literals).
+- 26 new analytics tests plus a CI-blocking QA-003(c) scientific-validation test, and 10 new
+  backend integration tests — all green; `make ci` clean end-to-end (235 pytest tests, vitest
+  8/8, `next build` 20 routes).
+
 ### Phase 6 — Alerts & Notifications
 
 - `apps/api`: an alert-rule engine in the domain layer (not `packages/analytics` — every rule
