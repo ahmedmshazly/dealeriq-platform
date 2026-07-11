@@ -138,5 +138,9 @@
       reproducibility gate for the same finding) — verified via the identical
       `uvicorn --reload` / `next dev` commands on alternate ports, exactly as every prior phase
       on this machine has done.
-- [ ] T020 Re-run `make ci` full suite green, including the now-blocking audit gate (T010) and the
-      new a11y lint rule (T014/T015)
+- [x] T020 Re-ran `make ci` against the freshly-reseeded database from T019: **fully green**.
+      ruff clean, `ruff format --check` (165 files), `mypy --strict` (108 source files), eslint
+      `--max-warnings 0` clean, `tsc --noEmit` clean, **245 pytest tests passed** (94% line
+      coverage, 18m53s — testcontainers Postgres), vitest 8/8, the now-blocking audit gate
+      passing with all 6 real findings correctly waived, `next build` (20 routes), and API-client
+      regeneration against a live server producing a **zero-diff** `schema.d.ts`.
