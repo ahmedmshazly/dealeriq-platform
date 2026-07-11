@@ -28,6 +28,7 @@ from dealeriq_api.routes import (
     leads,
     orders,
     permissions,
+    reports,
     roles,
     users,
     vehicle_models,
@@ -91,6 +92,7 @@ def create_app() -> FastAPI:
     app.include_router(jobs.router)
     app.include_router(forecasts.router)
     app.include_router(dashboards.router)
+    app.include_router(reports.router)
     app.include_router(inventory_intel.router)
     app.include_router(alerts.router)
     app.include_router(alert_rules.router)

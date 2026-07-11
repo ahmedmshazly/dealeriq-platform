@@ -46,15 +46,21 @@
       different salespeople's dashboards never leak one's leads/sales/alerts into the other's
       response (SC-002's security-critical property, explicitly asserted both directions);
       analyst role (no dashboard permissions) gets 403
-- [ ] T009 `apps/api/src/dealeriq_api/domain/monthly_report.py`: composes `sales_summary` +
-      `achieved_accuracy` + alert counts-by-rule/severity for one completed calendar month;
-      rejects the current in-progress month with a clear error (spec.md's Edge Cases)
-- [ ] T010 `apps/api/src/dealeriq_api/routes/reports.py` +
+- [x] T009 `apps/api/src/dealeriq_api/domain/monthly_report.py`: composes `sales_summary` +
+      `achieved_accuracy` (extended with an explicit `window_start`/`window_end` for an exact
+      calendar month, rather than only the rolling `window_weeks`-back default) + alert
+      counts-by-rule/severity for one completed calendar month; rejects the current in-progress
+      month with `CurrentMonthNotAllowed` (spec.md's Edge Cases)
+- [x] T010 `apps/api/src/dealeriq_api/routes/reports.py` +
       `apps/api/src/dealeriq_api/schemas/reports.py`: `GET /reports/monthly?month=YYYY-MM`,
-      defaulting to the most recently completed month when `month` is omitted
-- [ ] T011 Integration test `apps/api/tests/integration/test_monthly_report.py`: hand-constructed
-      fixtures for a completed month → sales/margin/accuracy/alert totals matching an independent
-      hand computation; requesting the current month returns a clear rejection, not partial data
+      defaulting to the most recently completed month when `month` is omitted; reuses
+      `dashboard:view_manager` (the report includes margin, Manager+ only per FR-043's
+      precedent) rather than a new permission key
+- [x] T011 Integration tests `apps/api/tests/integration/test_monthly_report.py` (4 tests):
+      hand-constructed fixtures for a completed month → sales/margin/alert totals matching an
+      independent hand computation, with an order/alert deliberately placed just outside the
+      month proven excluded; the current month returns 400, not partial data; a malformed
+      `month` returns 400; the no-argument default resolves to a genuinely prior month
 - [ ] T012 Regenerate `packages/api-client` against the new endpoints
 - [ ] T013 `apps/web/lib/chart-export.ts`: `exportChartAsPng(svgElement)` (SVG→canvas→
       `toBlob`, no new dependency) and `downloadCsv(filename, rows)` (`Blob`/
