@@ -107,17 +107,29 @@
       seeded data: Hibernating/New/Champions/At Risk segments all render; expanding a scored
       lead's row shows real, human-readable feature contributions (e.g. "Interested in: Economy:
       +0.40", "Budget band: +0.29").
-- [ ] T022 Verify SC-001 directly against the real seeded database: hand-pick a known high-value
-      repeat customer and a known dormant/zero-order customer, confirm their segments are correct
-      and distinguishable
-- [ ] T023 Verify SC-002/SC-003 directly against the real seeded database: every open lead has a
-      probability + top-3 explanation with no stale/fabricated scores; score-decile actual-win-
-      rate tracking confirms calibration (the phase's principal scientific-validation gate)
-- [ ] T024 Verify SC-004 directly against the real seeded database: configure a non-null
-      `score_cutoff`, confirm only qualifying idle leads' alerts open
-- [ ] T025 Verify SC-005: a deliberately drifted scoring population opens the drift alert; an
-      undrifted one does not
-- [ ] T026 Verify SC-006 (the phase's own exit demo) in a real browser: open the leads list,
-      confirm calibrated scores with visible explanations render with zero manual steps beyond
-      the initial job trigger
+- [x] T022 Verified SC-001 against the real seeded database: the customer with the most delivered
+      orders (25, Ashley Wright) segments as "At Risk" (R=1, F=5, M=5 — correctly reflecting
+      lots of historical value but no *recent* purchase, per ADR-022's rule order) and a
+      zero-order customer (Sarah Adams) segments as "New" — correct and clearly distinguishable.
+- [x] T023 Verified SC-002/SC-003 against the real seeded database: all 230 open leads have a
+      conversion probability and a non-empty top-3 explanation (0 missing); score-decile
+      calibration on the real validation split (n=1154) tracks closely across all 10 deciles
+      (e.g. decile 9: 0.963 predicted vs 0.962 actual win rate; decile 5: 0.553 vs 0.517) — this
+      phase's scientific-validation gate is the CI-blocking `test_qa003c_lead_model_sign_recovery.py`.
+- [x] T024 Verified SC-004 against the real seeded database: configuring `score_cutoff=0.3` on
+      `lead_idle` and re-running `evaluate_lead_idle` against the real ~40 idle leads opened
+      exactly 1 new alert — the one idle lead scoring 0.576; all leads below the cutoff (scores
+      0.03-0.17) correctly did not fire.
+- [x] T025 Verified SC-005 against real data (both directions, without mutating persisted state
+      — comparing the real job's own train/score feature frames): the real, undrifted run shows
+      small nonzero PSI on every monitored feature with none exceeding 0.25; an engineered
+      channel-composition shift (forcing every open lead's channel to "referral") correctly
+      produces PSI 1.5-8.5 on the four channel columns. This verification round found and fixed
+      a real bug: `compute_psi`'s quantile binning silently reported zero PSI for *any* shift in
+      a binary/one-hot column (see the psi.py commit + ADR-023 point 9) — caught specifically
+      because this task asked for a real engineered-drift check, not just the pure unit fixtures.
+- [x] T026 Verified SC-006 (the phase's own exit demo) in a real browser (logged in as
+      `manager1@dealeriq.dev`): the leads list renders calibrated scores with visible,
+      human-readable explanations for every scored lead, with zero manual steps beyond the
+      initial `POST /jobs/lead_scoring/run` trigger.
 - [ ] T027 Re-verify `make bootstrap && make seed && make dev` (NFR-007) and `make ci`
