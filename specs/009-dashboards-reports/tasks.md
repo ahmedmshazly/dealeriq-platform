@@ -61,7 +61,7 @@
       independent hand computation, with an order/alert deliberately placed just outside the
       month proven excluded; the current month returns 400, not partial data; a malformed
       `month` returns 400; the no-argument default resolves to a genuinely prior month
-- [ ] T012 Regenerate `packages/api-client` against the new endpoints
+- [x] T012 Regenerate `packages/api-client` against the new endpoints — `tsc --noEmit` clean
 - [ ] T013 `apps/web/lib/chart-export.ts`: `exportChartAsPng(svgElement)` (SVG→canvas→
       `toBlob`, no new dependency) and `downloadCsv(filename, rows)` (`Blob`/
       `URL.createObjectURL`) — reusable, no chart-specific coupling
