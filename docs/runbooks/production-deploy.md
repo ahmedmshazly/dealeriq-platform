@@ -6,6 +6,8 @@ DealerIQ production layout:
 |---|---|
 | Web | Vercel project `dealeriq`, Root Directory `apps/web`, GitHub `ahmedmshazly/dealeriq` (private) |
 | API + Postgres | One EC2 `t3.micro` in `eu-central-1` running `infra/docker-compose.prod.yml` |
+| Durable DB disk | Dedicated EBS volume bind-mounted at `/var/lib/dealeriq/pgdata` (`DeleteOnTermination=false`) — [durability.md](durability.md) / ADR-026 |
+| Off-box backups | Nightly `pg_dump` → S3 via `scripts/backup-to-s3.sh` + systemd timer |
 | Auth cookies | Browser talks same-origin to Vercel; `API_REWRITE_ORIGIN` proxies `/api/*` to the EC2 API |
 
 Firestore / Firebase is **not** used (stack is Postgres + SQLAlchemy + Alembic).
@@ -28,17 +30,20 @@ EC2 host secrets live only on the instance at `/etc/dealeriq/prod.env` (mode `60
 Region: `eu-central-1`. Prefer the existing Elastic IP so Vercel rewrites stay valid.
 
 1. Security group: SSH `22` from your IP; TCP `8000` from `0.0.0.0/0` (Vercel → API only; browsers use Vercel).
-2. Launch Amazon Linux 2023 `t3.micro`, 20 GB gp3, key pair, associate EIP.
-3. User-data / first boot: install Docker + Compose plugin, create a **2 GB swapfile**, `mkdir /opt/dealeriq /etc/dealeriq`.
+2. Launch Amazon Linux 2023 `t3.micro`, 20 GB gp3 root, key pair, associate EIP. Attach a **separate data EBS** with `DeleteOnTermination=false` (see [durability.md](durability.md)).
+3. User-data / first boot: install Docker + Compose plugin + AWS CLI, create a **2 GB swapfile**, `mkdir /opt/dealeriq /etc/dealeriq`, mount data volume at `/var/lib/dealeriq`.
 4. Clone the private repo into `/opt/dealeriq/src` (deploy key or short-lived `gh` token).
-5. Copy `infra/prod.env.example` → `/etc/dealeriq/prod.env`, set strong `POSTGRES_PASSWORD`, `JWT_SECRET_KEY`, `BOOTSTRAP_ADMIN_PASSWORD`, and `CORS_ORIGINS=https://dealeriq-nine.vercel.app`.
+5. Copy `infra/prod.env.example` → `/etc/dealeriq/prod.env`, set strong `POSTGRES_PASSWORD`, `JWT_SECRET_KEY`, `BOOTSTRAP_ADMIN_PASSWORD`, and `CORS_ORIGINS=https://dealeriq-nine.vercel.app`. Optionally set `DEALERIQ_DATA_ROOT=/var/lib/dealeriq`.
 6. Start:
 
 ```bash
 cd /opt/dealeriq/src
+sudo mkdir -p /var/lib/dealeriq/pgdata
 sudo docker compose -f infra/docker-compose.prod.yml --env-file /etc/dealeriq/prod.env up -d --build
 curl -fsS http://127.0.0.1:8000/api/v1/health
 ```
+
+7. Enable nightly S3 backups ([durability.md](durability.md) §3): instance IAM role + `/etc/dealeriq/backup.env` + `dealeriq-backup.timer`.
 
 The API entrypoint runs `alembic upgrade head` before uvicorn. Optional seed (heavy): run `uv`/seed inside a one-off container only if you need demo data.
 
@@ -80,8 +85,12 @@ aws ec2 start-instances --region eu-central-1 --instance-ids <INSTANCE_ID>
 ```
 
 EIP stays attached while stopped (small hourly EIP charge if unattached — keep it associated).
-- No RDS, ALB, NAT, Fargate, or Firestore.
+- No RDS, ALB, NAT, Fargate, or Firestore. Postgres stays on Compose + EBS + S3 dumps (ADR-026), not a managed DB.
 - If the API OOMs under analytics load, bump once to `t3.small` rather than adding services.
+
+## Durability / DR
+
+Full procedure (EBS mount, S3 bucket, IAM, path A reattach / path B restore): [`durability.md`](durability.md).
 
 ## Smoke checks
 

@@ -20,6 +20,13 @@ Both expose their ports as environment-overridable (`POSTGRES_PORT`, `MAILHOG_SM
 `pgdata` volume; `docker compose -f infra/docker-compose.yml down -v` (or `make down` plus a
 manual `-v`) resets it to empty for a from-scratch reseed.
 
+## `docker-compose.prod.yml`
+
+Production-only stack (API + Postgres, no MailHog). Postgres data is bind-mounted from
+`${DEALERIQ_DATA_ROOT:-/var/lib/dealeriq}/pgdata` on a durable EBS volume (ADR-026) — see
+[`../docs/runbooks/durability.md`](../docs/runbooks/durability.md). Do not use this file for
+local `make dev`.
+
 ## `seed/`
 
 The synthetic data generator (GEN-001..006) and its committed ground-truth artifacts. See

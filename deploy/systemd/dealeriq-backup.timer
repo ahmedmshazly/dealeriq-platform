@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily DealerIQ S3 backup timer (ADR-026)
+Documentation=file:///opt/dealeriq/src/docs/runbooks/durability.md
+
+[Timer]
+OnCalendar=*-*-* 03:15:00
+Persistent=true
+RandomizedDelaySec=10m
+Unit=dealeriq-backup.service
+
+[Install]
+WantedBy=timers.target

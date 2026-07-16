@@ -1,0 +1,21 @@
+[Unit]
+Description=DealerIQ production data backup to S3 (ADR-026)
+Documentation=file:///opt/dealeriq/src/docs/runbooks/durability.md
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+# Install path on the production host — adjust WorkingDirectory if the clone lives elsewhere.
+WorkingDirectory=/opt/dealeriq/src
+EnvironmentFile=-/etc/dealeriq/prod.env
+EnvironmentFile=-/etc/dealeriq/backup.env
+# backup.env must set BACKUP_S3_URI; IAM instance role supplies AWS credentials.
+ExecStart=/opt/dealeriq/src/scripts/backup-to-s3.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+
+[Install]
+WantedBy=multi-user.target
