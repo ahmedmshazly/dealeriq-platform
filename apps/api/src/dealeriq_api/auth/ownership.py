@@ -57,3 +57,41 @@ def assert_owner_or_permission(
         owner_id=owner_id,
     ):
         raise forbidden("You may only act on resources you own.")
+
+
+def resolve_owner_filter(
+    *,
+    granted: set[str],
+    manage_any_key: str,
+    manage_own_key: str,
+    current_user_id: uuid.UUID,
+    requested_owner_id: uuid.UUID | None,
+) -> uuid.UUID | None:
+    """Resolve list/get owner scoping for reads.
+
+    - manage_any → honour optional client filter (unscoped if None).
+    - manage_own without manage_any → force current user (Sales).
+    - view-only (e.g. Analyst) → unscoped (optional client filter still applies).
+    """
+    if manage_any_key in granted:
+        return requested_owner_id
+    if manage_own_key in granted:
+        return current_user_id
+    return requested_owner_id
+
+
+def can_view_owned_resource(
+    *,
+    granted: set[str],
+    manage_any_key: str,
+    manage_own_key: str,
+    current_user_id: uuid.UUID,
+    owner_id: uuid.UUID,
+) -> bool:
+    """True if the caller may read a single owned resource (get-by-id / timeline)."""
+    if manage_any_key in granted:
+        return True
+    if manage_own_key in granted:
+        return current_user_id == owner_id
+    # view-only roles (Analyst): dealership-wide read
+    return True

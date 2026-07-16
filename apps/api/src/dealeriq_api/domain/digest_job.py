@@ -18,6 +18,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from dealeriq_api.core.config import get_settings
+from dealeriq_api.domain.job_lifecycle import begin_run
 from dealeriq_api.domain.models.alerts import Alert, AlertStatus, Notification
 from dealeriq_api.domain.models.analytics import AnalyticsRun, RunStatus
 from dealeriq_api.domain.models.rbac import User
@@ -60,22 +61,7 @@ def _send_email(to_address: str, html_body: str) -> None:
 
 
 def run_digest_job(db: Session) -> AnalyticsRun:
-    """Caller (the route) is responsible for the FR-072-style concurrency check
-    (`is_job_running`) inside the same transaction that inserts this run's `running` row."""
-    today = datetime.now(UTC).date()
-    run = AnalyticsRun(
-        job_name=JOB_NAME,
-        params={},
-        seed=None,
-        code_version=_code_version(),
-        data_from=today,
-        data_to=today,
-        status=RunStatus.RUNNING,
-        metrics={},
-        started_at=datetime.now(UTC),
-    )
-    db.add(run)
-    db.flush()
+    run = begin_run(db, job_name=JOB_NAME, code_version=_code_version())
 
     try:
         summary = _execute_pipeline(db)

@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from dealeriq_api.auth.dependencies import get_user_permissions, require_permission
-from dealeriq_api.auth.ownership import require_any_permission
+from dealeriq_api.auth.ownership import require_any_permission, resolve_owner_filter
 from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import forbidden
@@ -93,10 +93,20 @@ def list_leads_route(
     status: LeadStatus | None = None,
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    _current_user: User = Depends(require_permission("leads:view")),
+    current_user: User = Depends(require_permission("leads:view")),
     db: Session = Depends(get_db),
 ) -> Page[LeadResponse]:
-    leads, total = list_leads(db, owner_id=owner_id, status=status, limit=limit, offset=offset)
+    granted = get_user_permissions(db, current_user.role_id)
+    scoped_owner_id = resolve_owner_filter(
+        granted=granted,
+        manage_any_key="leads:manage_any",
+        manage_own_key="leads:manage_own",
+        current_user_id=current_user.id,
+        requested_owner_id=owner_id,
+    )
+    leads, total = list_leads(
+        db, owner_id=scoped_owner_id, status=status, limit=limit, offset=offset
+    )
     return Page(
         items=_enrich_leads_with_scores(db, leads),
         total=total,

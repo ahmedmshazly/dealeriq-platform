@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from dealeriq_analytics.forecasting.champion import run_forecast_pipeline
 from dealeriq_analytics.forecasting.series import build_weekly_series, compute_week_start
 from dealeriq_analytics.sbc import DegenerateSeriesError, classify_with_stats
+from dealeriq_api.domain.job_lifecycle import begin_run
 from dealeriq_api.domain.models.analytics import (
     AnalyticsRun,
     Forecast,
@@ -133,74 +134,62 @@ def get_series_actuals(
     return counts.reindex(calendar, fill_value=0).astype("int64")
 
 
-def is_job_running(db: Session, job_name: str) -> bool:
-    existing = db.execute(
-        select(AnalyticsRun.id).where(
-            AnalyticsRun.job_name == job_name, AnalyticsRun.status == RunStatus.RUNNING
-        )
-    ).first()
-    return existing is not None
-
-
 def run_forecast_job(db: Session, *, seed: int | None = None) -> AnalyticsRun:
-    """Caller (the route) is responsible for the FR-072 concurrency check (`is_job_running`)
-    inside the same transaction that inserts this run's `running` row, so the check-then-insert
-    is atomic under the DB's transaction isolation, not a race between two separate statements."""
-    orders_df = _load_orders_frame(db)
-    if orders_df.empty:
-        raise ValueError("No order data found — cannot construct any demand series.")
-
-    week_start = compute_week_start(pd.Series([orders_df["at"].min()])).iloc[0]
-    last_week = compute_week_start(pd.Series([orders_df["at"].max()])).iloc[0]
-    n_weeks = int((last_week - week_start).days // 7) + 1
-
-    model_branch_df = _prefixed_column(
-        _prefixed_column(orders_df, "model_id", "model:", "_key1"), "branch_id", "branch:", "_key2"
-    )
-    model_branch_keys = list(
-        model_branch_df[["_key1", "_key2"]].drop_duplicates().itertuples(index=False, name=None)
-    )
-    model_branch_series = build_weekly_series(
-        model_branch_df,
-        group_cols=["_key1", "_key2"],
-        date_col="at",
-        keys=model_branch_keys,
-        week_start=week_start,
-        n_weeks=n_weeks,
-    )
-
-    segment_branch_df = _prefixed_column(
-        _prefixed_column(orders_df, "segment", "segment:", "_key1"), "branch_id", "branch:", "_key2"
-    )
-    segment_branch_keys = list(
-        segment_branch_df[["_key1", "_key2"]].drop_duplicates().itertuples(index=False, name=None)
-    )
-    segment_branch_series = build_weekly_series(
-        segment_branch_df,
-        group_cols=["_key1", "_key2"],
-        date_col="at",
-        keys=segment_branch_keys,
-        week_start=week_start,
-        n_weeks=n_weeks,
-    )
-
-    all_series = {**model_branch_series, **segment_branch_series}
-
-    run = AnalyticsRun(
-        job_name=JOB_NAME,
-        params={"n_weeks": n_weeks, "series_count": len(all_series)},
-        seed=seed,
-        code_version=_code_version(),
-        data_from=week_start.date(),
-        data_to=last_week.date(),
-        status=RunStatus.RUNNING,
-        metrics={},
-        started_at=datetime.now(UTC),
-    )
-    db.add(run)
-    db.flush()
+    """Insert RUNNING first (FR-072 via partial unique index), then load data and compute."""
+    run = begin_run(db, job_name=JOB_NAME, code_version=_code_version(), seed=seed)
 
     try:
+        orders_df = _load_orders_frame(db)
+        if orders_df.empty:
+            raise ValueError("No order data found — cannot construct any demand series.")
+
+        week_start = compute_week_start(pd.Series([orders_df["at"].min()])).iloc[0]
+        last_week = compute_week_start(pd.Series([orders_df["at"].max()])).iloc[0]
+        n_weeks = int((last_week - week_start).days // 7) + 1
+
+        model_branch_df = _prefixed_column(
+            _prefixed_column(orders_df, "model_id", "model:", "_key1"),
+            "branch_id",
+            "branch:",
+            "_key2",
+        )
+        model_branch_keys = list(
+            model_branch_df[["_key1", "_key2"]].drop_duplicates().itertuples(index=False, name=None)
+        )
+        model_branch_series = build_weekly_series(
+            model_branch_df,
+            group_cols=["_key1", "_key2"],
+            date_col="at",
+            keys=model_branch_keys,
+            week_start=week_start,
+            n_weeks=n_weeks,
+        )
+
+        segment_branch_df = _prefixed_column(
+            _prefixed_column(orders_df, "segment", "segment:", "_key1"),
+            "branch_id",
+            "branch:",
+            "_key2",
+        )
+        segment_branch_keys = list(
+            segment_branch_df[["_key1", "_key2"]]
+            .drop_duplicates()
+            .itertuples(index=False, name=None)
+        )
+        segment_branch_series = build_weekly_series(
+            segment_branch_df,
+            group_cols=["_key1", "_key2"],
+            date_col="at",
+            keys=segment_branch_keys,
+            week_start=week_start,
+            n_weeks=n_weeks,
+        )
+
+        all_series = {**model_branch_series, **segment_branch_series}
+        run.params = {"n_weeks": n_weeks, "series_count": len(all_series)}
+        run.data_from = week_start.date()
+        run.data_to = last_week.date()
+
         _execute_pipeline(db, run.id, all_series)
         run.status = RunStatus.SUCCEEDED
         run.finished_at = datetime.now(UTC)

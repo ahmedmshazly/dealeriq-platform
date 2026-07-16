@@ -73,7 +73,7 @@ export default function InventoryIntelPage() {
       return data;
     },
     refetchInterval: (query) =>
-      query.state.data?.some((r) => r.status === "running") ? 2000 : false,
+      query.state.data?.items?.some((r) => r.status === "running") ? 2000 : false,
   });
 
   const triggerRun = useMutation({
@@ -100,7 +100,7 @@ export default function InventoryIntelPage() {
     );
   }
 
-  const latestRun = runsQuery.data?.[0];
+  const latestRun = runsQuery.data?.items?.[0];
   const isRunning = latestRun?.status === "running";
   const cellsByKey = new Map((heatmapQuery.data?.cells ?? []).map((c) => [`${c.abc}-${c.xyz}`, c]));
 

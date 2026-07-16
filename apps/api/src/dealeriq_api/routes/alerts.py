@@ -28,20 +28,29 @@ router = APIRouter(prefix="/api/v1/alerts", tags=["alerts"])
 def list_alerts_route(
     status_filter: str | None = Query(default=None, alias="status"),
     severity_filter: str | None = Query(default=None, alias="severity"),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
     current_user: User = Depends(require_permission("alerts:view")),
     db: Session = Depends(get_db),
 ) -> AlertListResponse:
-    query = (
+    base = (
         select(Alert)
         .join(Notification, Notification.alert_id == Alert.id)
         .where(Notification.user_id == current_user.id)
     )
     if status_filter is not None:
-        query = query.where(Alert.status == status_filter)
+        base = base.where(Alert.status == status_filter)
     if severity_filter is not None:
-        query = query.where(Alert.severity == severity_filter)
-    query = query.order_by(Alert.created_at.desc())
-    alerts = db.execute(query).scalars().all()
+        base = base.where(Alert.severity == severity_filter)
+
+    count_stmt = select(func.count()).select_from(base.subquery())
+    total = db.execute(count_stmt).scalar_one()
+
+    alerts = (
+        db.execute(base.order_by(Alert.created_at.desc()).limit(limit).offset(offset))
+        .scalars()
+        .all()
+    )
 
     badge_count = db.execute(
         select(func.count())
@@ -53,6 +62,9 @@ def list_alerts_route(
     return AlertListResponse(
         badge_count=badge_count,
         alerts=[AlertResponse.model_validate(a, from_attributes=True) for a in alerts],
+        total=total,
+        limit=limit,
+        offset=offset,
     )
 
 

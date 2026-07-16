@@ -18,7 +18,7 @@ from dealeriq_api.domain.models.lead import Lead, LeadStatus
 from dealeriq_api.domain.models.order import Order, OrderEvent, OrderStatus, PaymentType
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.domain.models.vehicle import UnitStatus, VehicleModel, VehicleUnit
-from tests.helpers import admin_token, create_user, login
+from tests.helpers import admin_token, create_user, usable_token
 
 
 def _new_model_and_branch(db: Session) -> tuple[VehicleModel, Branch]:
@@ -143,10 +143,8 @@ def test_sales_dashboard_never_leaks_another_salespersons_data(
     db_session.add(Notification(user_id=sales_a_id, alert_id=alert_a.id, channel="in_app"))
     db_session.commit()
 
-    sales_a_login = login(client, sales_a_email, sales_a_password)
-    sales_a_bearer = sales_a_login.json()["access_token"]
-    sales_b_login = login(client, sales_b_email, sales_b_password)
-    sales_b_bearer = sales_b_login.json()["access_token"]
+    sales_a_bearer = usable_token(client, sales_a_email, sales_a_password)
+    sales_b_bearer = usable_token(client, sales_b_email, sales_b_password)
 
     resp_a = client.get(
         "/api/v1/dashboards/sales", headers={"Authorization": f"Bearer {sales_a_bearer}"}
@@ -174,11 +172,9 @@ def test_sales_dashboard_never_leaks_another_salespersons_data(
 
 def test_dashboards_require_permission(client: TestClient) -> None:
     admin = admin_token(client)
-    analyst_token = login(client, *create_user(client, admin, "analyst")[1:3]).json()[
-        "access_token"
-    ]
+    _, email, password = create_user(client, admin, "analyst")
+    analyst = usable_token(client, email, password)
 
-    resp = client.get(
-        "/api/v1/dashboards/manager", headers={"Authorization": f"Bearer {analyst_token}"}
-    )
+    resp = client.get("/api/v1/dashboards/manager", headers={"Authorization": f"Bearer {analyst}"})
     assert resp.status_code == 403
+    assert resp.json()["error"]["code"] == "forbidden"

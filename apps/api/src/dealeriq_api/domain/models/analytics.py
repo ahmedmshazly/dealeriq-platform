@@ -15,7 +15,7 @@ import uuid
 from datetime import date, datetime
 from typing import Any
 
-from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Index, String
+from sqlalchemy import Boolean, DateTime, Enum, Float, ForeignKey, Index, String, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -30,7 +30,16 @@ class RunStatus(enum.StrEnum):
 
 class AnalyticsRun(IdMixin, Base):
     __tablename__ = "analytics_runs"
-    __table_args__ = (Index("ix_analytics_runs_job_name_status", "job_name", "status"),)
+    __table_args__ = (
+        Index("ix_analytics_runs_job_name_status", "job_name", "status"),
+        # FR-072: at most one RUNNING row per job_name (partial unique index).
+        Index(
+            "uq_analytics_runs_job_name_running",
+            "job_name",
+            unique=True,
+            postgresql_where=text("status = 'RUNNING'"),
+        ),
+    )
 
     job_name: Mapped[str] = mapped_column(String(60))
     params: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)

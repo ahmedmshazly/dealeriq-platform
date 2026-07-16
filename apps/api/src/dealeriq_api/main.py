@@ -3,17 +3,20 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+from sqlalchemy.orm import Session
 
 from dealeriq_api.core.config import get_settings
+from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import register_error_handlers
 from dealeriq_api.core.limiter import limiter
 from dealeriq_api.core.logging import RequestLoggingMiddleware, configure_logging
 from dealeriq_api.core.scheduler import create_scheduler
+from dealeriq_api.core.security_headers import SecurityHeadersMiddleware
 from dealeriq_api.routes import (
     alert_rules,
     alerts,
@@ -69,6 +72,7 @@ def create_app() -> FastAPI:
 
     register_error_handlers(app)
 
+    app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(
         CORSMiddleware,
@@ -100,6 +104,23 @@ def create_app() -> FastAPI:
     @app.get("/api/v1/health", tags=["system"])
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    @app.get("/api/v1/ready", tags=["system"])
+    def ready(db: Session = Depends(get_db)) -> dict[str, str]:
+        """Readiness: verifies Postgres is reachable (liveness stays at /health)."""
+        from sqlalchemy import text
+
+        from dealeriq_api.core.errors import ApiError
+
+        try:
+            db.execute(text("SELECT 1"))
+        except Exception as exc:
+            raise ApiError(
+                status_code=503,
+                code="not_ready",
+                message=f"Database unavailable: {exc}",
+            ) from exc
+        return {"status": "ready"}
 
     return app
 

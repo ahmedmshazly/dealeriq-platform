@@ -35,6 +35,12 @@ def forbidden(message: str = "You do not have permission to perform this action.
     return ApiError(status_code=403, code="forbidden", message=message)
 
 
+def password_change_required(
+    message: str = "You must change your password before continuing.",
+) -> ApiError:
+    return ApiError(status_code=403, code="password_change_required", message=message)
+
+
 def not_found(message: str = "Resource not found.") -> ApiError:
     return ApiError(status_code=404, code="not_found", message=message)
 

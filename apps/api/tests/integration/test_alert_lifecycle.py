@@ -102,6 +102,15 @@ def test_alert_list_returns_badge_count_and_is_scoped_to_the_current_users_notif
     body = resp.json()
     assert body["badge_count"] >= 1
     assert len(body["alerts"]) >= 1
+    assert body["total"] >= 1
+    assert body["limit"] == 50
+    assert body["offset"] == 0
+
+
+def test_ready_endpoint_reports_database_ready(client: TestClient) -> None:
+    resp = client.get("/api/v1/ready")
+    assert resp.status_code == 200
+    assert resp.json() == {"status": "ready"}
 
 
 def test_alert_list_filters_by_status(client: TestClient, db_session: Session) -> None:

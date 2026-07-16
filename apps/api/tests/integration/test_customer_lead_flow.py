@@ -4,7 +4,7 @@ import uuid
 
 from fastapi.testclient import TestClient
 
-from tests.helpers import admin_token, create_user, login, user_token
+from tests.helpers import admin_token, create_user, usable_token, user_token
 
 
 def _create_customer(
@@ -91,12 +91,8 @@ def test_sales_user_cannot_edit_another_sales_users_lead(client: TestClient) -> 
     owner_id, owner_email, owner_password = create_user(client, admin, "sales")
     _other_id, other_email, other_password = create_user(client, admin, "sales")
 
-    owner_login = login(client, owner_email, owner_password)
-    assert owner_login.status_code == 200
-    owner_bearer = owner_login.json()["access_token"]
-
-    other_login = login(client, other_email, other_password)
-    other_bearer = other_login.json()["access_token"]
+    owner_bearer = usable_token(client, owner_email, owner_password)
+    other_bearer = usable_token(client, other_email, other_password)
 
     lead_resp = client.post(
         "/api/v1/leads",
@@ -137,8 +133,7 @@ def test_sales_user_cannot_create_a_lead_owned_by_someone_else(client: TestClien
     _sales_id, sales_email, sales_password = create_user(client, admin, "sales")
     other_manager_id, _, _ = create_user(client, admin, "manager")
 
-    sales_login = login(client, sales_email, sales_password)
-    sales_bearer = sales_login.json()["access_token"]
+    sales_bearer = usable_token(client, sales_email, sales_password)
 
     resp = client.post(
         "/api/v1/leads",

@@ -6,7 +6,7 @@ from datetime import date
 
 from fastapi.testclient import TestClient
 
-from tests.helpers import admin_token, create_user, login
+from tests.helpers import admin_token, create_user, usable_token
 
 
 def _create_branch(client: TestClient, token: str) -> str:
@@ -66,7 +66,7 @@ def _setup(client: TestClient, token: str, *, list_price: float = 20000.0):
 def test_low_discount_order_auto_approves_and_reserves_the_unit(client: TestClient) -> None:
     token = admin_token(client)
     sales_id, sales_email, sales_password = create_user(client, token, "sales")
-    sales_bearer = login(client, sales_email, sales_password).json()["access_token"]
+    sales_bearer = usable_token(client, sales_email, sales_password)
 
     unit_id, customer_id, model_id = _setup(client, token, list_price=20000.0)
 
@@ -121,9 +121,9 @@ def test_low_discount_order_auto_approves_and_reserves_the_unit(client: TestClie
 def test_high_discount_order_requires_manager_approval(client: TestClient) -> None:
     token = admin_token(client)
     sales_id, sales_email, sales_password = create_user(client, token, "sales")
-    sales_bearer = login(client, sales_email, sales_password).json()["access_token"]
+    sales_bearer = usable_token(client, sales_email, sales_password)
     manager_id, manager_email, manager_password = create_user(client, token, "manager")
-    manager_bearer = login(client, manager_email, manager_password).json()["access_token"]
+    manager_bearer = usable_token(client, manager_email, manager_password)
 
     unit_id, customer_id, _model_id = _setup(client, token, list_price=20000.0)
 
@@ -173,7 +173,7 @@ def test_cancelling_an_approved_order_releases_the_reservation_and_requires_a_re
 ) -> None:
     token = admin_token(client)
     sales_id, sales_email, sales_password = create_user(client, token, "sales")
-    sales_bearer = login(client, sales_email, sales_password).json()["access_token"]
+    sales_bearer = usable_token(client, sales_email, sales_password)
     unit_id, customer_id, model_id = _setup(client, token)
 
     order_id = client.post(
@@ -219,7 +219,7 @@ def test_cancelling_an_approved_order_releases_the_reservation_and_requires_a_re
 def test_order_timeline_records_every_status_change(client: TestClient) -> None:
     token = admin_token(client)
     sales_id, sales_email, sales_password = create_user(client, token, "sales")
-    sales_bearer = login(client, sales_email, sales_password).json()["access_token"]
+    sales_bearer = usable_token(client, sales_email, sales_password)
     unit_id, customer_id, _model_id = _setup(client, token)
 
     order_id = client.post(
@@ -252,7 +252,7 @@ def test_order_timeline_records_every_status_change(client: TestClient) -> None:
 def test_sales_cannot_create_an_order_for_someone_else(client: TestClient) -> None:
     token = admin_token(client)
     _sales_id, sales_email, sales_password = create_user(client, token, "sales")
-    sales_bearer = login(client, sales_email, sales_password).json()["access_token"]
+    sales_bearer = usable_token(client, sales_email, sales_password)
     other_id, _, _ = create_user(client, token, "sales")
     unit_id, customer_id, _model_id = _setup(client, token)
 

@@ -27,6 +27,7 @@ from dealeriq_analytics.customer.lead_scoring import (
 from dealeriq_analytics.customer.psi import PSI_DRIFT_THRESHOLD, compute_psi_report
 from dealeriq_analytics.customer.rfm import CustomerOrderStats, RfmResult, compute_rfm
 from dealeriq_api.domain.alert_rules import evaluate_lead_score_drift
+from dealeriq_api.domain.job_lifecycle import begin_run
 from dealeriq_api.domain.models.analytics import AnalyticsRun, RunStatus
 from dealeriq_api.domain.models.customer import Customer
 from dealeriq_api.domain.models.customer_analytics import CustomerRfmProfile, LeadScore
@@ -143,22 +144,7 @@ def _load_lead_feature_rows(
 
 
 def run_lead_scoring_job(db: Session) -> AnalyticsRun:
-    """Caller (the route) is responsible for the FR-072 concurrency check (`is_job_running`,
-    from `forecast_job.py`) inside the same transaction that inserts this run's `running` row."""
-    today = datetime.now(UTC).date()
-    run = AnalyticsRun(
-        job_name=JOB_NAME,
-        params={},
-        seed=None,
-        code_version=_code_version(),
-        data_from=today,
-        data_to=today,
-        status=RunStatus.RUNNING,
-        metrics={},
-        started_at=datetime.now(UTC),
-    )
-    db.add(run)
-    db.flush()
+    run = begin_run(db, job_name=JOB_NAME, code_version=_code_version())
 
     try:
         summary = _execute_pipeline(db, run.id)

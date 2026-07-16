@@ -25,6 +25,9 @@ class AlertResponse(BaseModel):
 class AlertListResponse(BaseModel):
     badge_count: int
     alerts: list[AlertResponse]
+    total: int
+    limit: int
+    offset: int
 
 
 class AlertRuleResponse(BaseModel):

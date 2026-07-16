@@ -10,8 +10,13 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (isLoading) return;
+    if (!user) {
       router.replace("/login");
+      return;
+    }
+    if (user.must_change_password) {
+      router.replace("/change-password");
     }
   }, [isLoading, user, router]);
 
@@ -23,7 +28,7 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
     );
   }
 
-  if (!user) {
+  if (!user || user.must_change_password) {
     return null;
   }
 

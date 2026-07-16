@@ -52,7 +52,7 @@ export default function AnalyticsPage() {
       return data;
     },
     refetchInterval: (query) =>
-      query.state.data?.some((r) => r.status === "running") ? 2000 : false,
+      query.state.data?.items?.some((r) => r.status === "running") ? 2000 : false,
   });
 
   const triggerRun = useMutation({
@@ -78,7 +78,7 @@ export default function AnalyticsPage() {
     );
   }
 
-  const latestRun = runsQuery.data?.[0];
+  const latestRun = runsQuery.data?.items?.[0];
   const isRunning = latestRun?.status === "running";
 
   return (

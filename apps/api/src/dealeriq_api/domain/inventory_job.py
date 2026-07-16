@@ -50,6 +50,7 @@ from dealeriq_analytics.inventory.survival import (
 from dealeriq_analytics.inventory.survival import (
     days_on_lot as compute_days_on_lot,
 )
+from dealeriq_api.domain.job_lifecycle import begin_run
 from dealeriq_api.domain.models.analytics import AnalyticsRun, Forecast, RunStatus
 from dealeriq_api.domain.models.inventory_intel import (
     ANOMALY_STATUS_NEW,
@@ -154,28 +155,23 @@ def _load_orders_frame(db: Session) -> pd.DataFrame:
 
 
 def run_inventory_job(db: Session, *, as_of: date | None = None) -> AnalyticsRun:
-    """Caller (the route) is responsible for the FR-072-style concurrency check
-    (`is_job_running`) inside the same transaction that inserts this run's `running` row."""
+    """Insert RUNNING first (FR-072), then load data and compute."""
     as_of = as_of or datetime.now(UTC).date()
-    orders_df = _load_orders_frame(db)
-    if orders_df.empty:
-        raise ValueError("No order data found — cannot compute inventory intelligence.")
-
-    run = AnalyticsRun(
+    run = begin_run(
+        db,
         job_name=JOB_NAME,
-        params={"as_of": as_of.isoformat()},
-        seed=None,
         code_version=_code_version(),
-        data_from=pd.Timestamp(orders_df["at"].min()).date(),
-        data_to=pd.Timestamp(orders_df["at"].max()).date(),
-        status=RunStatus.RUNNING,
-        metrics={},
-        started_at=datetime.now(UTC),
+        params={"as_of": as_of.isoformat()},
     )
-    db.add(run)
-    db.flush()
 
     try:
+        orders_df = _load_orders_frame(db)
+        if orders_df.empty:
+            raise ValueError("No order data found — cannot compute inventory intelligence.")
+
+        run.data_from = pd.Timestamp(orders_df["at"].min()).date()
+        run.data_to = pd.Timestamp(orders_df["at"].max()).date()
+
         summary = _execute_pipeline(db, run.id, orders_df, as_of)
         run.status = RunStatus.SUCCEEDED
         run.finished_at = datetime.now(UTC)

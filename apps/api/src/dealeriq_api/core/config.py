@@ -5,7 +5,12 @@ See .env.example for the full documented list of variables (NFR-009).
 
 from functools import lru_cache
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Intentionally obvious placeholder — allowed only when app_env == "development".
+INSECURE_JWT_PLACEHOLDER = "dev-only-insecure-secret-change-me"
+_MIN_JWT_SECRET_LENGTH = 32
 
 
 class Settings(BaseSettings):
@@ -22,7 +27,7 @@ class Settings(BaseSettings):
 
     # Auth (FR-001..006, ADR-009/010/019/020). jwt_secret_key MUST be overridden via .env for
     # anything beyond local dev — the default here is intentionally an obvious placeholder.
-    jwt_secret_key: str = "dev-only-insecure-secret-change-me"
+    jwt_secret_key: str = INSECURE_JWT_PLACEHOLDER
     jwt_key_id: str = "dev-1"
     access_token_ttl_minutes: int = 15
     refresh_token_ttl_days: int = 7
@@ -57,6 +62,20 @@ class Settings(BaseSettings):
     # via the `ENABLE_SCHEDULER=true` environment variable; the test suite never sets it, so
     # this is safe by default rather than relying on every test file remembering to disable it.
     enable_scheduler: bool = False
+
+    @model_validator(mode="after")
+    def _reject_insecure_jwt_outside_development(self) -> "Settings":
+        if self.app_env == "development":
+            return self
+        if (
+            self.jwt_secret_key == INSECURE_JWT_PLACEHOLDER
+            or len(self.jwt_secret_key) < _MIN_JWT_SECRET_LENGTH
+        ):
+            raise ValueError(
+                "JWT_SECRET_KEY must be set to a strong secret (length >= 32, not the "
+                "dev placeholder) when APP_ENV is not 'development'."
+            )
+        return self
 
     @property
     def cors_origin_list(self) -> list[str]:

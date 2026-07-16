@@ -6,14 +6,15 @@
 
 from collections.abc import Callable
 
-from fastapi import APIRouter, Depends
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from dealeriq_api.auth.dependencies import require_permission
+from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import bad_request, conflict
-from dealeriq_api.domain.forecast_job import is_job_running
+from dealeriq_api.domain.job_lifecycle import is_job_running
 from dealeriq_api.domain.models.analytics import AnalyticsRun
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.jobs.alerts import JOB_NAME as ALERTS_JOB_NAME
@@ -47,6 +48,7 @@ def trigger_job_route(
 ) -> AnalyticsRunResponse:
     if job_name not in KNOWN_JOBS:
         raise bad_request(f"Unknown job '{job_name}'.")
+    # Cheap pre-check; begin_run + partial unique index is the real FR-072 guard.
     if is_job_running(db, job_name):
         raise conflict(f"A '{job_name}' run is already in progress.")
 
@@ -55,21 +57,34 @@ def trigger_job_route(
     return AnalyticsRunResponse.from_model(run)
 
 
-@router.get("/{job_name}/runs", response_model=list[AnalyticsRunResponse])
+@router.get("/{job_name}/runs", response_model=Page[AnalyticsRunResponse])
 def list_job_runs_route(
     job_name: str,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
     _current_user: User = Depends(require_permission("jobs:view")),
     db: Session = Depends(get_db),
-) -> list[AnalyticsRunResponse]:
+) -> Page[AnalyticsRunResponse]:
     if job_name not in KNOWN_JOBS:
         raise bad_request(f"Unknown job '{job_name}'.")
+    count_stmt = (
+        select(func.count()).select_from(AnalyticsRun).where(AnalyticsRun.job_name == job_name)
+    )
+    total = db.execute(count_stmt).scalar_one()
     runs = (
         db.execute(
             select(AnalyticsRun)
             .where(AnalyticsRun.job_name == job_name)
             .order_by(AnalyticsRun.started_at.desc())
+            .limit(limit)
+            .offset(offset)
         )
         .scalars()
         .all()
     )
-    return [AnalyticsRunResponse.from_model(r) for r in runs]
+    return Page(
+        items=[AnalyticsRunResponse.from_model(r) for r in runs],
+        total=total,
+        limit=limit,
+        offset=offset,
+    )

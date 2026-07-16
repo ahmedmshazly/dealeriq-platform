@@ -763,6 +763,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ready
+         * @description Readiness: verifies Postgres is reachable (liveness stays at /health).
+         */
+        get: operations["ready_api_v1_ready_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -800,6 +820,12 @@ export interface components {
             badge_count: number;
             /** Alerts */
             alerts: components["schemas"]["AlertResponse"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
         };
         /** AlertResponse */
         AlertResponse: {
@@ -1432,6 +1458,17 @@ export interface components {
          * @enum {string}
          */
         OrderStatus: "draft" | "pending_approval" | "approved" | "delivered" | "cancelled";
+        /** Page[AnalyticsRunResponse] */
+        Page_AnalyticsRunResponse_: {
+            /** Items */
+            items: components["schemas"]["AnalyticsRunResponse"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
         /** Page[AuditLogEntryResponse] */
         Page_AuditLogEntryResponse_: {
             /** Items */
@@ -2876,7 +2913,10 @@ export interface operations {
     };
     list_job_runs_route_api_v1_jobs__job_name__runs_get: {
         parameters: {
-            query?: never;
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
             header?: never;
             path: {
                 job_name: string;
@@ -2891,7 +2931,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AnalyticsRunResponse"][];
+                    "application/json": components["schemas"]["Page_AnalyticsRunResponse_"];
                 };
             };
             /** @description Validation Error */
@@ -3211,6 +3251,8 @@ export interface operations {
             query?: {
                 status?: string | null;
                 severity?: string | null;
+                limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -3356,6 +3398,28 @@ export interface operations {
         };
     };
     health_api_v1_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    ready_api_v1_ready_get: {
         parameters: {
             query?: never;
             header?: never;

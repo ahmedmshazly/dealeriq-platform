@@ -6,7 +6,11 @@ from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
 from dealeriq_api.auth.dependencies import get_user_permissions, require_permission
-from dealeriq_api.auth.ownership import require_any_permission
+from dealeriq_api.auth.ownership import (
+    can_view_owned_resource,
+    require_any_permission,
+    resolve_owner_filter,
+)
 from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import forbidden, not_found
@@ -38,6 +42,18 @@ def _to_response(db: Session, order: Order, current_user: User) -> OrderResponse
     return OrderResponse.from_model(order, margin=margin)
 
 
+def _assert_can_view_order(db: Session, current_user: User, order: Order) -> None:
+    granted = get_user_permissions(db, current_user.role_id)
+    if not can_view_owned_resource(
+        granted=granted,
+        manage_any_key="orders:manage_any",
+        manage_own_key="orders:manage_own",
+        current_user_id=current_user.id,
+        owner_id=order.salesperson_id,
+    ):
+        raise not_found("Order not found.")
+
+
 @router.get("", response_model=Page[OrderResponse])
 def list_orders_route(
     salesperson_id: uuid.UUID | None = None,
@@ -47,8 +63,16 @@ def list_orders_route(
     current_user: User = Depends(require_permission("orders:view")),
     db: Session = Depends(get_db),
 ) -> Page[OrderResponse]:
+    granted = get_user_permissions(db, current_user.role_id)
+    scoped_salesperson_id = resolve_owner_filter(
+        granted=granted,
+        manage_any_key="orders:manage_any",
+        manage_own_key="orders:manage_own",
+        current_user_id=current_user.id,
+        requested_owner_id=salesperson_id,
+    )
     orders, total = list_orders(
-        db, salesperson_id=salesperson_id, status=status, limit=limit, offset=offset
+        db, salesperson_id=scoped_salesperson_id, status=status, limit=limit, offset=offset
     )
     return Page(
         items=[_to_response(db, o, current_user) for o in orders],
@@ -67,15 +91,20 @@ def get_order_route(
     order = db.get(Order, order_id)
     if order is None:
         raise not_found("Order not found.")
+    _assert_can_view_order(db, current_user, order)
     return _to_response(db, order, current_user)
 
 
 @router.get("/{order_id}/timeline", response_model=list[OrderEventResponse])
 def order_timeline_route(
     order_id: uuid.UUID,
-    _current_user: User = Depends(require_permission("orders:view")),
+    current_user: User = Depends(require_permission("orders:view")),
     db: Session = Depends(get_db),
 ) -> list[OrderEventResponse]:
+    order = db.get(Order, order_id)
+    if order is None:
+        raise not_found("Order not found.")
+    _assert_can_view_order(db, current_user, order)
     events = order_timeline(db, order_id)
     return [
         OrderEventResponse(
