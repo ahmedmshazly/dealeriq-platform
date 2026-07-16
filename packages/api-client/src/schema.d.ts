@@ -948,6 +948,12 @@ export interface components {
             run_id: string;
             /** Anomalies */
             anomalies: components["schemas"]["AnomalyResponse"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
         };
         /** AnomalyResponse */
         AnomalyResponse: {
@@ -1689,6 +1695,12 @@ export interface components {
             run_id: string;
             /** Units */
             units: components["schemas"]["UnitRiskResponse"][];
+            /** Total */
+            total: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
         };
         /** UnitRiskResponse */
         UnitRiskResponse: {
@@ -1876,7 +1888,7 @@ export interface components {
              */
             acquisition_date: string;
             /** Acquisition Cost */
-            acquisition_cost: number;
+            acquisition_cost: number | null;
             /** Days On Lot */
             days_on_lot: number;
             /** Abc Class */

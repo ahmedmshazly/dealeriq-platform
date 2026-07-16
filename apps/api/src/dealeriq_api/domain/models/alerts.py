@@ -13,7 +13,7 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, String
+from sqlalchemy import DateTime, Enum, ForeignKey, Index, String, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -47,7 +47,17 @@ class AlertRule(IdMixin, Base):
 
 class Alert(IdMixin, Base):
     __tablename__ = "alerts"
-    __table_args__ = (Index("ix_alerts_status_dedup_key", "status", "dedup_key"),)
+    __table_args__ = (
+        Index("ix_alerts_status_dedup_key", "status", "dedup_key"),
+        # FR-062: at most one non-RESOLVED alert per (rule_key, dedup_key).
+        Index(
+            "uq_alerts_open_rule_dedup",
+            "rule_key",
+            "dedup_key",
+            unique=True,
+            postgresql_where=text("status <> 'RESOLVED'"),
+        ),
+    )
 
     rule_key: Mapped[str] = mapped_column(String(30))
     dedup_key: Mapped[str] = mapped_column(String(255))

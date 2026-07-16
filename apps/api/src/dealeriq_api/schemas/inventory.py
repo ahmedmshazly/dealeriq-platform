@@ -57,7 +57,8 @@ class VehicleUnitResponse(BaseModel):
     branch_id: uuid.UUID
     status: UnitStatus
     acquisition_date: date
-    acquisition_cost: float
+    # FR-043: cost/margin is Manager+ only — null for callers without orders:view_margin.
+    acquisition_cost: float | None
     days_on_lot: int
     # Analytics outputs (DS-INV, Phase 5) — not populated until that phase's job has run.
     abc_class: str | None = None
@@ -65,7 +66,7 @@ class VehicleUnitResponse(BaseModel):
     aging_risk_score: float | None = None
 
     @classmethod
-    def from_model(cls, unit: VehicleUnit) -> "VehicleUnitResponse":
+    def from_model(cls, unit: VehicleUnit, *, include_cost: bool = False) -> "VehicleUnitResponse":
         return cls(
             id=unit.id,
             vin=unit.vin,
@@ -73,6 +74,6 @@ class VehicleUnitResponse(BaseModel):
             branch_id=unit.branch_id,
             status=unit.status,
             acquisition_date=unit.acquisition_date,
-            acquisition_cost=float(unit.acquisition_cost),
+            acquisition_cost=float(unit.acquisition_cost) if include_cost else None,
             days_on_lot=days_on_lot(unit),
         )

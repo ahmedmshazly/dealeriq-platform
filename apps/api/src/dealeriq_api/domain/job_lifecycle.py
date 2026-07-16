@@ -1,8 +1,8 @@
 """Shared analytics-run lifecycle helpers (FR-070..072).
 
-`begin_run` inserts the RUNNING row *before* any heavy work so the partial unique index on
-`(job_name) WHERE status = 'running'` is the real FR-072 concurrency guard — not a check-then-
-act race between the HTTP route and the job body.
+`begin_run` inserts and *commits* the RUNNING row before any heavy work so the partial unique
+index on `(job_name) WHERE status = 'RUNNING'` is visible to other sessions — concurrent
+triggers get 409 instead of serializing then double-executing.
 """
 
 from datetime import UTC, date, datetime
@@ -36,7 +36,7 @@ def begin_run(
     data_from: date | None = None,
     data_to: date | None = None,
 ) -> AnalyticsRun:
-    """Insert a RUNNING analytics_runs row; raise 409 conflict if one is already running."""
+    """Insert a RUNNING analytics_runs row and commit it; raise 409 if one is already running."""
     if is_job_running(db, job_name):
         raise conflict(f"A '{job_name}' run is already in progress.")
 
@@ -58,4 +58,7 @@ def begin_run(
             db.flush()
     except IntegrityError as exc:
         raise conflict(f"A '{job_name}' run is already in progress.") from exc
+    # Durable claim before heavy work so other sessions see RUNNING immediately.
+    db.commit()
+    db.refresh(run)
     return run

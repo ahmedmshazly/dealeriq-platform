@@ -5,7 +5,7 @@ import uuid
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.orm import Session
 
-from dealeriq_api.auth.dependencies import require_permission
+from dealeriq_api.auth.dependencies import get_user_permissions, require_permission
 from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
 from dealeriq_api.domain.inventory_service import (
@@ -24,6 +24,11 @@ from dealeriq_api.schemas.inventory import (
 router = APIRouter(prefix="/api/v1/vehicle-units", tags=["vehicle-units"])
 
 
+def _include_cost(db: Session, user: User) -> bool:
+    # FR-043: acquisition cost enables margin reconstruction — same gate as orders:view_margin.
+    return "orders:view_margin" in get_user_permissions(db, user.role_id)
+
+
 @router.get("", response_model=Page[VehicleUnitResponse])
 def list_vehicle_units_route(
     branch_id: uuid.UUID | None = None,
@@ -34,7 +39,7 @@ def list_vehicle_units_route(
     max_days_on_lot: int | None = None,
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
-    _current_user: User = Depends(require_permission("inventory:view")),
+    current_user: User = Depends(require_permission("inventory:view")),
     db: Session = Depends(get_db),
 ) -> Page[VehicleUnitResponse]:
     units, total = list_vehicle_units(
@@ -48,8 +53,9 @@ def list_vehicle_units_route(
         limit=limit,
         offset=offset,
     )
+    include_cost = _include_cost(db, current_user)
     return Page(
-        items=[VehicleUnitResponse.from_model(u) for u in units],
+        items=[VehicleUnitResponse.from_model(u, include_cost=include_cost) for u in units],
         total=total,
         limit=limit,
         offset=offset,
@@ -74,7 +80,7 @@ def create_vehicle_unit_route(
         acquisition_cost=body.acquisition_cost,
         ip=ip,
     )
-    return VehicleUnitResponse.from_model(unit)
+    return VehicleUnitResponse.from_model(unit, include_cost=_include_cost(db, current_user))
 
 
 @router.post("/{unit_id}/adjust", response_model=VehicleUnitResponse)
@@ -94,4 +100,4 @@ def adjust_vehicle_unit_route(
         reason=body.reason,
         ip=ip,
     )
-    return VehicleUnitResponse.from_model(unit)
+    return VehicleUnitResponse.from_model(unit, include_cost=_include_cost(db, current_user))

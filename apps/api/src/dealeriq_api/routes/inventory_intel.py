@@ -8,7 +8,7 @@ same convention Phase 4's forecasts routes established.
 import uuid
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from dealeriq_api.auth.dependencies import require_permission
@@ -183,6 +183,8 @@ def unit_risk_list_route(
     run_id: uuid.UUID | None = Query(default=None),
     aging_only: bool = Query(default=False),
     worst_decile_only: bool = Query(default=False),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
     _current_user: User = Depends(require_permission("inventory-intel:view")),
     db: Session = Depends(get_db),
 ) -> UnitRiskListResponse:
@@ -197,7 +199,10 @@ def unit_risk_list_route(
         query = query.where(UnitRisk.is_aging.is_(True))
     if worst_decile_only:
         query = query.where(UnitRisk.risk_decile == 1)
-    rows = db.execute(query).all()
+
+    count_query = select(func.count()).select_from(query.order_by(None).subquery())
+    total = int(db.execute(count_query).scalar_one())
+    rows = db.execute(query.offset(offset).limit(limit)).all()
 
     branch_names = _branch_names(db, {unit.branch_id for _, unit, _ in rows})
     units = [
@@ -215,7 +220,7 @@ def unit_risk_list_route(
         )
         for unit_risk, unit, model in rows
     ]
-    return UnitRiskListResponse(run_id=run.id, units=units)
+    return UnitRiskListResponse(run_id=run.id, units=units, total=total, limit=limit, offset=offset)
 
 
 def _anomaly_display_name(db: Session, anomaly: Anomaly) -> str:
@@ -246,6 +251,8 @@ def anomaly_list_route(
     scope: str | None = Query(default=None),
     min_severity: float | None = Query(default=None),
     status_filter: str | None = Query(default=None, alias="status"),
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
     _current_user: User = Depends(require_permission("inventory-intel:view")),
     db: Session = Depends(get_db),
 ) -> AnomalyListResponse:
@@ -257,8 +264,14 @@ def anomaly_list_route(
         query = query.where(Anomaly.severity >= min_severity)
     if status_filter is not None:
         query = query.where(Anomaly.status == status_filter)
-    query = query.order_by(Anomaly.severity.desc())
-    rows = db.execute(query).scalars().all()
+
+    count_query = select(func.count()).select_from(query.order_by(None).subquery())
+    total = int(db.execute(count_query).scalar_one())
+    rows = (
+        db.execute(query.order_by(Anomaly.severity.desc()).offset(offset).limit(limit))
+        .scalars()
+        .all()
+    )
 
     anomalies = [
         AnomalyResponse(
@@ -277,4 +290,6 @@ def anomaly_list_route(
         )
         for a in rows
     ]
-    return AnomalyListResponse(run_id=run.id, anomalies=anomalies)
+    return AnomalyListResponse(
+        run_id=run.id, anomalies=anomalies, total=total, limit=limit, offset=offset
+    )

@@ -159,3 +159,22 @@ def test_sales_cannot_get_another_salespersons_order(client: TestClient) -> None
     assert list_a.status_code == 200
     assert all(item["salesperson_id"] == sales_a_id for item in list_a.json()["items"])
     assert order_id not in {item["id"] for item in list_a.json()["items"]}
+
+    # Nested customer history must not leak peer negotiated prices either.
+    detail = client.get(
+        f"/api/v1/customers/{customer}", headers={"Authorization": f"Bearer {sales_a}"}
+    )
+    assert detail.status_code == 200
+    assert order_id not in {o["id"] for o in detail.json()["orders"]}
+
+    # Sales inventory list must not expose acquisition_cost (FR-043).
+    units = client.get("/api/v1/vehicle-units", headers={"Authorization": f"Bearer {sales_a}"})
+    assert units.status_code == 200
+    assert all(item["acquisition_cost"] is None for item in units.json()["items"])
+
+    manager = user_token(client, admin, "manager")
+    manager_units = client.get(
+        "/api/v1/vehicle-units", headers={"Authorization": f"Bearer {manager}"}
+    )
+    assert manager_units.status_code == 200
+    assert any(item["acquisition_cost"] is not None for item in manager_units.json()["items"])

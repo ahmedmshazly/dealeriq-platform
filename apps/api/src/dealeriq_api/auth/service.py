@@ -219,6 +219,19 @@ def change_password(db: Session, *, user: User, current_password: str, new_passw
         raise forbidden("Current password is incorrect.")
     user.password_hash = hash_password(new_password)
     user.must_change_password = False
+    # Invalidate every refresh session so a stolen cookie cannot outlive the password change.
+    now = datetime.now(UTC)
+    tokens = (
+        db.execute(
+            select(RefreshToken).where(
+                RefreshToken.user_id == user.id, RefreshToken.revoked_at.is_(None)
+            )
+        )
+        .scalars()
+        .all()
+    )
+    for t in tokens:
+        t.revoked_at = now
     write_audit_row(
         db,
         actor_id=user.id,

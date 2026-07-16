@@ -198,7 +198,9 @@ def approve_order(db: Session, *, current_user: User, order_id: uuid.UUID, ip: s
 
 
 def deliver_order(db: Session, *, current_user: User, order_id: uuid.UUID, ip: str | None) -> Order:
-    order = db.get(Order, order_id)
+    order = db.execute(
+        select(Order).where(Order.id == order_id).with_for_update()
+    ).scalar_one_or_none()
     if order is None:
         raise not_found("Order not found.")
     assert_owner_or_permission(
@@ -215,6 +217,13 @@ def deliver_order(db: Session, *, current_user: User, order_id: uuid.UUID, ip: s
     unit = db.execute(
         select(VehicleUnit).where(VehicleUnit.id == order.unit_id).with_for_update()
     ).scalar_one()
+    # Re-check after locks so concurrent delivers cannot both emit SALE.
+    if order.status != OrderStatus.APPROVED:
+        raise bad_request(
+            f"Only an approved order can be delivered (current: {order.status.value})."
+        )
+    if unit.status != UnitStatus.RESERVED:
+        raise conflict(f"Unit is not reserved for delivery (status: {unit.status.value}).")
     before = order.status
     now = datetime.now(UTC)
     unit.status = UnitStatus.SOLD

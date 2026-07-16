@@ -56,7 +56,7 @@ export default function InventoryIntelPage() {
     queryKey: ["anomalies", scope],
     queryFn: async () => {
       const { data, error, response } = await api.GET("/api/v1/anomalies", {
-        params: { query: scope ? { scope } : {} },
+        params: { query: { ...(scope ? { scope } : {}), limit: 200 } },
       });
       if (error) throw new ApiRequestError("Failed to load anomalies.", response.status);
       return data;

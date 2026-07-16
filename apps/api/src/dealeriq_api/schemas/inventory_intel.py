@@ -60,6 +60,9 @@ class ModelDetailResponse(BaseModel):
 class UnitRiskListResponse(BaseModel):
     run_id: uuid.UUID
     units: list[UnitRiskResponse]
+    total: int
+    limit: int
+    offset: int
 
 
 class AnomalyResponse(BaseModel):
@@ -80,3 +83,6 @@ class AnomalyResponse(BaseModel):
 class AnomalyListResponse(BaseModel):
     run_id: uuid.UUID
     anomalies: list[AnomalyResponse]
+    total: int
+    limit: int
+    offset: int

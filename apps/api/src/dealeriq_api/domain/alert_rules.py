@@ -53,6 +53,8 @@ def open_alert(
     """Conditional insert: no duplicate *open-or-acknowledged* alert for the same
     (rule_key, dedup_key) (FR-062). Returns `None` (not an error) when one already exists —
     that's the expected, common case on a repeat evaluation, not a failure."""
+    from sqlalchemy.exc import IntegrityError
+
     existing = db.execute(
         select(Alert.id).where(
             Alert.rule_key == rule_key,
@@ -70,8 +72,12 @@ def open_alert(
         payload=payload,
         status=AlertStatus.OPEN,
     )
-    db.add(alert)
-    db.flush()
+    try:
+        with db.begin_nested():
+            db.add(alert)
+            db.flush()
+    except IntegrityError:
+        return None
     _fan_out_notifications(db, alert, rule_key)
     return alert
 

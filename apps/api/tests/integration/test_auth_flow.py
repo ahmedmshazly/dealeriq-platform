@@ -206,7 +206,9 @@ def test_change_password_requires_correct_current_password(client: TestClient) -
     admin = admin_token(client)
     _, email, temp_password = create_user(client, admin, "analyst")
     # change-password is allowlisted while must_change_password is still true
-    token = login(client, email, temp_password).json()["access_token"]
+    login_resp = login(client, email, temp_password)
+    token = login_resp.json()["access_token"]
+    refresh_cookie = login_resp.cookies.get("dealeriq_refresh")
 
     wrong_current = client.post(
         "/api/v1/auth/change-password",
@@ -221,6 +223,10 @@ def test_change_password_requires_correct_current_password(client: TestClient) -
         headers={"Authorization": f"Bearer {token}"},
     )
     assert correct.status_code == 204
+
+    # Refresh from the pre-change cookie must fail once sessions are revoked.
+    refresh = client.post("/api/v1/auth/refresh", cookies={"dealeriq_refresh": refresh_cookie})
+    assert refresh.status_code == 401
 
     relogin = login(client, email, "brand-new-pass-123")
     assert relogin.status_code == 200

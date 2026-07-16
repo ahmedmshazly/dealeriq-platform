@@ -1,13 +1,21 @@
 import type { InputHTMLAttributes } from "react";
+import { useId } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-export function Input({ error, className = "", ...props }: InputProps) {
+export function Input({ error, className = "", id, ...props }: InputProps) {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const errorId = `${inputId}-error`;
+
   return (
     <div className="flex flex-col gap-1">
       <input
+        id={inputId}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errorId : undefined}
         className={`rounded-control border px-3 py-2 text-sm text-text-primary outline-none transition-colors duration-fast placeholder:text-text-disabled focus:border-[1.5px] focus:border-primary-500 focus:ring-4 focus:ring-primary-50 ${
           error
             ? "border-[1.5px] border-critical-fg bg-critical-bg text-critical-fg"
@@ -15,7 +23,11 @@ export function Input({ error, className = "", ...props }: InputProps) {
         } ${className}`}
         {...props}
       />
-      {error && <span className="text-xs text-critical-fg">{error}</span>}
+      {error && (
+        <span id={errorId} role="alert" className="text-xs text-critical-fg">
+          {error}
+        </span>
+      )}
     </div>
   );
 }

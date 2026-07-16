@@ -56,7 +56,7 @@ def _send_email(to_address: str, html_body: str) -> None:
     message["To"] = to_address
     message.attach(MIMEText(html_body, "html"))
 
-    with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as smtp:
+    with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as smtp:
         smtp.send_message(message)
 
 

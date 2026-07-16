@@ -6,7 +6,8 @@ from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.auth.dependencies import require_permission
+from dealeriq_api.auth.dependencies import get_user_permissions, require_permission
+from dealeriq_api.auth.ownership import resolve_owner_filter
 from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import not_found
@@ -81,7 +82,7 @@ def create_customer_route(
 @router.get("/{customer_id}", response_model=CustomerDetailResponse)
 def get_customer_route(
     customer_id: uuid.UUID,
-    _current_user: User = Depends(require_permission("customers:view")),
+    current_user: User = Depends(require_permission("customers:view")),
     db: Session = Depends(get_db),
 ) -> CustomerDetailResponse:
     customer = db.get(Customer, customer_id)
@@ -102,7 +103,15 @@ def get_customer_route(
             frequency_score = profile.frequency_score
             monetary_score = profile.monetary_score
 
-    order_rows = db.execute(
+    granted = get_user_permissions(db, current_user.role_id)
+    scoped_salesperson_id = resolve_owner_filter(
+        granted=granted,
+        manage_any_key="orders:manage_any",
+        manage_own_key="orders:manage_own",
+        current_user_id=current_user.id,
+        requested_owner_id=None,
+    )
+    order_query = (
         select(
             Order.id,
             Order.created_at,
@@ -116,7 +125,10 @@ def get_customer_route(
         .join(VehicleModel, VehicleModel.id == VehicleUnit.model_id)
         .where(Order.customer_id == customer_id)
         .order_by(Order.created_at.desc())
-    ).all()
+    )
+    if scoped_salesperson_id is not None:
+        order_query = order_query.where(Order.salesperson_id == scoped_salesperson_id)
+    order_rows = db.execute(order_query).all()
 
     return CustomerDetailResponse(
         customer=CustomerResponse.from_model(customer),

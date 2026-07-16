@@ -8,8 +8,9 @@ from functools import lru_cache
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Intentionally obvious placeholder — allowed only when app_env == "development".
+# Intentionally obvious placeholders — allowed only when app_env == "development".
 INSECURE_JWT_PLACEHOLDER = "dev-only-insecure-secret-change-me"
+INSECURE_BOOTSTRAP_PASSWORD = "ChangeMe123!"
 _MIN_JWT_SECRET_LENGTH = 32
 
 
@@ -39,7 +40,7 @@ class Settings(BaseSettings):
     # Bootstrap Admin (seeded by Alembic migration 0001_auth_rbac — self-registration is
     # disabled per FR-004, so a first account must exist some other way).
     bootstrap_admin_email: str = "admin@dealeriq.dev"
-    bootstrap_admin_password: str = "ChangeMe123!"
+    bootstrap_admin_password: str = INSECURE_BOOTSTRAP_PASSWORD
 
     # Orders (FR-041): discount above this fraction of list price requires Manager+ approval.
     order_approval_discount_threshold: float = 0.05
@@ -64,7 +65,7 @@ class Settings(BaseSettings):
     enable_scheduler: bool = False
 
     @model_validator(mode="after")
-    def _reject_insecure_jwt_outside_development(self) -> "Settings":
+    def _reject_insecure_defaults_outside_development(self) -> "Settings":
         if self.app_env == "development":
             return self
         if (
@@ -74,6 +75,11 @@ class Settings(BaseSettings):
             raise ValueError(
                 "JWT_SECRET_KEY must be set to a strong secret (length >= 32, not the "
                 "dev placeholder) when APP_ENV is not 'development'."
+            )
+        if self.bootstrap_admin_password == INSECURE_BOOTSTRAP_PASSWORD:
+            raise ValueError(
+                "BOOTSTRAP_ADMIN_PASSWORD must be set to a non-default value when "
+                "APP_ENV is not 'development'."
             )
         return self
 

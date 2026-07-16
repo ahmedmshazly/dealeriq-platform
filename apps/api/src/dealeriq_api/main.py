@@ -59,8 +59,8 @@ def create_app() -> FastAPI:
         title="DealerIQ API",
         version="0.1.0",
         description="Dealership intelligence platform — REST API (DIQ-SRS-001).",
-        openapi_url="/api/v1/openapi.json",
-        docs_url="/api/v1/docs",
+        openapi_url="/api/v1/openapi.json" if settings.app_env == "development" else None,
+        docs_url="/api/v1/docs" if settings.app_env == "development" else None,
         lifespan=_lifespan,
     )
 
@@ -115,10 +115,13 @@ def create_app() -> FastAPI:
         try:
             db.execute(text("SELECT 1"))
         except Exception as exc:
+            import logging
+
+            logging.getLogger("dealeriq").exception("Readiness probe failed: %s", exc)
             raise ApiError(
                 status_code=503,
                 code="not_ready",
-                message=f"Database unavailable: {exc}",
+                message="Database unavailable",
             ) from exc
         return {"status": "ready"}
 
