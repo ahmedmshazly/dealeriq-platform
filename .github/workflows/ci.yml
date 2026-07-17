@@ -9,8 +9,6 @@ on:
 env:
   DATABASE_URL: postgresql+psycopg://dealeriq:dealeriq@127.0.0.1:5432/dealeriq
   NEXT_PUBLIC_API_URL: http://127.0.0.1:8123
-  SMTP_HOST: 127.0.0.1
-  SMTP_PORT: "1025"
 
 jobs:
   ci:
@@ -27,16 +25,6 @@ jobs:
           - 5432:5432
         options: >-
           --health-cmd "pg_isready -U dealeriq -d dealeriq"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-      mailhog:
-        image: mailhog/mailhog:v1.0.1
-        ports:
-          - 1025:1025
-          - 8025:8025
-        options: >-
-          --health-cmd "wget -qO- http://localhost:8025"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
