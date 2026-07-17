@@ -47,7 +47,9 @@ class Settings(BaseSettings):
 
     # Digest email (FR-064): SMTP defaults match MailHog's own listener
     # (infra/docker-compose.yml) — zero paid email service for local dev.
-    smtp_host: str = "localhost"
+    # Prefer IPv4: `localhost` → ::1 fails on some CI runners (Errno 99) when
+    # Docker only publishes 0.0.0.0:1025.
+    smtp_host: str = "127.0.0.1"
     smtp_port: int = 1025
     smtp_from_address: str = "alerts@dealeriq.dev"
 

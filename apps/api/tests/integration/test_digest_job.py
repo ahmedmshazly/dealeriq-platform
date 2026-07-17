@@ -14,7 +14,7 @@ from dealeriq_api.domain.jobs.digest_job import run_digest_job
 from dealeriq_api.domain.models.alerts import AlertSeverity, Notification
 from dealeriq_api.domain.models.rbac import Role, User
 
-MAILHOG_API = "http://localhost:8025/api/v2"
+MAILHOG_API = "http://127.0.0.1:8025/api/v2"
 
 
 def _new_manager_user(db: Session) -> User:
