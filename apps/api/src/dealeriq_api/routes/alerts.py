@@ -16,9 +16,9 @@ from sqlalchemy.orm import Session
 from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import bad_request, not_found
-from dealeriq_api.domain.audit import write_audit_row
 from dealeriq_api.domain.models.alerts import Alert, AlertStatus, Notification
 from dealeriq_api.domain.models.rbac import User
+from dealeriq_api.domain.services.audit import write_audit_row
 from dealeriq_api.schemas.alerts import AlertListResponse, AlertResponse
 
 router = APIRouter(prefix="/api/v1/alerts", tags=["alerts"])

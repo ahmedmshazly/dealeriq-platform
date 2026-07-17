@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.domain.forecast_job import run_forecast_job
+from dealeriq_api.domain.jobs.forecast_job import run_forecast_job
 from dealeriq_api.domain.models.analytics import AnalyticsRun, ForecastMetric, RunStatus
 from dealeriq_api.domain.models.branch import Branch
 from dealeriq_api.domain.models.customer import Customer
@@ -145,7 +145,7 @@ def test_job_that_raises_ends_failed_not_stuck_running(
     def _boom(series_by_key: object) -> None:
         raise RuntimeError("simulated pipeline failure")
 
-    monkeypatch.setattr("dealeriq_api.domain.forecast_job.run_forecast_pipeline", _boom)
+    monkeypatch.setattr("dealeriq_api.domain.jobs.forecast_job.run_forecast_pipeline", _boom)
 
     with pytest.raises(RuntimeError, match="simulated pipeline failure"):
         run_forecast_job(db_session)

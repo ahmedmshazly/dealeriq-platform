@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session
 from dealeriq_analytics.forecasting.champion import run_forecast_pipeline
 from dealeriq_analytics.forecasting.series import build_weekly_series, compute_week_start
 from dealeriq_analytics.sbc import DegenerateSeriesError, classify_with_stats
-from dealeriq_api.domain.job_lifecycle import begin_run
+from dealeriq_api.domain.jobs.job_lifecycle import begin_run
 from dealeriq_api.domain.models.analytics import (
     AnalyticsRun,
     Forecast,

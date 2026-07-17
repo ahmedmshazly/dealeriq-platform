@@ -19,7 +19,7 @@ from dealeriq_api.domain.models.customer_analytics import LeadScore
 from dealeriq_api.domain.models.inventory_intel import Anomaly, InventoryIntel, UnitRisk
 from dealeriq_api.domain.models.lead import Lead, LeadStatus
 from dealeriq_api.domain.models.order import Order, OrderEvent, OrderStatus
-from dealeriq_api.domain.sales_summary import (
+from dealeriq_api.domain.reports.sales_summary import (
     ModelRevenue,
     month_bounds,
     monthly_sales_by_salesperson,

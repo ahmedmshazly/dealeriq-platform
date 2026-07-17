@@ -18,7 +18,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from dealeriq_api.core.config import get_settings
-from dealeriq_api.domain.job_lifecycle import begin_run
+from dealeriq_api.domain.jobs.job_lifecycle import begin_run
 from dealeriq_api.domain.models.alerts import Alert, AlertStatus, Notification
 from dealeriq_api.domain.models.analytics import AnalyticsRun, RunStatus
 from dealeriq_api.domain.models.rbac import User

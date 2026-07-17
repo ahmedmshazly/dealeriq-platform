@@ -8,13 +8,13 @@ from sqlalchemy.orm import Session
 from dealeriq_api.auth.dependencies import get_user_permissions, require_permission
 from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
-from dealeriq_api.domain.inventory_service import (
+from dealeriq_api.domain.models.rbac import User
+from dealeriq_api.domain.models.vehicle import UnitStatus
+from dealeriq_api.domain.services.inventory_service import (
     adjust_unit,
     create_vehicle_unit,
     list_vehicle_units,
 )
-from dealeriq_api.domain.models.rbac import User
-from dealeriq_api.domain.models.vehicle import UnitStatus
 from dealeriq_api.schemas.inventory import (
     VehicleUnitAdjustRequest,
     VehicleUnitCreateRequest,

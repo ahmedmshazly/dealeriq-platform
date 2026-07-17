@@ -11,11 +11,11 @@ from dealeriq_api.auth.ownership import require_any_permission, resolve_owner_fi
 from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import forbidden
-from dealeriq_api.domain.lead_service import create_lead, list_leads, transition_lead
 from dealeriq_api.domain.models.analytics import AnalyticsRun, RunStatus
 from dealeriq_api.domain.models.customer_analytics import CustomerRfmProfile, LeadScore
 from dealeriq_api.domain.models.lead import Lead, LeadStatus
 from dealeriq_api.domain.models.rbac import User
+from dealeriq_api.domain.services.lead_service import create_lead, list_leads, transition_lead
 from dealeriq_api.schemas.leads import (
     FeatureContributionResponse,
     LeadCreateRequest,

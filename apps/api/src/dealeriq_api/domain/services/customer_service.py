@@ -7,8 +7,8 @@ import uuid
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.domain.audit import write_audit_row
 from dealeriq_api.domain.models.customer import Customer
+from dealeriq_api.domain.services.audit import write_audit_row
 
 
 def find_possible_duplicates(

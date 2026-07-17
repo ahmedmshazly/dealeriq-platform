@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 
 from dealeriq_analytics.forecasting.cv import SEASON_LENGTH
 from dealeriq_analytics.forecasting.metrics import mase
-from dealeriq_api.domain.forecast_job import get_series_actuals
+from dealeriq_api.domain.jobs.forecast_job import get_series_actuals
 from dealeriq_api.domain.models.analytics import AnalyticsRun, Forecast, RunStatus
 
 DEFAULT_WINDOW_WEEKS = 12

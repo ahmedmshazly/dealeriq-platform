@@ -1,12 +1,12 @@
 import pytest
 
-from dealeriq_api.domain.lead_state_machine import (
+from dealeriq_api.domain.models.lead import LeadStatus
+from dealeriq_api.domain.services.lead_state_machine import (
     ALLOWED_TRANSITIONS,
     InvalidLeadTransition,
     is_valid_transition,
     validate_transition,
 )
-from dealeriq_api.domain.models.lead import LeadStatus
 
 ALL_STATUSES = list(LeadStatus)
 

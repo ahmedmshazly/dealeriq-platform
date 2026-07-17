@@ -11,13 +11,13 @@ from dealeriq_api.auth.ownership import resolve_owner_filter
 from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import not_found
-from dealeriq_api.domain.customer_service import create_customer, list_customers
 from dealeriq_api.domain.models.analytics import AnalyticsRun, RunStatus
 from dealeriq_api.domain.models.customer import Customer
 from dealeriq_api.domain.models.customer_analytics import CustomerRfmProfile
 from dealeriq_api.domain.models.order import Order
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.domain.models.vehicle import VehicleModel, VehicleUnit
+from dealeriq_api.domain.services.customer_service import create_customer, list_customers
 from dealeriq_api.schemas.customers import (
     CustomerCreateRequest,
     CustomerCreateResponse,

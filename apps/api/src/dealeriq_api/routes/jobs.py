@@ -14,7 +14,7 @@ from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.auth.schemas import Page
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import bad_request, conflict
-from dealeriq_api.domain.job_lifecycle import is_job_running
+from dealeriq_api.domain.jobs.job_lifecycle import is_job_running
 from dealeriq_api.domain.models.analytics import AnalyticsRun
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.jobs.alerts import JOB_NAME as ALERTS_JOB_NAME

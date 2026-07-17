@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.domain.inventory_job import run_inventory_job
+from dealeriq_api.domain.jobs.inventory_job import run_inventory_job
 from dealeriq_api.domain.models.analytics import AnalyticsRun, RunStatus
 from dealeriq_api.domain.models.branch import Branch
 from dealeriq_api.domain.models.customer import Customer
@@ -217,7 +217,7 @@ def test_job_that_raises_ends_failed_not_stuck_running(
     def _boom(*_args: object, **_kwargs: object) -> None:
         raise RuntimeError("simulated pipeline failure")
 
-    monkeypatch.setattr("dealeriq_api.domain.inventory_job._write_inventory_intel", _boom)
+    monkeypatch.setattr("dealeriq_api.domain.jobs.inventory_job._write_inventory_intel", _boom)
 
     with pytest.raises(RuntimeError, match="simulated pipeline failure"):
         run_inventory_job(db_session)

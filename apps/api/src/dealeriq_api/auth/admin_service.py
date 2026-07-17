@@ -7,9 +7,9 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from dealeriq_api.core.errors import bad_request, not_found
-from dealeriq_api.domain.audit import write_audit_row
 from dealeriq_api.domain.models.audit_log import AuditLog
 from dealeriq_api.domain.models.rbac import Permission, Role, RolePermission, User
+from dealeriq_api.domain.services.audit import write_audit_row
 
 
 def list_users(db: Session, *, limit: int, offset: int) -> tuple[list[User], int]:

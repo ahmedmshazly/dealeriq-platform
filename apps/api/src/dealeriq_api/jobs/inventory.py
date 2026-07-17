@@ -6,6 +6,6 @@ off of, so the two can't drift apart. No background scheduler instantiated yet (
 concern), same as forecast.
 """
 
-from dealeriq_api.domain.inventory_job import JOB_NAME, run_inventory_job
+from dealeriq_api.domain.jobs.inventory_job import JOB_NAME, run_inventory_job
 
 __all__ = ["JOB_NAME", "run_inventory_job"]

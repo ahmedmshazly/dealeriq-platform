@@ -16,7 +16,7 @@ from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import forbidden, not_found
 from dealeriq_api.domain.models.order import Order, OrderStatus
 from dealeriq_api.domain.models.rbac import User
-from dealeriq_api.domain.order_service import (
+from dealeriq_api.domain.services.order_service import (
     approve_order,
     cancel_order,
     create_order,

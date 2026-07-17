@@ -50,7 +50,7 @@ from dealeriq_analytics.inventory.survival import (
 from dealeriq_analytics.inventory.survival import (
     days_on_lot as compute_days_on_lot,
 )
-from dealeriq_api.domain.job_lifecycle import begin_run
+from dealeriq_api.domain.jobs.job_lifecycle import begin_run
 from dealeriq_api.domain.models.analytics import AnalyticsRun, Forecast, RunStatus
 from dealeriq_api.domain.models.inventory_intel import (
     ANOMALY_STATUS_NEW,

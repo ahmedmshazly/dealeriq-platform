@@ -11,7 +11,6 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from dealeriq_api.core.errors import bad_request, not_found
-from dealeriq_api.domain.audit import write_audit_row
 from dealeriq_api.domain.models.branch import Branch
 from dealeriq_api.domain.models.vehicle import (
     MovementType,
@@ -20,6 +19,7 @@ from dealeriq_api.domain.models.vehicle import (
     VehicleModel,
     VehicleUnit,
 )
+from dealeriq_api.domain.services.audit import write_audit_row
 
 
 def create_branch(db: Session, *, name: str, city: str) -> Branch:

@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.domain.alert_rules import open_alert
+from dealeriq_api.domain.alerts.alert_rules import open_alert
 from dealeriq_api.domain.models.alerts import Alert, AlertSeverity
 from dealeriq_api.domain.models.audit_log import AuditLog
 from dealeriq_api.domain.models.rbac import User

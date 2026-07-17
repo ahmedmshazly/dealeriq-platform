@@ -9,9 +9,9 @@ from sqlalchemy.orm import Session
 from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import not_found
-from dealeriq_api.domain.audit import write_audit_row
 from dealeriq_api.domain.models.alerts import AlertRule
 from dealeriq_api.domain.models.rbac import User
+from dealeriq_api.domain.services.audit import write_audit_row
 from dealeriq_api.schemas.alerts import AlertRuleResponse, AlertRuleUpdateRequest
 
 router = APIRouter(prefix="/api/v1/alert-rules", tags=["alert-rules"])

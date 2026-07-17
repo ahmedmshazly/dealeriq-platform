@@ -7,10 +7,10 @@ from sqlalchemy.orm import Session
 from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.core.config import get_settings
 from dealeriq_api.core.db import get_db
-from dealeriq_api.domain.dashboard_service import manager_dashboard, sales_dashboard
 from dealeriq_api.domain.models.customer import Customer
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.domain.models.vehicle import VehicleModel
+from dealeriq_api.domain.services.dashboard_service import manager_dashboard, sales_dashboard
 from dealeriq_api.schemas.dashboards import (
     ManagerDashboardResponse,
     ModelRevenueResponse,

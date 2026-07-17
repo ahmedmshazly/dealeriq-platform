@@ -9,8 +9,8 @@ import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.domain.alert_rules import open_alert
-from dealeriq_api.domain.digest_job import run_digest_job
+from dealeriq_api.domain.alerts.alert_rules import open_alert
+from dealeriq_api.domain.jobs.digest_job import run_digest_job
 from dealeriq_api.domain.models.alerts import AlertSeverity, Notification
 from dealeriq_api.domain.models.rbac import Role, User
 

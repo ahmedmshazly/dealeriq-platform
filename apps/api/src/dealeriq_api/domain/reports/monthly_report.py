@@ -9,10 +9,10 @@ from datetime import UTC, date, datetime
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.domain.achieved_accuracy import compute_achieved_accuracy
 from dealeriq_api.domain.models.alerts import Alert
 from dealeriq_api.domain.models.analytics import AnalyticsRun, Forecast, RunStatus
-from dealeriq_api.domain.sales_summary import month_bounds, monthly_sales_and_margin
+from dealeriq_api.domain.reports.achieved_accuracy import compute_achieved_accuracy
+from dealeriq_api.domain.reports.sales_summary import month_bounds, monthly_sales_and_margin
 
 
 class CurrentMonthNotAllowed(ValueError):

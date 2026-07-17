@@ -7,6 +7,6 @@ triggers). `JOB_NAME` here is the single source of truth `routes/jobs.py`'s job 
 `domain/forecast_job.py`'s `AnalyticsRun.job_name` both key off of, so the two can't drift apart.
 """
 
-from dealeriq_api.domain.forecast_job import JOB_NAME, run_forecast_job
+from dealeriq_api.domain.jobs.forecast_job import JOB_NAME, run_forecast_job
 
 __all__ = ["JOB_NAME", "run_forecast_job"]

@@ -5,8 +5,8 @@ from datetime import date
 
 from pydantic import BaseModel, Field
 
-from dealeriq_api.domain.inventory_service import days_on_lot
 from dealeriq_api.domain.models.vehicle import UnitStatus, VehicleUnit
+from dealeriq_api.domain.services.inventory_service import days_on_lot
 
 
 class BranchCreateRequest(BaseModel):

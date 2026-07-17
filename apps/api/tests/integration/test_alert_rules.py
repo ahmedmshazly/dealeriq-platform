@@ -8,7 +8,7 @@ from datetime import UTC, date, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.domain.alert_rules import (
+from dealeriq_api.domain.alerts.alert_rules import (
     evaluate_forecast_stockout,
     evaluate_lead_idle,
     evaluate_lead_score_drift,
@@ -27,7 +27,7 @@ from dealeriq_api.domain.models.lead import Lead, LeadStatus
 from dealeriq_api.domain.models.order import PaymentType
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.domain.models.vehicle import UnitStatus, VehicleModel, VehicleUnit
-from dealeriq_api.domain.order_service import create_order, submit_order
+from dealeriq_api.domain.services.order_service import create_order, submit_order
 
 
 def _new_run(db: Session, job_name: str) -> AnalyticsRun:

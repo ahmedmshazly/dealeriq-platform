@@ -9,7 +9,7 @@ from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import bad_request
 from dealeriq_api.domain.models.rbac import User
-from dealeriq_api.domain.monthly_report import (
+from dealeriq_api.domain.reports.monthly_report import (
     CurrentMonthNotAllowed,
     compute_monthly_report,
     most_recently_completed_month,

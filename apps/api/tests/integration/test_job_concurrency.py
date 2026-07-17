@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from dealeriq_api.core.errors import ApiError
-from dealeriq_api.domain.job_lifecycle import begin_run
+from dealeriq_api.domain.jobs.job_lifecycle import begin_run
 from dealeriq_api.domain.models.analytics import RunStatus
 
 

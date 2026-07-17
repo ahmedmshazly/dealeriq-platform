@@ -40,7 +40,6 @@ from dealeriq_analytics.generator.leads import (
 from dealeriq_analytics.sbc import DegenerateSeriesError, classify_with_stats
 from dealeriq_api.auth.passwords import hash_password
 from dealeriq_api.core.db import engine
-from dealeriq_api.domain.lead_state_machine import ALLOWED_TRANSITIONS
 from dealeriq_api.domain.models import (
     Branch,
     Customer,
@@ -59,6 +58,7 @@ from dealeriq_api.domain.models import (
     VehicleModel,
     VehicleUnit,
 )
+from dealeriq_api.domain.services.lead_state_machine import ALLOWED_TRANSITIONS
 
 GROUND_TRUTH_DIR = pathlib.Path(__file__).parent / "ground_truth"
 

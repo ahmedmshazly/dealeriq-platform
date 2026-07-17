@@ -8,10 +8,13 @@ from sqlalchemy.orm import Session
 
 from dealeriq_api.auth.ownership import assert_owner_or_permission
 from dealeriq_api.core.errors import bad_request, not_found
-from dealeriq_api.domain.audit import write_audit_row
-from dealeriq_api.domain.lead_state_machine import InvalidLeadTransition, validate_transition
 from dealeriq_api.domain.models.lead import Lead, LeadEvent, LeadStatus
 from dealeriq_api.domain.models.rbac import User
+from dealeriq_api.domain.services.audit import write_audit_row
+from dealeriq_api.domain.services.lead_state_machine import (
+    InvalidLeadTransition,
+    validate_transition,
+)
 
 
 def create_lead(

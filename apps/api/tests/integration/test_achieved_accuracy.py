@@ -13,13 +13,13 @@ from datetime import UTC, date, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.domain.achieved_accuracy import compute_achieved_accuracy
 from dealeriq_api.domain.models.analytics import AnalyticsRun, Forecast, RunStatus
 from dealeriq_api.domain.models.branch import Branch
 from dealeriq_api.domain.models.customer import Customer
 from dealeriq_api.domain.models.order import Order, OrderStatus, PaymentType
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.domain.models.vehicle import UnitStatus, VehicleModel, VehicleUnit
+from dealeriq_api.domain.reports.achieved_accuracy import compute_achieved_accuracy
 
 # 49 "quiet" weeks at a constant 3 orders/week, then 4 "evaluation" weeks with known, distinct
 # actuals -- chosen so the full 53-week history makes mase()'s naive-error denominator collapse

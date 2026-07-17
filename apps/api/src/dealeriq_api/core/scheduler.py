@@ -19,11 +19,11 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy.orm import Session, sessionmaker
 
 from dealeriq_api.core.db import engine
-from dealeriq_api.domain.alert_job import run_alert_job
-from dealeriq_api.domain.digest_job import run_digest_job
-from dealeriq_api.domain.forecast_job import run_forecast_job
-from dealeriq_api.domain.inventory_job import run_inventory_job
-from dealeriq_api.domain.lead_scoring_job import run_lead_scoring_job
+from dealeriq_api.domain.jobs.alert_job import run_alert_job
+from dealeriq_api.domain.jobs.digest_job import run_digest_job
+from dealeriq_api.domain.jobs.forecast_job import run_forecast_job
+from dealeriq_api.domain.jobs.inventory_job import run_inventory_job
+from dealeriq_api.domain.jobs.lead_scoring_job import run_lead_scoring_job
 
 logger = logging.getLogger("dealeriq_api.scheduler")
 

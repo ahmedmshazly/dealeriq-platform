@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 
 from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.core.db import get_db
-from dealeriq_api.domain.inventory_service import create_vehicle_model, list_vehicle_models
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.domain.models.vehicle import VehicleModel
+from dealeriq_api.domain.services.inventory_service import create_vehicle_model, list_vehicle_models
 from dealeriq_api.schemas.inventory import VehicleModelCreateRequest, VehicleModelResponse
 
 router = APIRouter(prefix="/api/v1/vehicle-models", tags=["vehicle-models"])

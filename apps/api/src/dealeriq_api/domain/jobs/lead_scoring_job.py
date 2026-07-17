@@ -26,8 +26,8 @@ from dealeriq_analytics.customer.lead_scoring import (
 )
 from dealeriq_analytics.customer.psi import PSI_DRIFT_THRESHOLD, compute_psi_report
 from dealeriq_analytics.customer.rfm import CustomerOrderStats, RfmResult, compute_rfm
-from dealeriq_api.domain.alert_rules import evaluate_lead_score_drift
-from dealeriq_api.domain.job_lifecycle import begin_run
+from dealeriq_api.domain.alerts.alert_rules import evaluate_lead_score_drift
+from dealeriq_api.domain.jobs.job_lifecycle import begin_run
 from dealeriq_api.domain.models.analytics import AnalyticsRun, RunStatus
 from dealeriq_api.domain.models.customer import Customer
 from dealeriq_api.domain.models.customer_analytics import CustomerRfmProfile, LeadScore

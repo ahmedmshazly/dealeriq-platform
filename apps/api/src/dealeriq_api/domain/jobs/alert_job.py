@@ -17,14 +17,14 @@ from datetime import UTC, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from dealeriq_api.domain.alert_rules import (
+from dealeriq_api.domain.alerts.alert_rules import (
     evaluate_forecast_stockout,
     evaluate_lead_idle,
     evaluate_sales_anomaly,
     evaluate_stock_reorder,
     evaluate_unit_aging,
 )
-from dealeriq_api.domain.job_lifecycle import begin_run
+from dealeriq_api.domain.jobs.job_lifecycle import begin_run
 from dealeriq_api.domain.models.analytics import AnalyticsRun, RunStatus
 
 JOB_NAME = "alerts"

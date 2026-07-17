@@ -12,8 +12,7 @@ from sqlalchemy.orm import Session
 from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.core.db import get_db
 from dealeriq_api.core.errors import not_found
-from dealeriq_api.domain.achieved_accuracy import DEFAULT_WINDOW_WEEKS, compute_achieved_accuracy
-from dealeriq_api.domain.forecast_job import get_series_actuals
+from dealeriq_api.domain.jobs.forecast_job import get_series_actuals
 from dealeriq_api.domain.models.analytics import (
     AnalyticsRun,
     Forecast,
@@ -24,6 +23,10 @@ from dealeriq_api.domain.models.analytics import (
 from dealeriq_api.domain.models.branch import Branch
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.domain.models.vehicle import VehicleModel
+from dealeriq_api.domain.reports.achieved_accuracy import (
+    DEFAULT_WINDOW_WEEKS,
+    compute_achieved_accuracy,
+)
 from dealeriq_api.schemas.forecasts import (
     AchievedAccuracyResponse,
     ActualPointResponse,

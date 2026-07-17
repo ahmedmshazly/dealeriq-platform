@@ -16,8 +16,7 @@ from sqlalchemy.orm import Session
 from dealeriq_api.auth.ownership import assert_owner_or_permission
 from dealeriq_api.core.config import get_settings
 from dealeriq_api.core.errors import bad_request, conflict, not_found
-from dealeriq_api.domain.alert_rules import evaluate_discount_approval
-from dealeriq_api.domain.audit import write_audit_row
+from dealeriq_api.domain.alerts.alert_rules import evaluate_discount_approval
 from dealeriq_api.domain.models.order import Order, OrderEvent, OrderStatus, PaymentType
 from dealeriq_api.domain.models.rbac import User
 from dealeriq_api.domain.models.vehicle import (
@@ -27,6 +26,7 @@ from dealeriq_api.domain.models.vehicle import (
     VehicleModel,
     VehicleUnit,
 )
+from dealeriq_api.domain.services.audit import write_audit_row
 
 
 def create_order(

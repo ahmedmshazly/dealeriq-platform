@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 
 from dealeriq_api.auth.dependencies import require_permission
 from dealeriq_api.core.db import get_db
-from dealeriq_api.domain.inventory_service import create_branch, list_branches
 from dealeriq_api.domain.models.rbac import User
+from dealeriq_api.domain.services.inventory_service import create_branch, list_branches
 from dealeriq_api.schemas.inventory import BranchCreateRequest, BranchResponse
 
 router = APIRouter(prefix="/api/v1/branches", tags=["branches"])

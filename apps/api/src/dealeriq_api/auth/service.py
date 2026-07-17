@@ -22,9 +22,9 @@ from dealeriq_api.auth.tokens import (
 )
 from dealeriq_api.core.config import get_settings
 from dealeriq_api.core.errors import ApiError, bad_request, forbidden, unauthorized
-from dealeriq_api.domain.audit import write_audit_row
 from dealeriq_api.domain.models.rbac import Role, User
 from dealeriq_api.domain.models.refresh_token import RefreshToken
+from dealeriq_api.domain.services.audit import write_audit_row
 
 
 def _account_locked_error(user: User) -> ApiError:
