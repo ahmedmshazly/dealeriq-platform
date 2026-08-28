@@ -2,7 +2,9 @@
   "name": "dealeriq",
   "private": true,
   "version": "0.1.0",
-  "description": "DealerIQ workspace root (npm workspaces) — see docs/adr/016-js-monorepo-tooling.md",
+  "author": "Ahmed Elshazly",
+  "license": "MIT",
+  "description": "DealerIQ workspace root (npm workspaces) \u2014 see docs/adr/016-js-monorepo-tooling.md",
   "workspaces": [
     "apps/web",
     "packages/api-client"
@@ -13,6 +15,7 @@
   "scripts": {
     "dev:web": "npm run dev --workspace apps/web",
     "build:web": "npm run build --workspace apps/web",
+    "build:vercel": "npm run docs:site && npm run build:web",
     "lint:web": "npm run lint --workspace apps/web",
     "typecheck:web": "npm run typecheck --workspace apps/web",
     "test:web": "npm run test --workspace apps/web",

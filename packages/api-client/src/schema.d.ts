@@ -790,7 +790,7 @@ export interface components {
         /**
          * AchievedAccuracyResponse
          * @description FR-073: `None` fields mean no forecast for this series is old enough to have real actuals
-         *     yet — never a fabricated number.
+         *     yet - never a fabricated number.
          */
         AchievedAccuracyResponse: {
             /** Series Key */
@@ -3197,6 +3197,8 @@ export interface operations {
                 run_id?: string | null;
                 aging_only?: boolean;
                 worst_decile_only?: boolean;
+                limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;
@@ -3231,6 +3233,8 @@ export interface operations {
                 scope?: string | null;
                 min_severity?: number | null;
                 status?: string | null;
+                limit?: number;
+                offset?: number;
             };
             header?: never;
             path?: never;

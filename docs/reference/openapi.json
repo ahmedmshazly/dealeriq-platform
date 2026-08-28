@@ -2661,7 +2661,7 @@
           "window_end"
         ],
         "title": "AchievedAccuracyResponse",
-        "description": "FR-073: `None` fields mean no forecast for this series is old enough to have real actuals\nyet \u2014 never a fabricated number."
+        "description": "FR-073: `None` fields mean no forecast for this series is old enough to have real actuals\nyet - never a fabricated number."
       },
       "ActualPointResponse": {
         "properties": {
