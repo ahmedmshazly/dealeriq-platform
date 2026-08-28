@@ -19,7 +19,7 @@ bootstrap:
 
 # Brings up infra, migrates the schema to head, then runs the full synthetic data generator
 # (GEN-001..006): ~15k orders, ~6k leads/customers, 156 weeks of demand history, injected
-# anomalies — see specs/004-synthetic-data/ and docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md.
+# anomalies - see specs/004-synthetic-data/ and docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md.
 seed:
 	@echo "==> Starting infra (postgres + mailhog)"
 	@$(COMPOSE) up -d
@@ -72,7 +72,7 @@ test:
 # The same checks CI runs (§12.2). Before a git remote existed, `make ci`
 # passing locally was the evidence backing the "CI green" exit criterion.
 # Starts the API standalone (no DB required to serve OpenAPI schema) just long enough to
-# regenerate the API client against it, then tears it down — mirrors what the GitHub
+# regenerate the API client against it, then tears it down - mirrors what the GitHub
 # Actions workflow does with a service container.
 ci: lint test audit
 	@echo "==> next build"
@@ -87,7 +87,7 @@ ci: lint test audit
 	@echo "==> CI checks passed."
 
 # QA-004: the golden-path E2E suite. Requires an already-running `make dev` stack (real
-# Postgres, real API, real Next.js on :3000) with the standard seed data -- this target does not
+# Postgres, real API, real Next.js on :3000) with the standard seed data; this target does not
 # start one itself, matching every prior phase's "verify against the real dev stack" convention.
 e2e:
 	@echo "==> Playwright golden-path suite (requires \`make dev\` running in another terminal)"
@@ -105,8 +105,10 @@ benchmark:
 audit:
 	@echo "==> Dependency audit (waiver-aware)"
 	@uv run python scripts/ci/check_dependency_audit.py
+	@echo "==> Identity gate (local paths, personal email, private hostnames)"
+	@uv run python scripts/ci/check_identity_strings.py
 
-# DS-OPS-004 / SRS §15: the one-command reproduction path -- runs the multi-dataset forecasting
+# DS-OPS-004 / SRS §15: the one-command reproduction path, runs the multi-dataset forecasting
 # benchmark, then compiles the paper against its real output. No database, no running service.
 benchmark-paper:
 	@echo "==> Forecasting method benchmark (packages/analytics/benchmark)"

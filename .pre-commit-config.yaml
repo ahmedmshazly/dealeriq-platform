@@ -23,6 +23,12 @@ repos:
         language: system
         types: [python]
 
+      - id: identity-gate
+        name: identity gate (local paths, personal email, private hostnames)
+        entry: uv run python scripts/ci/check_identity_strings.py --staged
+        language: system
+        pass_filenames: false
+
       - id: eslint-web
         name: eslint (apps/web)
         entry: bash -c 'cd apps/web && npx eslint .'

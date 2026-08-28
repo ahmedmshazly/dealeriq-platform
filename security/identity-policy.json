@@ -1,0 +1,53 @@
+{
+  "$comment": [
+    "QA-008 identity gate policy, enforced by scripts/ci/check_identity_strings.py.",
+    "environment[] rules are matched by SHAPE, never by value, so this file never contains",
+    "a home path, an address or a hostname. identity[] rules carry the maintainer name as a",
+    "literal, which leaks nothing: it is already the copyright holder in LICENSE. The point",
+    "of that rule is not to hide the name but to keep it in the files where attribution",
+    "belongs, instead of scattered through source comments and runbooks."
+  ],
+  "environment": [
+    {
+      "id": "home-path",
+      "pattern": "/(?:home|Users)/(?!runner\\b)[A-Za-z_][A-Za-z0-9_.-]*",
+      "message": "local home directory path; use a path relative to the repo root, or ~/"
+    },
+    {
+      "id": "personal-email",
+      "pattern": "[A-Za-z0-9._%+-]+@(?:gmail|googlemail|outlook|hotmail|live|yahoo|icloud|aol|proton|protonmail)\\.(?:com|me|mail)\\b",
+      "message": "personal email address; point at the GitHub profile instead (see SECURITY.md)"
+    },
+    {
+      "id": "lan-hostname",
+      "pattern": "\\b[A-Za-z0-9][A-Za-z0-9-]*\\.(?:local|lan|internal|home)\\b",
+      "message": "LAN hostname; use a placeholder or an env var"
+    },
+    {
+      "id": "private-ip",
+      "pattern": "\\b(?:10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|192\\.168\\.\\d{1,3}\\.\\d{1,3}|172\\.(?:1[6-9]|2\\d|3[01])\\.\\d{1,3}\\.\\d{1,3})\\b",
+      "message": "private network address; use a placeholder or an env var"
+    }
+  ],
+  "identity": [
+    {
+      "id": "maintainer-name",
+      "pattern": "\\bAhmed\\s+(?:M\\.?\\s+)?Elshazly\\b",
+      "allowed_in": [
+        "LICENSE",
+        "CITATION.cff",
+        "docs/srs/DealerIQ-SRS.md",
+        "docs/paper/paper.tex",
+        "pyproject.toml",
+        "apps/api/pyproject.toml",
+        "packages/analytics/pyproject.toml",
+        "package.json",
+        "apps/web/package.json",
+        "docs-app/package.json",
+        "packages/api-client/package.json"
+      ],
+      "message": "maintainer name outside a designated attribution file"
+    }
+  ],
+  "waivers": []
+}

@@ -96,3 +96,6 @@ jobs:
 
       - name: Dependency audit (QA-007)
         run: uv run python scripts/ci/check_dependency_audit.py
+
+      - name: Identity gate (local paths, personal email, private hostnames)
+        run: uv run python scripts/ci/check_identity_strings.py
