@@ -2,6 +2,7 @@
 name = "dealeriq-analytics"
 version = "0.1.0"
 description = "DealerIQ analytics library: forecasting, inventory intelligence, anomaly detection, customer analytics, benchmark harness."
+authors = [{ name = "Ahmed Elshazly" }]
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=2.0",

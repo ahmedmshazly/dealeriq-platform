@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use DealerIQ or its benchmark, please cite it as below."
+title: "DealerIQ: a dealership intelligence platform"
+abstract: >-
+  Demand forecasting, inventory optimization, anomaly detection, customer and lead
+  analytics, and rule-based alerting layered on a role-based sales-and-inventory
+  system of record for automotive dealerships. Includes an operational benchmark of
+  classical and intermittent-specific forecasting methods.
+type: software
+authors:
+  - family-names: Elshazly
+    given-names: Ahmed
+version: 1.0.0
+date-released: 2026-07-12
+license: MIT
+repository-code: "https://github.com/ahmedmshazly/dealeriq"
+keywords:
+  - demand forecasting
+  - intermittent demand
+  - inventory optimization
+  - anomaly detection
+  - automotive retail

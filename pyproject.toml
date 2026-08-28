@@ -1,7 +1,8 @@
 [project]
 name = "dealeriq"
 version = "0.1.0"
-description = "DealerIQ workspace root (uv workspace) — see docs/adr/015-python-packaging.md"
+description = "DealerIQ workspace root (uv workspace); see docs/adr/015-python-packaging.md"
+authors = [{ name = "Ahmed Elshazly" }]
 requires-python = ">=3.12"
 
 [tool.uv.workspace]

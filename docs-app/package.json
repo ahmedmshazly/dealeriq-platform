@@ -2,6 +2,8 @@
   "name": "handbook-reader",
   "private": true,
   "version": "1.0.0",
+  "author": "Ahmed Elshazly",
+  "license": "MIT",
   "type": "module",
   "description": "A local, desktop-class reader for the DealerIQ architecture handbook in docs/.",
   "scripts": {
@@ -11,8 +13,8 @@
     "open": "tsx scripts/open-app-window.ts",
     "start": "npm run fonts --silent && npm run index && concurrently -k -s first -n vite,window \"vite\" \"tsx scripts/open-app-window.ts\"",
     "build": "npm run fonts --silent && npm run index && vite build",
-    "pack": "npm run fonts --silent && npm run index && PACK=1 vite build && mv dist/index.html dist/handbook.html && echo \"\\npacked → docs-app/dist/handbook.html\"",
-    "site": "npm run fonts --silent && npm run index && SITE=1 vite build && echo \"\\npublished → apps/web/public/handbook/\"",
+    "pack": "npm run fonts --silent && npm run index && PACK=1 vite build && mv dist/index.html dist/handbook.html && echo \"\\npacked \u2192 docs-app/dist/handbook.html\"",
+    "site": "npm run fonts --silent && npm run index && SITE=1 vite build && echo \"\\npublished \u2192 apps/web/public/handbook/\"",
     "verify": "npm run index && tsx scripts/verify.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"

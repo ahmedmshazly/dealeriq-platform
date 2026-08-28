@@ -2,6 +2,7 @@
 name = "dealeriq-api"
 version = "0.1.0"
 description = "DealerIQ FastAPI backend"
+authors = [{ name = "Ahmed Elshazly" }]
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",

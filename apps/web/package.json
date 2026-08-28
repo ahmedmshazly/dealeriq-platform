@@ -2,6 +2,8 @@
   "name": "@dealeriq/web",
   "private": true,
   "version": "0.1.0",
+  "author": "Ahmed Elshazly",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

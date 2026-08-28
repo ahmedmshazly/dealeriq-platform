@@ -1,6 +1,8 @@
 {
   "name": "@dealeriq/api-client",
   "version": "0.1.0",
+  "author": "Ahmed Elshazly",
+  "license": "MIT",
   "description": "TypeScript API client generated from apps/api's OpenAPI schema (C-05, ADR-012).",
   "type": "module",
   "main": "src/index.ts",
