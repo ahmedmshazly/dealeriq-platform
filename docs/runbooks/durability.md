@@ -11,6 +11,20 @@ The API stores no uploads on disk; backups are **DB-only**.
 See also: [`production-deploy.md`](production-deploy.md),
 [`docs/adr/026-production-data-durability.md`](../adr/026-production-data-durability.md).
 
+## D18 Backup and restore
+
+**Purpose:** Nightly off-box backup and destructive restore path (ADR-026).
+
+```mermaid
+flowchart LR
+  pg[(Postgres_on_EBS)] -->|"pg_dump custom"| dump[backup_file]
+  dump -->|"aws s3 cp"| s3[S3_versioned]
+  s3 -->|"restore script"| verify[sha256_verify]
+  verify -->|"CONFIRM=YES"| pgRestored[(Postgres_restored)]
+```
+
+Use `DRY_RUN=1` before any restore. Catalog: [diagrams D18](../diagrams/README.md).
+
 ## 1. Provision and mount the data EBS volume
 
 Replace `<az>`, `<instance-id>`, and region to match the production EC2
@@ -143,7 +157,7 @@ aws s3 cp s3://dealeriq-prod-backups/prod/postgres/LATEST -
 Dry-run without uploading (from the repo root on the host):
 
 ```bash
-BACKUP_S3_URI=s3://dealeriq-prod-backups/prod DRY_RUN=1 ./scripts/backup-to-s3.sh
+BACKUP_S3_URI=s3://dealeriq-prod-backups/prod DRY_RUN=1 ./scripts/ops/backup-to-s3.sh
 ```
 
 ## 4. Disaster recovery
@@ -161,11 +175,11 @@ BACKUP_S3_URI=s3://dealeriq-prod-backups/prod DRY_RUN=1 ./scripts/backup-to-s3.s
 ```bash
 cd /opt/dealeriq/src
 # Preview
-BACKUP_S3_URI=s3://dealeriq-prod-backups/prod DRY_RUN=1 ./scripts/restore-from-s3.sh
+BACKUP_S3_URI=s3://dealeriq-prod-backups/prod DRY_RUN=1 ./scripts/ops/restore-from-s3.sh
 
 # Apply (destructive to the local DB)
-BACKUP_S3_URI=s3://dealeriq-prod-backups/prod CONFIRM=YES ./scripts/restore-from-s3.sh
-# Or pin a day: BACKUP_DAY=2026-07-15 CONFIRM=YES ./scripts/restore-from-s3.sh
+BACKUP_S3_URI=s3://dealeriq-prod-backups/prod CONFIRM=YES ./scripts/ops/restore-from-s3.sh
+# Or pin a day: BACKUP_DAY=2026-07-15 CONFIRM=YES ./scripts/ops/restore-from-s3.sh
 ```
 
 Restore stops `api`, recreates the database from the dump, and restarts `api`

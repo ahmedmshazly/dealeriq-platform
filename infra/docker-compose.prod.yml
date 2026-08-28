@@ -35,7 +35,7 @@ services:
   api:
     build:
       context: ..
-      dockerfile: Dockerfile
+      dockerfile: infra/Dockerfile
     image: dealeriq-api:latest
     restart: unless-stopped
     depends_on:

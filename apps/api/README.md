@@ -1,31 +1,41 @@
 # apps/api — DealerIQ API
 
 FastAPI (Python 3.12) backend. Owns the database; the sole security boundary (RBAC is enforced
-here only, never trusted from the frontend). See `docs/srs/DealerIQ-SRS.md` §5, §7, §8.
+here only, never trusted from the frontend). See `docs/srs/DealerIQ-SRS.md` §5, §7, §8 and
+`docs/explanation/architecture.md`.
 
-## Layout
+## Layout (ADR-027)
 
 ```
 src/dealeriq_api/
-├── auth/       # JWT, refresh-token rotation, RBAC dependencies, password hashing (Phase 1)
-├── domain/     # SQLAlchemy models (rbac, refresh_token, audit_log so far), audit helper
-├── routes/     # REST endpoints, versioned /api/v1 (auth, users, roles, permissions, audit-log)
-├── jobs/       # APScheduler job definitions (Phase 4+)
-├── alerts/     # rule engine, notification dispatch (Phase 6+)
-└── core/       # config, logging, db session, errors, rate limiter
-alembic/        # migrations — schema changes ONLY via reviewed Alembic revisions (ADR-008)
+├── auth/                 # JWT, refresh-token rotation, RBAC deps, password hashing
+├── domain/
+│   ├── models/           # SQLAlchemy ORM entities
+│   ├── services/         # transactional use cases, audit helper, lead state machine
+│   ├── alerts/           # alert rule evaluation engine
+│   ├── reports/          # monthly report, sales summary, achieved accuracy
+│   ├── jobs/             # forecast / inventory / scoring / alert / digest pipelines
+│   └── base.py           # ORM declarative base
+├── routes/               # REST endpoints, versioned /api/v1
+├── schemas/              # Pydantic request/response DTOs (non-auth)
+├── jobs/                 # thin registry re-exports (job name SSOT for scheduler + HTTP)
+└── core/                 # config, logging, db session, errors, rate limiter, scheduler
+alembic/                  # migrations — schema changes ONLY via reviewed Alembic revisions
 tests/
-├── unit/        # no DB — passwords, tokens, lockout-window arithmetic
-├── integration/  # real ephemeral Postgres via testcontainers-python (ADR-013)
+├── unit/                 # no DB
+├── integration/          # real ephemeral Postgres via testcontainers (ADR-013)
 └── conftest.py
 ```
 
-## Auth (Phase 1)
+There is **no repository layer** — services and jobs use SQLAlchemy `Session` directly
+(intentional; see ADR-027).
+
+## Auth
 
 Deny-by-default: every route declares `Depends(require_permission("resource:action"))`. Access
 tokens are short-lived JWTs (`Authorization: Bearer`); refresh tokens are opaque, httpOnly-cookie
 values with rotation and reuse detection (ADR-019). Self-registration is disabled — the first
-Admin account is seeded by the `0001_auth_rbac` migration from `BOOTSTRAP_ADMIN_EMAIL`/
+Admin account is seeded by the auth RBAC migration from `BOOTSTRAP_ADMIN_EMAIL`/
 `BOOTSTRAP_ADMIN_PASSWORD` (see `.env.example`) with `must_change_password=true`.
 
 ## Running locally

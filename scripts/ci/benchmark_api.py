@@ -4,7 +4,7 @@ seeded database. Sequential requests, matching NFR-003's own framing ("p95 API l
 laptop") -- this is a measurement tool, not a concurrent-load generator.
 
 Usage (against an already-running `make dev` stack, or `make benchmark`):
-    uv run python scripts/benchmark_api.py [--base-url http://localhost:8000] [--n 100]
+    uv run python scripts/ci/benchmark_api.py [--base-url http://localhost:8000] [--n 100]
 """
 
 import argparse

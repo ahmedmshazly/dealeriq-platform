@@ -1,0 +1,120 @@
+/* ───────────────────────── Design tokens ─────────────────────────
+   DealerIQ identity — mapped from the brand kit tokens (Signal teal,
+   cool slate neutrals, Ember secondary). Light is the product default;
+   dark matches the brand dark palette.
+
+   Theme is driven only by `data-theme` on <html>, persisted as
+   localStorage["diq-theme"]. No prefers-color-scheme. */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f7f8f9;
+  --deep: #eef0f2;
+  --surface: #ffffff;
+  --raised: #ffffff;
+  --raised-2: #eef0f2;
+  --panel: #eef0f2;
+
+  --border: #e1e4e7;
+  --border-soft: #eef0f2;
+  --border-strong: #cbd1d5;
+
+  --head: #131b20;
+  --text: #131b20;
+  --read: #29333a;
+  --muted: #5b646b;
+  --dim: #5b646b;
+  --faint: #7c858c;
+  --faint-2: #a6aeb4;
+
+  --accent: #1c6e8c;
+  --accent-soft: #175a73;
+  --accent-2: #3f93ab;
+  --accent-3: #a8672a;
+  --verify: #1b5c32;
+  --danger: #b23b36;
+  --on-accent: #ffffff;
+
+  --grad-warm: #eaf3f6;
+  --grad-deep: #eef0f2;
+  --grad-btn1: #ffffff;
+  --grad-btn2: #eef0f2;
+
+  --surface-rgb: 255, 255, 255;
+  --deep-rgb: 238, 240, 242;
+  --glass-rgb: 247, 248, 249;
+  --hairline-rgb: 19, 27, 32;
+  --accent-rgb: 28, 110, 140;
+  --accent2-rgb: 63, 147, 171;
+  --accent3-rgb: 168, 103, 42;
+  --verify-rgb: 27, 92, 50;
+  --danger-rgb: 178, 59, 54;
+  --shadow-rgb: 19, 27, 32;
+
+  --grain-opacity: 0.025;
+  --grain-blend: multiply;
+
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.7, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+
+  --bar-h: 46px;
+  --r-pill: 999px;
+  --r-card: 14px;
+  --r-ctl: 8px;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #131b20;
+  --deep: #0e1518;
+  --surface: #1a242a;
+  --raised: #212c33;
+  --raised-2: #29333a;
+  --panel: #1a242a;
+
+  --border: #29333a;
+  --border-soft: #212c33;
+  --border-strong: #414b51;
+
+  --head: #f7f8f9;
+  --text: #f7f8f9;
+  --read: #e1e4e7;
+  --muted: #a6aeb4;
+  --dim: #a6aeb4;
+  --faint: #7c858c;
+  --faint-2: #5b646b;
+
+  --accent: #4fb6d0;
+  --accent-soft: #3f93ab;
+  --accent-2: #6bb2c4;
+  --accent-3: #dda25e;
+  --verify: #6fcb8e;
+  --danger: #f08b85;
+  --on-accent: #0d2129;
+
+  --grad-warm: #1a242a;
+  --grad-deep: #0e1518;
+  --grad-btn1: #1a242a;
+  --grad-btn2: #131b20;
+
+  --surface-rgb: 26, 36, 42;
+  --deep-rgb: 14, 21, 24;
+  --glass-rgb: 19, 27, 32;
+  --hairline-rgb: 255, 255, 255;
+  --accent-rgb: 79, 182, 208;
+  --accent2-rgb: 107, 178, 196;
+  --accent3-rgb: 221, 162, 94;
+  --verify-rgb: 111, 203, 142;
+  --danger-rgb: 240, 139, 133;
+  --shadow-rgb: 0, 0, 0;
+
+  --grain-opacity: 0.04;
+  --grain-blend: overlay;
+}

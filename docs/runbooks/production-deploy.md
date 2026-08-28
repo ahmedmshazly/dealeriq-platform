@@ -7,10 +7,33 @@ DealerIQ production layout:
 | Web | Vercel project `dealeriq`, Root Directory `apps/web`, GitHub `ahmedmshazly/dealeriq` (private) |
 | API + Postgres | One EC2 `t3.micro` in `eu-central-1` running `infra/docker-compose.prod.yml` |
 | Durable DB disk | Dedicated EBS volume bind-mounted at `/var/lib/dealeriq/pgdata` (`DeleteOnTermination=false`) — [durability.md](durability.md) / ADR-026 |
-| Off-box backups | Nightly `pg_dump` → S3 via `scripts/backup-to-s3.sh` + systemd timer |
+| Off-box backups | Nightly `pg_dump` → S3 via `scripts/ops/backup-to-s3.sh` + systemd timer |
 | Auth cookies | Browser talks same-origin to Vercel; `API_REWRITE_ORIGIN` proxies `/api/*` to the EC2 API |
 
 Firestore / Firebase is **not** used (stack is Postgres + SQLAlchemy + Alembic).
+
+## D05 Production deployment
+
+**Purpose:** How browser traffic, Vercel, EC2 API, EBS Postgres, and S3 backups relate.
+
+```mermaid
+flowchart TB
+  browser[Browser]
+  vercel[Vercel_NextJs]
+  api[dealeriq_api_on_EC2]
+  pg[(Postgres_pgdata)]
+  ebs[EBS_volume]
+  s3[S3_backups]
+  timer[systemd_backup_timer]
+  browser -->|"HTTPS"| vercel
+  vercel -->|"rewrite /api to EIP:8000"| api
+  api --> pg
+  pg --- ebs
+  timer -->|"pg_dump"| s3
+  pg -.-> timer
+```
+
+Catalog: [diagrams D05](../diagrams/README.md).
 
 ## Current production endpoints
 

@@ -3,16 +3,19 @@
 ## Core Principles
 
 ### I. Monorepo & Stack Discipline
-The project is a single monorepo (`dealeriq/`) with the exact layout mandated by SRS §3.2:
-`apps/api` (FastAPI, Python 3.12), `apps/web` (Next.js 15, TypeScript, App Router),
+The project is a single monorepo (`dealeriq/`) with the top-level layout mandated by SRS §3.2
+and ADR-001: `apps/api` (FastAPI, Python 3.12), `apps/web` (Next.js 15, TypeScript, App Router),
 `packages/analytics` (Python analytics library), `packages/api-client` (generated TS client),
-`infra/` (Docker Compose + seed scripts), `docs/` (SRS, ADRs, runbooks, paper). The mandated
-stack is FastAPI + PostgreSQL 16 + APScheduler + statsforecast (statsmodels retained only for
-STL per ADR-018) + scikit-learn + Recharts. No component of this stack, and no deviation from
-this layout, may change without a new ADR under `docs/adr/` justifying the change. Rationale:
-this layout and stack were deliberately chosen (ADR-001..008, ADR-018) to keep the OpenAPI
-contract, generated client, and analytics boundary coherent; ad-hoc restructuring breaks that
-coherence silently.
+`infra/` (Docker Compose, Dockerfile, seed scripts), `docs/` (SRS, ADRs, Diataxis portal,
+runbooks, paper), and `specs/` (planning archive). Internal package layout is refined per ADR-027: API `domain/` splits into
+`models/`, `services/`, `alerts/`, `reports/`, and `jobs/`; web feature UI lives under
+`apps/web/features/`; host scripts under `scripts/ops/` and `scripts/ci/`. The mandated stack
+is FastAPI + PostgreSQL 16 + APScheduler + statsforecast (statsmodels retained only for STL
+per ADR-018) + scikit-learn + Recharts. No component of this stack, and no deviation from the
+top-level layout, may change without a new ADR under `docs/adr/` justifying the change.
+Rationale: this layout and stack were deliberately chosen (ADR-001..008, ADR-018, ADR-027) to
+keep the OpenAPI contract, generated client, and analytics boundary coherent; ad-hoc
+restructuring breaks that coherence silently.
 
 ### II. Free, Local-First, Zero Paid Services (NON-NEGOTIABLE)
 Every service required for local development and operation MUST be free/open-source and run

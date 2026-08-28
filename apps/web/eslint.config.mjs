@@ -21,7 +21,9 @@ const eslintConfig = [
     },
   },
   {
-    ignores: [".next/**", "node_modules/**", "next-env.d.ts"],
+    // public/handbook/ is the docs-app reader's Vite build output (ADR-028), published by
+    // `make docs-site` and gitignored. Minified vendor bundles, not source.
+    ignores: [".next/**", "node_modules/**", "next-env.d.ts", "public/handbook/**"],
   },
 ];
 

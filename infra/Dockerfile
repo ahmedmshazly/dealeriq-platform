@@ -1,5 +1,5 @@
 # DealerIQ API — production image (FastAPI + analytics workspace).
-# Build from repo root: docker build -t dealeriq-api .
+# Build from repo root: docker build -f infra/Dockerfile -t dealeriq-api .
 
 FROM python:3.12-slim-bookworm AS base
 

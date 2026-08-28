@@ -10,6 +10,26 @@ git --version && python3 --version && uv --version && node --version && npm --ve
   && docker --version && docker compose version
 ```
 
+## D06 Local development topology
+
+**Purpose:** What `make bootstrap` / `make seed` / `make dev` start on a laptop.
+
+```mermaid
+flowchart LR
+  browser[Browser]
+  next[Next_dev_3000]
+  api[uvicorn_8000]
+  pg[(Compose_Postgres)]
+  mailhog[MailHog_8025]
+  browser --> next
+  browser --> mailhog
+  next -->|"NEXT_PUBLIC_API_URL"| api
+  api --> pg
+  api -->|"SMTP 1025"| mailhog
+```
+
+Catalog: [diagrams D06](../diagrams/README.md).
+
 ## First-time setup
 
 ```bash
@@ -49,14 +69,23 @@ make test     # pytest (apps/api, packages/analytics) + vitest (apps/web)
 make ci       # lint + test + next build + regenerate/compile the API client
 ```
 
-## Signing in (Phase 1+)
+## Signing in (dev seed accounts)
 
-A fresh `make seed` creates exactly one account: the bootstrap Admin from
-`BOOTSTRAP_ADMIN_EMAIL`/`BOOTSTRAP_ADMIN_PASSWORD` in `.env` (defaults:
-`admin@dealeriq.dev` / `ChangeMe123!`), with `must_change_password=true` — you'll be routed to
-`/change-password` on first login. Self-registration is disabled (FR-004); create Manager/Sales/
-Analyst accounts from `/admin/users` once signed in as Admin. Each created account's one-time
-temporary password is shown once in that page's response — there is no other way to retrieve it.
+**Dev only — never use these passwords in production.** Accounts come from the migration
+bootstrap Admin plus `make seed` (`infra/seed/generate.py`). Defaults live in
+`Settings` / `SEED_USER_PASSWORD` and are intentionally predictable for local work.
+
+| Role | Email | Password | Notes |
+|------|-------|----------|-------|
+| Admin | `admin@dealeriq.dev` | `ChangeMe123!` | Full permissions; first login forces password change |
+| Manager | `manager1@dealeriq.dev`, `manager2@dealeriq.dev` | `SeedUser123!` | Manager dashboard, approvals, margin visibility |
+| Sales | `sales1@dealeriq.dev` … `sales8@dealeriq.dev` | `SeedUser123!` | Own leads/orders (intended); Sales dashboard |
+| Analyst | `analyst1@dealeriq.dev` | `SeedUser123!` | Read analytics/intel; no order/lead writes |
+
+App: http://localhost:3000 · API docs: http://localhost:8000/api/v1/docs · MailHog: http://localhost:8025
+
+Self-registration is disabled (FR-004). Re-running `make seed` against a fresh volume regenerates
+the same emails/passwords (deterministic seed).
 
 ## Logs
 

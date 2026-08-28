@@ -1,4 +1,4 @@
-.PHONY: bootstrap seed dev down ci test lint migrate e2e benchmark audit benchmark-paper
+.PHONY: bootstrap seed dev down ci test lint migrate e2e benchmark audit benchmark-paper docs-openapi docs docs-pack docs-verify docs-site
 
 COMPOSE = docker compose -f infra/docker-compose.yml
 
@@ -97,14 +97,14 @@ e2e:
 # endpoints. Requires an already-running `make dev` stack, same as `make e2e`.
 benchmark:
 	@echo "==> API latency benchmark (requires \`make dev\` running in another terminal)"
-	@uv run python scripts/benchmark_api.py
+	@uv run python scripts/ci/benchmark_api.py
 
 # QA-007: dependency vulnerability + secret gate. pip-audit and npm audit run for real (not
 # `|| true`); any finding not covered by a reviewed entry in security/dependency-waivers.json
 # fails the build.
 audit:
 	@echo "==> Dependency audit (waiver-aware)"
-	@uv run python scripts/check_dependency_audit.py
+	@uv run python scripts/ci/check_dependency_audit.py
 
 # DS-OPS-004 / SRS §15: the one-command reproduction path -- runs the multi-dataset forecasting
 # benchmark, then compiles the paper against its real output. No database, no running service.
@@ -117,3 +117,22 @@ benchmark-paper:
 	@cd docs/paper && pdflatex -interaction=nonstopmode paper.tex >/dev/null
 	@cd docs/paper && pdflatex -interaction=nonstopmode paper.tex >/dev/null
 	@echo "==> Wrote docs/paper/paper.pdf"
+
+# Export the OpenAPI 3 schema to docs/reference/openapi.json (no DB required).
+docs-openapi:
+	@echo "==> Exporting OpenAPI schema"
+	@uv run python -c "import json; from dealeriq_api.main import create_app; \
+print(json.dumps(create_app().openapi(), indent=2))" > docs/reference/openapi.json
+	@echo "==> Wrote docs/reference/openapi.json"
+
+docs: ## Open the DealerIQ handbook reader (docs-app)
+	npm run docs
+
+docs-pack: ## Pack a single offline handbook.html
+	npm run docs:pack
+
+docs-verify: ## Mechanical audit of the handbook corpus (CI gate)
+	npm run docs:verify
+
+docs-site: ## Publish static reader to apps/web/public/handbook
+	npm run docs:site

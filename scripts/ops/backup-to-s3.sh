@@ -16,7 +16,7 @@
 # Blobs: the API stores no uploads on disk — DB-only backup is sufficient.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${ROOT}"
 
 : "${BACKUP_S3_URI:?BACKUP_S3_URI is required (e.g. s3://dealeriq-prod-backups/prod)}"

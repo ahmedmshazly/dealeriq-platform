@@ -1,0 +1,38 @@
+{
+  "name": "handbook-reader",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A local, desktop-class reader for the DealerIQ architecture handbook in docs/.",
+  "scripts": {
+    "index": "tsx scripts/build-index.ts",
+    "fonts": "tsx scripts/fetch-fonts.ts",
+    "dev": "npm run fonts --silent && npm run index && vite",
+    "open": "tsx scripts/open-app-window.ts",
+    "start": "npm run fonts --silent && npm run index && concurrently -k -s first -n vite,window \"vite\" \"tsx scripts/open-app-window.ts\"",
+    "build": "npm run fonts --silent && npm run index && vite build",
+    "pack": "npm run fonts --silent && npm run index && PACK=1 vite build && mv dist/index.html dist/handbook.html && echo \"\\npacked → docs-app/dist/handbook.html\"",
+    "site": "npm run fonts --silent && npm run index && SITE=1 vite build && echo \"\\npublished → apps/web/public/handbook/\"",
+    "verify": "npm run index && tsx scripts/verify.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "katex": "^0.16.11",
+    "marked": "^14.1.4",
+    "mermaid": "^11.4.1",
+    "minisearch": "^7.1.1",
+    "shiki": "^1.24.0"
+  },
+  "devDependencies": {
+    "@types/katex": "^0.16.7",
+    "@types/node": "^22.15.21",
+    "concurrently": "^9.1.0",
+    "jsdom": "^29.1.1",
+    "tsx": "^4.22.4",
+    "typescript": "^5.8.3",
+    "vite": "^6.0.5",
+    "vite-plugin-singlefile": "^2.1.0",
+    "vitest": "^4.1.9"
+  }
+}

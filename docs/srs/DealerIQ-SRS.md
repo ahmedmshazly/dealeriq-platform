@@ -6,7 +6,7 @@
 |---|---|
 | Document ID | DIQ-SRS-001 |
 | Version | 1.0.0 |
-| Status | Draft for implementation |
+| Status | Accepted — v1.0.0 shipped; layout refined per ADR-027 |
 | Author | Ahmed Elshazly |
 | Date | 2026-07-10 |
 | Standard alignment | ISO/IEC/IEEE 29148:2018 (adapted), IEEE 830 structure |
@@ -128,7 +128,31 @@ DealerIQ is a greenfield monorepo application composed of:
 - Vercel natively supports monorepos via Root Directory (`apps/web`).
 - Two repos are justified by independent teams/release cadences — neither applies here.
 
+### 3.1.1 Visual architecture
+
+Mermaid diagrams for context, containers, deployment, auth, domain state machines, data model,
+and CI live in [`docs/diagrams/README.md`](../diagrams/README.md) (catalog D01–D18). Narrative
+architecture: [`docs/explanation/architecture.md`](../explanation/architecture.md).
+
+```mermaid
+flowchart TB
+  user[DealershipUser] --> dealeriq[DealerIQ]
+  dealeriq --> smtp[SMTP]
+  dealeriq --> s3[S3_backups]
+```
+
+```mermaid
+flowchart LR
+  browser[Browser] --> web[NextJs]
+  web --> api[FastAPI]
+  api --> pg[(PostgreSQL)]
+  api --> analytics[analytics_pkg]
+```
+
 ### 3.2 Monorepo Layout
+
+Top-level roots are fixed by ADR-001. Internal layout under those roots is refined by
+ADR-027 (Diataxis docs portal, layered `domain/`, web `features/`).
 
 ```
 dealeriq/
@@ -136,33 +160,37 @@ dealeriq/
 │   ├── api/                  # FastAPI service
 │   │   ├── src/dealeriq_api/
 │   │   │   ├── auth/         # JWT, RBAC, password hashing
-│   │   │   ├── domain/       # SQLAlchemy models, services
+│   │   │   ├── domain/       # models/, services/, alerts/, reports/, jobs/
 │   │   │   ├── routes/       # REST endpoints (versioned /api/v1)
-│   │   │   ├── jobs/         # APScheduler job definitions
-│   │   │   ├── alerts/       # rule engine, notification dispatch
+│   │   │   ├── jobs/         # thin APScheduler / HTTP job name registry
+│   │   │   ├── schemas/      # Pydantic API DTOs
 │   │   │   └── core/         # config, logging, db session, errors
 │   │   ├── alembic/          # migrations
 │   │   └── tests/
 │   └── web/                  # Next.js app
-│       ├── app/              # App Router routes
-│       ├── components/
-│       ├── lib/
+│       ├── app/              # App Router routes (thin)
+│       ├── features/         # feature UI and data hooks
+│       ├── components/       # shared UI + layout
+│       ├── lib/              # API client, auth, utilities
 │       └── tests/
 ├── packages/
 │   ├── analytics/            # Python: forecasting, anomalies, scoring, benchmark CLI
-│   │   ├── src/dealeriq_analytics/
-│   │   └── tests/
-│   └── api-client/           # generated TS client (openapi-typescript / orval)
+│   └── api-client/           # generated TS client (openapi-typescript)
 ├── infra/
-│   ├── docker-compose.yml    # postgres, mailhog
-│   └── seed/                 # synthetic data generator entrypoints
-├── docs/
-│   ├── srs/                  # this document
-│   ├── adr/                  # ADR-001..N
-│   ├── runbooks/
-│   └── paper/                # research write-up
+│   ├── Dockerfile            # production API image
+│   ├── docker-compose.yml    # local postgres + mailhog
+│   ├── docker-compose.prod.yml
+│   └── seed/                 # synthetic data generator
+├── scripts/
+│   ├── ops/                  # backup / restore
+│   └── ci/                   # audit gate, latency benchmark
+├── deploy/                   # systemd units for prod backups
+├── docs/                     # Diataxis portal — see docs/README.md
+│   ├── getting-started/ how-to/ reference/ explanation/
+│   ├── srs/ adr/ runbooks/ paper/
+├── specs/                    # planning archive (not product docs)
 ├── .github/workflows/        # CI
-└── Makefile / justfile       # one-command dev tasks
+└── Makefile                  # one-command dev tasks
 ```
 
 ### 3.3 Runtime Architecture
@@ -399,18 +427,24 @@ Core entities (PostgreSQL; all tables have `id` UUID, `created_at`, `updated_at`
 
 ## 8. API Specification (Outline)
 
-REST, JSON, versioned under `/api/v1`. OpenAPI 3.1 schema is the contract; the TS client is generated from it in CI (C-05). Error envelope: `{ "error": { "code": "...", "message": "...", "details": [...] } }`.
+REST, JSON, versioned under `/api/v1`. OpenAPI 3.1 schema is the contract; the TS client is
+generated from it in CI (C-05). Error envelope:
+`{ "error": { "code": "...", "message": "...", "details": [...] } }`.
 
-Representative resources (full schema emerges from each phase plan):
+**Full guide and committed snapshot:** [`docs/reference/api.md`](../reference/api.md) and
+[`docs/reference/openapi.json`](../reference/openapi.json) (regenerate with `make docs-openapi`).
+Live Swagger in development: `/api/v1/docs`.
+
+Representative resources:
 
 - `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `POST /auth/logout-all`
-- `GET/POST/PATCH /users`, `GET /roles`, `GET /permissions/matrix`
-- `GET/POST/PATCH /vehicle-models`, `/vehicle-units`, `POST /vehicle-units/import` (dry-run flag)
+- `GET/POST/PATCH /users`, `GET /roles`, `GET /permissions`
+- `GET/POST/PATCH /vehicle-models`, `/vehicle-units`
 - `GET/POST/PATCH /customers`, `/leads`, `POST /leads/{id}/transition`
 - `GET/POST /orders`, `POST /orders/{id}/submit|approve|deliver|cancel`
 - `GET /dashboards/manager|sales`, `GET /reports/monthly?month=`
-- `GET /analytics/forecasts?series=&run=`, `GET /analytics/leaderboard`, `GET /analytics/anomalies`, `GET /analytics/runs`
-- `POST /jobs/{name}/run` (admin), `GET /jobs/status`
+- `GET /forecasts`, `GET /inventory-intel`, `GET /jobs/runs`
+- `POST /jobs/{name}/run` (admin)
 - `GET/PATCH /alert-rules`, `GET /alerts`, `POST /alerts/{id}/acknowledge|resolve`
 - `GET /notifications`, `POST /notifications/{id}/read`
 - `GET /audit-log`

@@ -18,3 +18,9 @@ estimated.
 
 Deterministic given `GeneratorConfig`'s seed (42 by default): re-running against a freshly-reset
 DB reproduces byte-identical output (GEN-001, SC-005).
+
+## Dev seed logins
+
+See [`docs/runbooks/local-dev.md`](../../docs/runbooks/local-dev.md) for the full role table.
+Quick reference (dev only): Admin `admin@dealeriq.dev` / `ChangeMe123!`; seeded Manager/Sales/Analyst
+users use `SeedUser123!`.

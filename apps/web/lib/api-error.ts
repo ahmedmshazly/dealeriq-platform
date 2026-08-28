@@ -1,4 +1,4 @@
-/** Thrown by page-level queryFns so TanStack Query's retry logic (query-provider.tsx) can tell
+/** Thrown by page-level queryFns so TanStack Query's retry logic (components/layout/query-provider.tsx) can tell
  * a permanent 4xx (wrong permission, bad request) apart from a transient network/5xx error. */
 export class ApiRequestError extends Error {
   constructor(

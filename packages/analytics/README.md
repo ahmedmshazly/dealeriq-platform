@@ -1,23 +1,39 @@
 # packages/analytics — DealerIQ Analytics
 
 Python library for forecasting, inventory intelligence, anomaly detection, and customer/lead
-analytics (`docs/srs/DealerIQ-SRS.md` §6). Imported by `apps/api`'s job runner; also runnable
-standalone as a CLI for experiments and the benchmark harness (Phase 10,
-`python -m dealeriq_analytics.benchmark --config ...`).
+analytics (SRS §6). Imported by `apps/api` job pipelines; also runnable standalone for
+experiments and the benchmark harness (`python -m dealeriq_analytics.benchmark`).
 
-Empty at Phase 0 by design — this package exists now so the workspace/packaging/test pattern
-is established before any domain logic lands, starting with the synthetic data generator
-(Phase 3) and the forecasting engine (Phase 4).
+## Layout
 
-## Design discipline (constitution Principle VII, QA-002)
+```
+src/dealeriq_analytics/
+├── forecasting/          # methods, CV, champion selection, metrics, series helpers
+├── inventory/            # ABC-XYZ, reorder, survival
+├── anomalies_detector/   # series + transaction anomalies
+├── customer/             # RFM, lead scoring, PSI
+├── generator/            # synthetic demand / leads / anomalies (seed pipeline)
+├── benchmark/            # CLI harness for the research paper
+└── sbc.py                # Seasonal behavior classification
+tests/                    # unit tests with hand-computed fixtures (QA-002)
+```
 
-Every metric (MASE, pinball loss, empirical coverage, SBC classification, Croston/SBA/TSB
-outputs) is unit-tested against hand-computed fixtures or published toy examples **before**
-being wired into any pipeline. Seasonal Naive is the mandatory champion floor (DS-FC-006) — this
-is enforced in code, not just documented.
+## Principles
 
-## Tests
+- Metrics are unit-tested against fixtures **before** wiring into API jobs.
+- Seasonal Naive is the mandatory forecasting champion floor (DS-FC-006).
+- Jobs in the API own persistence and `analytics_runs`; this package stays pure compute.
+
+## Running tests
 
 ```bash
-uv run pytest packages/analytics/tests --cov=dealeriq_analytics --cov-report=term-missing
+uv run pytest packages/analytics/tests
 ```
+
+## Benchmark / paper
+
+```bash
+make benchmark-paper
+```
+
+See `docs/explanation/analytics-pipeline.md` and `docs/paper/`.

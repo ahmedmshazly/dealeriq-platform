@@ -3,7 +3,7 @@ security/dependency-waivers.json, and fail (non-zero exit) on anything not expli
 Replaces the `pip-audit ... || true` / `npm audit ... || true` no-ops in CI -- those steps ran
 but could never actually fail the build; this script is what makes the gate real.
 
-Usage: uv run python scripts/check_dependency_audit.py
+Usage: uv run python scripts/ci/check_dependency_audit.py
 """
 
 import json
@@ -12,7 +12,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 WAIVERS_FILE = REPO_ROOT / "security" / "dependency-waivers.json"
 
 GHSA_RE = re.compile(r"GHSA-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}")

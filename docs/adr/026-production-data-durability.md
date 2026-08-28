@@ -24,9 +24,9 @@ The API stores no uploads/blobs on local disk — durability is Postgres-only.
 2. **Production hosts** bind-mount
    `${DEALERIQ_DATA_ROOT:-/var/lib/dealeriq}/pgdata` from a **dedicated EBS
    volume** with **DeleteOnTermination = false**.
-3. **Off-box recovery:** nightly `scripts/backup-to-s3.sh` uploads a custom-format
+3. **Off-box recovery:** nightly `scripts/ops/backup-to-s3.sh` uploads a custom-format
    `pg_dump` (+ sha256 manifest) to a versioned S3 bucket, authenticated by an
-   **EC2 instance IAM role**. Restore via `scripts/restore-from-s3.sh`
+   **EC2 instance IAM role**. Restore via `scripts/ops/restore-from-s3.sh`
    (`DRY_RUN=1` / `CONFIRM=YES`).
 4. **Dev/CI** keep named volumes in `infra/docker-compose.yml` alone (`make dev`
    unchanged).

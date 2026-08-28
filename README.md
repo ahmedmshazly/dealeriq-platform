@@ -1,45 +1,79 @@
 # DealerIQ
 
 A dealership intelligence platform: automated demand forecasting, inventory optimization,
-anomaly detection, customer/lead analytics, and rule-based alerting, layered on top of a
-role-based sales-and-inventory system of record for automotive dealerships.
+anomaly detection, customer/lead analytics, and rule-based alerting on top of a role-based
+sales-and-inventory system of record.
 
-The authoritative specification is [`docs/srs/DealerIQ-SRS.md`](docs/srs/DealerIQ-SRS.md)
-(DIQ-SRS-001 v1.0.0). This repository is being built phase-by-phase against that SRS using see
-[`specs/`](specs/) for each phase's `spec.md` / `plan.md` / `tasks.md`, and
-[`CHANGELOG.md`](CHANGELOG.md) for what's actually landed, phase by phase.
+| | |
+|---|---|
+| Spec | [`docs/srs/DealerIQ-SRS.md`](docs/srs/DealerIQ-SRS.md) (DIQ-SRS-001 v1.0.0) |
+| Docs portal | [`docs/README.md`](docs/README.md) (Diataxis) |
+| Handbook | `make docs` · reading path [`docs/00-reading-path.md`](docs/00-reading-path.md) · `/handbook/` after `make docs-site` |
+| Diagrams | [`docs/diagrams/README.md`](docs/diagrams/README.md) (Mermaid D01–D18) |
+| License | [MIT](LICENSE) |
+| Security | [`SECURITY.md`](SECURITY.md) |
+| Contributing | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ## Stack
 
 FastAPI (Python 3.12) · Next.js 15 (TypeScript, App Router) · PostgreSQL 16 · APScheduler ·
-statsforecast/statsmodels/scikit-learn · Recharts. Free/open-source only — everything runs
-locally via Docker Compose (Postgres + MailHog), zero paid services (see
-[`docs/adr/`](docs/adr/) for every architecture decision and its rationale).
+statsforecast / statsmodels (STL) / scikit-learn · Recharts. Local stack via Docker Compose
+(Postgres + MailHog). Architecture decisions: [`docs/adr/`](docs/adr/).
+
+```mermaid
+flowchart LR
+  web[apps/web] -->|OpenAPI client| api[apps/api]
+  api --> pg[(Postgres)]
+  api --> analytics[packages/analytics]
+```
 
 ## Repository layout
 
 ```
-apps/api/            FastAPI backend (REST API, auth, RBAC, job scheduler, alert engine)
-apps/web/             Next.js frontend (dashboards, operational screens, admin console)
-packages/analytics/   Python analytics library (forecasting, inventory, anomalies, scoring)
-packages/api-client/  Generated TypeScript client (single source of truth: the OpenAPI schema)
-infra/                Docker Compose (Postgres 16 + MailHog), synthetic data generator
-docs/                 SRS, ADRs, runbooks, backlog, research paper
-specs/                Feature specs/plans/tasks, one per delivery phase
+apps/api/              FastAPI — auth, RBAC, domain, jobs, OpenAPI
+apps/web/              Next.js — app routes + features/
+packages/analytics/    Forecasting, inventory intel, anomalies, scoring
+packages/api-client/   Generated TypeScript client
+infra/                 Compose, Dockerfile, seed generator
+scripts/ops|ci/        Backup/restore and CI gates
+deploy/                systemd backup units
+docs/                  Documentation portal (start at docs/README.md)
+docs/diagrams/         Mermaid visual catalog (architecture, auth, ops, CI)
+docs-app/              Offline handbook reader (Vite); publishes to apps/web/public/handbook
+specs/                 Planning archive
 ```
 
-## Getting started
+## Quick start
 
 ```bash
 make bootstrap && make seed && make dev
 ```
 
-See [`docs/runbooks/local-dev.md`](docs/runbooks/local-dev.md) for the full guide (prereqs,
-troubleshooting, regenerating the API client, resetting the database).
+- Web: http://localhost:3000  
+- API docs: http://localhost:8000/api/v1/docs  
+- MailHog: http://localhost:8025  
 
-## Project governance
+Seed logins and troubleshooting: [`docs/runbooks/local-dev.md`](docs/runbooks/local-dev.md).  
+Full onboarding: [`docs/getting-started/onboarding.md`](docs/getting-started/onboarding.md).
 
-[`docs/constitution.md`](docs/constitution.md) encodes this project's
-non-negotiable engineering principles, derived from the SRS. Every ADR beyond the SRS's own
-ADR-001..008 lives in [`docs/adr/`](docs/adr/). P1/P2 items deliberately deferred out of a
-phase's scope are tracked in [`docs/backlog.md`](docs/backlog.md).
+## Handbook
+
+```bash
+make docs          # interactive reader at http://localhost:5178
+make docs-verify   # corpus audit (CI gate)
+make docs-site     # static build → apps/web/public/handbook/ (/handbook/)
+```
+
+## Quality
+
+```bash
+make lint && make test   # day-to-day
+make ci                  # lint, tests, audit, Next build, client drift check
+```
+
+## Governance
+
+- Constitution: [`docs/constitution.md`](docs/constitution.md)
+- ADRs: [`docs/adr/`](docs/adr/) ([index](docs/adr/README.md))
+- Deferred work: [`docs/backlog.md`](docs/backlog.md)
+- Changelog: [`CHANGELOG.md`](CHANGELOG.md)

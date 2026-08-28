@@ -5,6 +5,24 @@ All notable changes to this project are documented here. Format loosely follows
 (Conventional Commits drive the actual commit history — see `git log` for full detail;
 NFR-009).
 
+## [Unreleased]
+
+### Changed
+
+- **ADR-027 internal layout + Diataxis docs portal:** API
+  `domain/` split into `services/`, `alerts/`, `reports/`, `jobs/`; web screens extracted to
+  `features/`; Dockerfile moved to `infra/Dockerfile`; host scripts under `scripts/ops/` and
+  `scripts/ci/`.
+- Documentation portal at `docs/README.md` (getting-started, how-to, reference, explanation),
+  plus `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE` (MIT), ADR index, incident/rollback
+  runbooks, and `make docs-openapi`.
+- **Visual documentation suite:** Mermaid catalog D01–D18 under `docs/diagrams/`, including
+  system context, deploy/local topology, auth sequences, RBAC, order/lead/alert state machines,
+  analytics job flow, expanded ER, monorepo map, CI pipeline, and backup/restore.
+- **ADR-028 handbook reader:** portfolio-style `docs-app/` indexes Diataxis `docs/` (reading
+  path, glossary, search/graph). `make docs` / `make docs-verify` / `make docs-site` →
+  `apps/web/public/handbook/` (`/handbook/`).
+
 ## [1.0.0] - 2026-07-12
 
 All ten phases (SRS §13, Phase 0 through Phase 10) are complete. This is the v1.0.0 release.

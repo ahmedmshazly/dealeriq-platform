@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#1C6E8C" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>DealerIQ — Handbook</title>
+    <script>
+      // Set the theme before first paint so the shell never flashes the wrong theme.
+      (function () {
+        try {
+          var t = localStorage.getItem("diq-theme");
+          if (t === "dark") document.documentElement.dataset.theme = "dark";
+          else document.documentElement.dataset.theme = "light";
+        } catch (_) {
+          /* private mode: keep the light default */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#prose">Skip to content</a>
+    <div id="app" aria-busy="true"></div>
+    <div id="boot" class="boot">
+      <div class="boot-brand" aria-hidden="true">
+        <img class="boot-mark-img boot-mark-img--light" src="/mark.svg" alt="" width="48" height="48" />
+        <img class="boot-mark-img boot-mark-img--dark" src="/mark-on-dark.svg" alt="" width="48" height="48" />
+        <div class="boot-mark">Dealer<span class="boot-mark-b">IQ</span></div>
+      </div>
+      <p class="boot-note">Loading the handbook…</p>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

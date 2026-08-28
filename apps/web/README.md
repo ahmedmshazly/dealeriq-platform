@@ -2,16 +2,45 @@
 
 Next.js 15 (App Router, TypeScript) frontend. Consumes the API exclusively through the
 generated client in `packages/api-client` (C-05, ADR-012) — no hand-written fetch calls to
-undocumented endpoints (the one temporary exception, the Phase 0 home page's direct `/health`
-fetch, is documented inline and will be removed once real endpoints exist).
+undocumented endpoints.
+
+## Project layout (ADR-027)
+
+```
+apps/web/
+├── app/                    # App Router — thin route shells only
+│   ├── (authenticated)/    # Protected routes (layout + page.tsx re-exports)
+│   ├── login/
+│   └── change-password/
+├── features/               # Screen UI — one primary export per route
+│   ├── dashboard/
+│   ├── inventory/
+│   ├── inventory-intel/
+│   ├── analytics/
+│   ├── customers/
+│   ├── leads/
+│   ├── orders/
+│   ├── alerts/
+│   ├── reports/
+│   ├── admin/              # users, permissions, audit-log, alert-rules
+│   └── auth/               # login, change-password
+├── components/
+│   ├── ui/                 # Shared primitives (Button, Card, …)
+│   └── layout/             # App shell and root providers
+└── lib/                    # API client wiring, auth context, helpers
+```
+
+Route files under `app/` import and re-export the matching feature component (e.g.
+`features/dashboard/dashboard-page.tsx` exports `DashboardPage`). Client boundaries live in
+feature modules; pages stay thin shells.
 
 ## Brand system
 
 Design tokens are copied verbatim from the brand kit tokens into `app/tokens.css` and wired
 into `tailwind.config.ts` (colors/radius/shadow reference CSS custom properties so
 `[data-theme="dark"]` swaps them live — see `next-themes` usage in
-`components/theme-provider.tsx`, `attribute="data-theme"`, `defaultTheme="light"`). Fonts
-(Inter + JetBrains Mono) are self-hosted via `next/font/google`, not the Brand Kit mockups' CDN
+`components/layout/theme-provider.tsx`, `attribute="data-theme"`, `defaultTheme="light"`). Fonts
+(Inter + JetBrains Mono) are self-hosted via `next/font/google`, not the brand kit mockups' CDN
 `<link>` approach. Icons come from `lucide-react`, stroke-width 1.5 per the brand guidelines.
 
 Two brand kit inconsistencies were resolved during implementation (see

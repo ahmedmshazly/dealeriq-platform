@@ -20,6 +20,16 @@ Both expose their ports as environment-overridable (`POSTGRES_PORT`, `MAILHOG_SM
 `pgdata` volume; `docker compose -f infra/docker-compose.yml down -v` (or `make down` plus a
 manual `-v`) resets it to empty for a from-scratch reseed.
 
+## `Dockerfile`
+
+Production API image (FastAPI + analytics workspace). Build context is the **repo root**:
+
+```bash
+docker build -f infra/Dockerfile -t dealeriq-api .
+# or via compose:
+docker compose -f infra/docker-compose.prod.yml --env-file /etc/dealeriq/prod.env build
+```
+
 ## `docker-compose.prod.yml`
 
 Production-only stack (API + Postgres, no MailHog). Postgres data is bind-mounted from

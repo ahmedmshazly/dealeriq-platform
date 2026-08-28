@@ -17,7 +17,7 @@ npm run build --workspace packages/api-client       # tsc --noEmit
 
 `src/schema.d.ts` is committed. CI regenerates it against a freshly-started API instance and
 fails the build if it drifts from the committed version, unless the API's version is
-deliberately bumped (QA-005).
+deliberately bumped (QA-005). Step-by-step: [`docs/how-to/regenerate-api-client.md`](../../docs/how-to/regenerate-api-client.md).
 
 ## Usage
 

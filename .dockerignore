@@ -27,7 +27,6 @@ packages/api-client
 infra/pgdata
 infra/seed
 *.md
-TEST_LOGINS.md
 CHANGELOG.md
 package-lock.json
 package.json

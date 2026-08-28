@@ -18,6 +18,10 @@
     "test:web": "npm run test --workspace apps/web",
     "e2e": "npm run e2e --workspace apps/web",
     "generate:client": "npm run generate --workspace packages/api-client",
-    "build:client": "npm run build --workspace packages/api-client"
+    "build:client": "npm run build --workspace packages/api-client",
+    "docs": "npm --prefix docs-app install --silent && npm --prefix docs-app run start",
+    "docs:pack": "npm --prefix docs-app install --silent && npm --prefix docs-app run pack",
+    "docs:verify": "npm --prefix docs-app install --silent && npm --prefix docs-app run verify",
+    "docs:site": "npm --prefix docs-app ci --include=dev --silent && npm --prefix docs-app run site"
   }
 }
