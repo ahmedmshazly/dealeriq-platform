@@ -1,11 +1,11 @@
 """Lead-conversion scoring (DS-CUST-002..005, ADR-023): calibrated logistic regression with
-per-lead top-3 explanations. Pure, DB-free — plain records in, dataclasses out (Phase 4/5's
+per-lead top-3 explanations. Pure, DB-free - plain records in, dataclasses out (Phase 4/5's
 established `packages/analytics` convention); no SQLAlchemy imports.
 
 Two separate fits share one standardized feature matrix: a plain `LogisticRegression` supplies
 interpretable coefficients for DS-CUST-004's top-3 explanations, and a `CalibratedClassifierCV`
 wrapping the same estimator type supplies the calibrated probability actually shown to users
-(DS-CUST-003) — `CalibratedClassifierCV` internally cross-validates and holds multiple fold
+(DS-CUST-003) - `CalibratedClassifierCV` internally cross-validates and holds multiple fold
 models, so there is no single clean coefficient vector to explain from directly. Both are fit on
 the identical training rows and feature columns, so the explanation's direction/ranking stays
 representative of what actually drove the calibrated score.
@@ -48,12 +48,12 @@ PSI_MONITORED_FEATURES: tuple[str, ...] = (
 )
 """FR-074's drift check compares this run's training population (resolved leads, spanning the
 full history) against its scoring population (currently-open leads, which are inherently recent
-by definition) -- so `days_since_creation`, `season_sin`/`season_cos`, and `interaction_count`
+by definition), so `days_since_creation`, `season_sin`/`season_cos`, and `interaction_count`
 are *mechanically* different between the two populations regardless of any genuine change in the
 incoming lead mix (an open lead can't have accumulated as many days or interactions as an
 already-resolved one). Monitoring those would make the drift alert fire on every single run,
-which is not a useful signal. Only the compositional features here -- what channels, budget
-tiers, vehicle segments, and customer quality leads are coming from -- are meaningfully
+which is not a useful signal. Only the compositional features here, what channels, budget
+tiers, vehicle segments, and customer quality leads are coming from, are meaningfully
 exchangeable between the two populations, so drift in *those* is the actionable signal."""
 
 
@@ -98,7 +98,7 @@ class LeadScoringResult:
     train_features: pd.DataFrame
     score_features: pd.DataFrame
     explain_coefficients: dict[str, float]
-    """The interpretable `explain_model`'s fitted coefficients, by feature name — exposed for
+    """The interpretable `explain_model`'s fitted coefficients, by feature name - exposed for
     QA-003(c)'s sign-recovery validation (`test_qa003c_lead_model_sign_recovery.py`) and any
     future model-diagnostics surface; not itself the calibrated probability."""
 
@@ -106,7 +106,7 @@ class LeadScoringResult:
 def build_feature_matrix(rows: list[LeadFeatureRow], *, as_of: datetime) -> pd.DataFrame:
     """One row per lead, deterministic column order. Unseen/unrecognized categorical values
     (e.g. a `budget_band` string not in `BUDGET_BANDS`) fall back to the baseline level rather
-    than raising, per spec.md's Edge Cases — a lead with unusual data still gets scored."""
+    than raising, per spec.md's Edge Cases - a lead with unusual data still gets scored."""
     records = []
     for r in rows:
         rec: dict[str, float] = {"lead_id": r.lead_id}  # type: ignore[dict-item]
@@ -141,7 +141,7 @@ def temporal_split(
     rows: list[LeadFeatureRow], *, train_fraction: float = 0.8
 ) -> tuple[list[LeadFeatureRow], list[LeadFeatureRow]]:
     """DS-CUST-005: leads ordered by `created_at`, earliest `train_fraction` train, remainder
-    validate — never shuffled, so a lead created after the split point can never leak into the
+    validate - never shuffled, so a lead created after the split point can never leak into the
     training fold via random chance."""
     resolved = sorted((r for r in rows if r.won is not None), key=lambda r: r.created_at)
     split_idx = int(len(resolved) * train_fraction)
@@ -203,7 +203,7 @@ def train_and_score(
     )
 
     # `penalty` left at its default ("l2", DS-CUST-003's requirement) rather than passed
-    # explicitly -- sklearn 1.8+ deprecates the `penalty="l2"` spelling in favor of just using
+    # explicitly, sklearn 1.8+ deprecates the `penalty="l2"` spelling in favor of just using
     # the default, ahead of its removal in 1.10.
     explain_model = LogisticRegression(class_weight="balanced", max_iter=1000)
     explain_model.fit(x_train, y_train)

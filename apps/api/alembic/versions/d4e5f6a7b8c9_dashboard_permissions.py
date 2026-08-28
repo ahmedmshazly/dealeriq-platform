@@ -4,10 +4,10 @@ Revision ID: d4e5f6a7b8c9
 Revises: c3d4e5f6a7b8
 Create Date: 2026-07-11 15:00:00.000000
 
-Hand-authored — no new tables (ADR-024: achieved accuracy is computed on demand, the sales
+Hand-authored - no new tables (ADR-024: achieved accuracy is computed on demand, the sales
 target is a single `Settings`-level constant, not a persisted per-salesperson quota). Seeds two
 new permissions: `dashboard:view_manager` (admin/manager) and `dashboard:view_sales`
-(admin/manager/sales — the sales dashboard scopes "my" data server-side by `current_user.id`
+(admin/manager/sales - the sales dashboard scopes "my" data server-side by `current_user.id`
 regardless of role, so managers/admins can view it too for oversight).
 """
 

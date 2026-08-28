@@ -1,6 +1,6 @@
 """VehicleModel, VehicleUnit, and the append-only StockMovement ledger (FR-020/021, DAT-003).
 
-Unit status is DERIVED from the ledger by application code (inventory_service.py) — the
+Unit status is DERIVED from the ledger by application code (inventory_service.py) - the
 `status` column is a materialized convenience for fast filtering, but the ledger is the source
 of truth; every status change is accompanied by a stock_movements row in the same transaction.
 """

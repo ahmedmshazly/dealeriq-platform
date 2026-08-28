@@ -1,6 +1,6 @@
-"""AuditLog — append-only (constitution Principle IV, DAT-003, FR-080/081).
+"""AuditLog - append-only (constitution Principle IV, DAT-003, FR-080/081).
 
-Rows are inserted, never mutated or deleted. No `updated_at` column — there is no such thing as
+Rows are inserted, never mutated or deleted. No `updated_at` column - there is no such thing as
 updating an audit row.
 """
 

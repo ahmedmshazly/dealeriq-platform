@@ -5,7 +5,7 @@ Revises: a1b2c3d4e5f6
 Create Date: 2026-07-10 18:00:00.000000
 
 Hand-authored to mirror the AlertRule/Alert/Notification model definitions (reviewed per
-ADR-011 — verified by running `alembic upgrade head` against a real Postgres instance, and
+ADR-011 - verified by running `alembic upgrade head` against a real Postgres instance, and
 confirming a subsequent `alembic revision --autogenerate` produces an empty diff). Seeds the six
 FR-061 built-in rules with DS-OPS-001's stated defaults. Adds alerts:view/alerts:manage/
 alert-rules:manage permission grants.

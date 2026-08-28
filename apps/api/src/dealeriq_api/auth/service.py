@@ -1,7 +1,7 @@
 """Login, refresh (with rotation + reuse detection), logout, logout-all, change-password.
 
 Every path here that changes account/session state writes an audit row in the same
-transaction (constitution Principle IV, FR-080) — the audit log and the action it describes
+transaction (constitution Principle IV, FR-080) - the audit log and the action it describes
 commit or roll back together, never independently.
 """
 

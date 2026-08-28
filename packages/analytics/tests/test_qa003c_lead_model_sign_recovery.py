@@ -1,38 +1,38 @@
-"""QA-003(c) — CI-blocking scientific validation, per the constitution's Phase 4+ mandate (the
+"""QA-003(c) - CI-blocking scientific validation, per the constitution's Phase 4+ mandate (the
 same standing QA-003(a)/(b) got in Phases 4/5): "lead-model recovers sign of ground-truth
 coefficients."
 
 Phase 3's own `test_lead_generator.py` already validates that a plain `LogisticRegression` fit
 directly on the simulator's design matrix (`leads_to_design_matrix`) recovers every ground-truth
-coefficient's sign — a check on the *simulator's* validity. This test extends the same check to
+coefficient's sign - a check on the *simulator's* validity. This test extends the same check to
 Phase 7's actual deployed pipeline: `build_feature_matrix` + standardization + the calibrated
 `LogisticRegression`/`CalibratedClassifierCV` combination `train_and_score` really uses
 (DS-CUST-002/003), not just the simulator's self-check.
 
 Feature mapping from `SimulatedLead` to `LeadFeatureRow` uses the simulator's own
 `days_since_creation`/`interaction_count`/`rfm_quintile` values directly (via a constructed
-`created_at` and `customer_rfm_score`), not a DB-realized proxy — this test validates the *model
+`created_at` and `customer_rfm_score`), not a DB-realized proxy - this test validates the *model
 architecture's* ability to recover a known signal from data shaped like the ground truth, not the
 real database's specific feature-realization choices (those are exercised by
 `test_lead_scoring.py`'s unit tests and validated against the real seeded database, documented in
-the Phase 7 report — DS-ANO-003 in Phase 5 drew the same real-database-only line for its
+the Phase 7 report - DS-ANO-003 in Phase 5 drew the same real-database-only line for its
 transaction-level detector rather than building a second in-memory reproduction).
 
-`season_sin`/`season_cos` (continuous, month-based) has no ground-truth sign to check against —
+`season_sin`/`season_cos` (continuous, month-based) has no ground-truth sign to check against -
 the simulator's own seasonality signal is a binary `is_peak_season` flag on a different cadence
 (week-of-year buckets), not a continuous month cycle, so the two aren't directly comparable
 coefficient-for-coefficient. Every other feature has a direct, checkable ground-truth sign.
 
 Discrimination/calibration are graded relative to two baselines computed from the *same* held-out
-validation split, not fixed literals — a hardcoded AUC target is either too strict for a weak
+validation split, not fixed literals - a hardcoded AUC target is either too strict for a weak
 ground-truth signal or too loose for a strong one, while "how close to the achievable ceiling" and
 "better than predicting the base rate" are meaningful regardless of exactly how separable this
 particular seeded population turns out to be:
-  - **Ceiling ROC-AUC**: the AUC obtained by ranking on the simulator's own true `p_won` — the
+  - **Ceiling ROC-AUC**: the AUC obtained by ranking on the simulator's own true `p_won` - the
     best any model could ever do on this exact validation split, since `p_won` is the literal
     probability the outcomes were drawn from.
   - **Naive Brier score**: the score of a model that always predicts the population's mean win
-    rate — the naive floor a real, feature-driven model has to beat.
+    rate - the naive floor a real, feature-driven model has to beat.
 """
 
 from datetime import UTC, datetime, timedelta

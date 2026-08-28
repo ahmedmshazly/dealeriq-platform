@@ -1,13 +1,13 @@
 """Per-series champion selection (DS-FC-006) and final forecast assembly (DS-FC-007).
 
 Champion = the method with the lowest mean MASE across its valid CV folds, but only if it beats
-Seasonal Naive's mean MASE on that same series — otherwise Seasonal Naive itself is champion.
+Seasonal Naive's mean MASE on that same series - otherwise Seasonal Naive itself is champion.
 An exact tie against Seasonal Naive resolves to Seasonal Naive (the simplest sufficient
 explanation, not an arbitrary pick). A method with zero valid folds for a series (every fold
 failed to converge) is never eligible for champion on that series.
 
 MASE's in-sample scale is computed once per series from the *full* 156-week history (not
-re-sliced per CV fold) — a standard, practical simplification of Hyndman & Koehler's per-fold
+re-sliced per CV fold) - a standard, practical simplification of Hyndman & Koehler's per-fold
 definition that still scores "how hard is this series to beat with seasonal naive," just with
 one fixed reference instead of 24 slightly-different ones.
 """
@@ -118,7 +118,7 @@ def select_champion(metrics_by_method: dict[str, MethodMetrics]) -> str:
 def _refit_champion_forecast(champion_alias: str, series: pd.Series) -> list[ForecastPoint]:
     """Refits the champion method on the FULL history (not a CV fold) to produce the actual
     persisted 12-week point forecast + 80% interval. The lower bound is clamped at 0 for display
-    (vehicle demand can't be negative) — the raw, unclamped CV interval is what pinball loss and
+    (vehicle demand can't be negative) - the raw, unclamped CV interval is what pinball loss and
     coverage were computed against, so clamping here doesn't retroactively change any metric."""
     model = next(
         m for m in build_method_pool(SEASON_LENGTH, HORIZON) if str(m.alias) == champion_alias

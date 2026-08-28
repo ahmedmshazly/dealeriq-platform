@@ -4,7 +4,7 @@ quantile of lead-time demand, not a fixed multiplier.
 Phase 4's persisted forecast already carries three known points of each future week's demand
 distribution: the 10th and 90th percentiles (`yhat_lo80`/`yhat_hi80`, from the champion's 80%
 prediction interval) and the point forecast `yhat` (treated as the 50th percentile / median
-estimate). For the default service level (90%), the reorder point uses `yhat_hi80` directly — no
+estimate). For the default service level (90%), the reorder point uses `yhat_hi80` directly - no
 interpolation needed, since that *is* the 90th percentile the pipeline already computed. For any
 other configured service level, this module linearly interpolates between the three known
 anchor points (0.10, 0.50, 0.90) rather than assuming a parametric (e.g. Normal) distribution
@@ -12,7 +12,7 @@ the champion method may not actually produce.
 
 Multi-week lead-time demand uses the sum of each week's *own* quantile estimate, not a true
 convolved multi-week quantile (which would require the joint distribution across weeks, not just
-each week's marginal) — a standard, disclosed simplification also used in practice, consistent
+each week's marginal) - a standard, disclosed simplification also used in practice, consistent
 with this project's existing "document the simplification" treatment of MASE's fixed in-sample
 scale in Phase 4.
 """
@@ -65,7 +65,7 @@ def compute_reorder_point(
     """`forecast` is the champion's persisted future-week points, in chronological order
     (`champion.py`'s `_refit_champion_forecast` output / the `forecasts` table rows for one
     series). Raises `NoForecastError` if there aren't enough forecast weeks to cover the
-    configured lead time — callers should skip that (model, branch) with the recorded reason
+    configured lead time - callers should skip that (model, branch) with the recorded reason
     (spec.md User Story 2, Acceptance Scenario 2), not fabricate a value."""
     if len(forecast) < lead_time_weeks:
         raise NoForecastError(

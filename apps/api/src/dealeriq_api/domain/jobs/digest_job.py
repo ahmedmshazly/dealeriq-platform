@@ -1,9 +1,9 @@
 """Daily digest email job (FR-064): summarizes each user's new/open alerts as a rendered-HTML
 email, sent via stdlib `smtplib` to the MailHog container already running for local dev
-(`infra/docker-compose.yml`) — no third-party email API, no templating-library dependency (the
+(`infra/docker-compose.yml`) - no third-party email API, no templating-library dependency (the
 content is a short, fixed-shape list of alert lines, not complex enough to justify one).
 
-A user with zero un-emailed, non-resolved notifications gets no email at all — an empty digest
+A user with zero un-emailed, non-resolved notifications gets no email at all - an empty digest
 is not sent (spec.md User Story 3, Acceptance Scenario 2).
 """
 

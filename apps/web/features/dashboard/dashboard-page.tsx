@@ -30,7 +30,7 @@ function ManagerDashboard() {
     queryKey: ["dashboards", "manager"],
     queryFn: async () => {
       // GET /dashboards/manager has zero declared parameters, so FastAPI never documents a 403
-      // response for it -- openapi-fetch's generated `error` union collapses to `never` even
+      // response for it, openapi-fetch's generated `error` union collapses to `never` even
       // though require_permission("dashboard:view_manager") absolutely can 403 at runtime.
       // Checking response.ok instead of the error sentinel is the established workaround
       // (see apps/web/features/admin/alert-rules-page.tsx).
@@ -48,7 +48,7 @@ function ManagerDashboard() {
       </Card>
     );
   }
-  if (!query.data) return <Card className="p-6 text-sm text-text-muted">Loading…</Card>;
+  if (!query.data) return <Card className="p-6 text-sm text-text-muted">Loading...</Card>;
   const d = query.data;
 
   const chartRows = d.sales_vs_forecast.map((p) => ({
@@ -60,7 +60,7 @@ function ManagerDashboard() {
   }));
 
   function handleExportPng() {
-    // Recharts also renders a 14x14 <svg> icon per legend item inside this container -- a
+    // Recharts also renders a 14x14 <svg> icon per legend item inside this container, a
     // plain `querySelector("svg")` grabs the first one of those instead of the actual chart,
     // exporting a near-blank thumbnail. The main chart's <svg> is always the direct child of
     // .recharts-wrapper, so scope to that.
@@ -232,7 +232,7 @@ function SalesDashboard() {
       </Card>
     );
   }
-  if (!query.data) return <Card className="p-6 text-sm text-text-muted">Loading…</Card>;
+  if (!query.data) return <Card className="p-6 text-sm text-text-muted">Loading...</Card>;
   const d = query.data;
   const pct = Math.min(100, (d.my_sales_this_month / d.my_target) * 100);
 

@@ -1,10 +1,10 @@
-# Data durability (ADR-026) — survive EC2 termination
+# Data durability (ADR-026) - survive EC2 termination
 
 Production Postgres lives on a **dedicated EBS volume**
 (`DeleteOnTermination=false`) bind-mounted at
 `${DEALERIQ_DATA_ROOT:-/var/lib/dealeriq}/pgdata`, and is mirrored nightly to
 **S3**. Local `make dev` / `infra/docker-compose.yml` stay on named volumes +
-MailHog — this runbook is host-only.
+MailHog - this runbook is host-only.
 
 The API stores no uploads on disk; backups are **DB-only**.
 
@@ -63,7 +63,7 @@ aws ec2 describe-volumes --volume-ids "$VOL_ID" \
 
 If the instance is terminated, the volume remains. Attach it to a replacement
 instance in the **same AZ**, mount at `/var/lib/dealeriq`, clone the repo, and
-bring Compose up — data is already there.
+bring Compose up - data is already there.
 
 ### Migrating an existing named-volume deploy
 
@@ -122,7 +122,7 @@ Attach an instance profile whose role allows only your prefix (example policy):
 ```
 
 Install the AWS CLI on the host (`aws sts get-caller-identity` must succeed via
-the instance role — no access keys in `prod.env` or git).
+the instance role - no access keys in `prod.env` or git).
 
 Document on the host:
 
@@ -162,7 +162,7 @@ BACKUP_S3_URI=s3://dealeriq-prod-backups/prod DRY_RUN=1 ./scripts/ops/backup-to-
 
 ## 4. Disaster recovery
 
-**A — Instance gone, EBS volume intact (preferred):**
+**A - Instance gone, EBS volume intact (preferred):**
 
 1. Launch a new EC2 in the **same AZ**, attach the volume, mount `/var/lib/dealeriq`.
 2. Clone the repo to `/opt/dealeriq/src`, copy `/etc/dealeriq/prod.env`, install Docker.
@@ -170,7 +170,7 @@ BACKUP_S3_URI=s3://dealeriq-prod-backups/prod DRY_RUN=1 ./scripts/ops/backup-to-
 4. Smoke-test `/api/v1/health` and login. No S3 restore needed.
 5. Re-associate the Elastic IP if needed (so Vercel `API_REWRITE_ORIGIN` stays valid).
 
-**B — Volume also lost (or wrong AZ):**
+**B - Volume also lost (or wrong AZ):**
 
 ```bash
 cd /opt/dealeriq/src
@@ -191,4 +191,4 @@ Restore stops `api`, recreates the database from the dump, and restarts `api`
 - Point-in-time recovery finer than the last successful nightly dump (take an
   extra manual backup before high-risk ops:
   `sudo systemctl start dealeriq-backup.service`).
-- Vercel frontend / auth cookie config — unchanged by this runbook.
+- Vercel frontend / auth cookie config - unchanged by this runbook.

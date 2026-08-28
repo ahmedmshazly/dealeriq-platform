@@ -1,4 +1,4 @@
-"""Branch — dealership location (SRS §7)."""
+"""Branch - dealership location (SRS §7)."""
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column

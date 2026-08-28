@@ -1,15 +1,15 @@
-"""APScheduler activation (ADR-004, DS-OPS-001): the first real cron registrations — Phase 4/5
+"""APScheduler activation (ADR-004, DS-OPS-001): the first real cron registrations - Phase 4/5
 each only registered a `job_name` for the on-demand HTTP trigger, deferring actual scheduling to
 this phase.
 
 Every scheduled job calls the *exact same function* `POST /jobs/{name}/run` already calls, each
-opening its own DB session directly (no HTTP request context to inject one from) — so
+opening its own DB session directly (no HTTP request context to inject one from) - so
 DS-OPS-002's idempotency guarantee covers a cron firing and an on-demand HTTP trigger uniformly,
 and the FR-072 concurrency guard (checked inside each job's own transaction) prevents a cron
 firing from colliding with a manual trigger that's still running.
 
 Only started when `settings.enable_scheduler=True` (see core/config.py's docstring on why this
-defaults off) — `make dev` is the only caller that turns it on.
+defaults off) - `make dev` is the only caller that turns it on.
 """
 
 import logging

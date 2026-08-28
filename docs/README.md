@@ -2,7 +2,7 @@
 
 **Audience:** engineers, operators, auditors, and portfolio reviewers.  
 **Last updated:** 2026-07-17  
-**Layout:** [Diataxis](https://diataxis.fr/) — tutorials, how-to guides, reference, explanation.
+**Layout:** [Diataxis](https://diataxis.fr/) - tutorials, how-to guides, reference, explanation.
 
 The authoritative requirements document remains [`srs/DealerIQ-SRS.md`](srs/DealerIQ-SRS.md)
 (DIQ-SRS-001). Architecture decisions live in [`adr/`](adr/). Phase planning under
@@ -15,23 +15,23 @@ Markdown in this tree is the source of truth. The interactive handbook reader
 
 ## Start here
 
-| If you want to… | Go to |
+| If you want to... | Go to |
 |-----------------|-------|
 | Study the handbook (3 sessions) | [Reading path](00-reading-path.md) |
 | Browse the interactive reader | `make docs` → http://localhost:5178 · or `/handbook/` |
-| Run the app for the first time | [Getting started — onboarding](getting-started/onboarding.md) |
+| Run the app for the first time | [Getting started - onboarding](getting-started/onboarding.md) |
 | Day-to-day local development | [Runbook: local-dev](runbooks/local-dev.md) |
-| Understand the system | [Explanation — architecture](explanation/architecture.md) |
+| Understand the system | [Explanation - architecture](explanation/architecture.md) |
 | See system diagrams | [Visual catalog](diagrams/README.md) |
 | Look up a term | [Glossary](glossary.md) |
-| Look up an env var | [Reference — configuration](reference/configuration.md) |
-| Call the API | [Reference — API](reference/api.md) + live OpenAPI at `/api/v1/docs` |
-| See who can do what | [Reference — permissions](reference/permissions.md) |
+| Look up an env var | [Reference - configuration](reference/configuration.md) |
+| Call the API | [Reference - API](reference/api.md) + live OpenAPI at `/api/v1/docs` |
+| See who can do what | [Reference - permissions](reference/permissions.md) |
 | Deploy / back up production | [Runbooks](runbooks/) |
 
 ## Tutorials (getting started)
 
-- [Onboarding](getting-started/onboarding.md) — bootstrap, seed, first login, role tour
+- [Onboarding](getting-started/onboarding.md) - bootstrap, seed, first login, role tour
 
 ## How-to guides
 
@@ -51,13 +51,13 @@ Markdown in this tree is the source of truth. The interactive handbook reader
 
 - [Architecture](explanation/architecture.md)
 - [Security model](explanation/security-model.md)
-- [Domain lifecycles](explanation/domain-lifecycles.md) — orders, leads, alerts
+- [Domain lifecycles](explanation/domain-lifecycles.md) - orders, leads, alerts
 - [Analytics pipeline](explanation/analytics-pipeline.md)
 - [Data model](explanation/data-model.md)
 
 ## Diagrams
 
-- [Visual documentation catalog](diagrams/README.md) — Mermaid D01–D18 (context, deploy, auth, state machines, ER, CI)
+- [Visual documentation catalog](diagrams/README.md) - Mermaid D01-D18 (context, deploy, auth, state machines, ER, CI)
 
 ## Operational runbooks
 
@@ -73,7 +73,7 @@ Markdown in this tree is the source of truth. The interactive handbook reader
 | Path | Role |
 |------|------|
 | [srs/](srs/) | Software requirements specification |
-| [diagrams/](diagrams/) | Mermaid visual catalog (D01–D18) |
+| [diagrams/](diagrams/) | Mermaid visual catalog (D01-D18) |
 | [adr/](adr/) | Architecture decision records ([index](adr/README.md)) |
 | [paper/](paper/) | Forecasting benchmark manuscript |
 | [backlog.md](backlog.md) | Deferred P1/P2 items |
@@ -81,7 +81,7 @@ Markdown in this tree is the source of truth. The interactive handbook reader
 ## Planning archive (not product docs)
 
 [`specs/`](../specs/) holds the `spec.md` / `plan.md` / `tasks.md` per delivery phase.
-Prefer the CHANGELOG for “what is true today.”
+Prefer the CHANGELOG for "what is true today."
 
 ## Project governance
 

@@ -1,7 +1,7 @@
 """Weekly series construction from the order ledger (DS-FC-001).
 
-Two series families share this function: (model, branch) — one series per distinct vehicle
-model sold at a branch — and (segment, branch) — unit counts summed across every model in that
+Two series families share this function: (model, branch) - one series per distinct vehicle
+model sold at a branch - and (segment, branch) - unit counts summed across every model in that
 segment at that branch. Both need explicit calendar alignment and zero-fill: a week with no
 deliveries is a real zero, not a missing row, since ADI/CV² (DS-FC-002) and every method in the
 DS-FC-003 pool depend on a complete, gap-free weekly index.
@@ -26,7 +26,7 @@ def build_weekly_series(
     n_weeks: int,
 ) -> dict[tuple[str, ...], pd.Series]:
     """Counts rows of `orders` per (group_cols..., week) and reindexes onto a complete
-    `n_weeks`-long calendar starting at `week_start`. Every key in `keys` gets a series — even
+    `n_weeks`-long calendar starting at `week_start`. Every key in `keys` gets a series - even
     one with zero matching orders across the entire window gets an all-zero series, rather than
     being silently omitted, since a missing series is a generator/data bug, not a valid outcome."""
     calendar = pd.date_range(week_start, periods=n_weeks, freq="W-MON")
@@ -66,9 +66,9 @@ def build_weekly_mean_series(
 ) -> dict[tuple[str, ...], pd.Series]:
     """Like `build_weekly_series` but averages `value_col` per week instead of counting rows
     (used for DS-ANO-001's average-discount/average-margin monitored series). A week with no
-    rows is forward-filled from the most recent week that had data (never zero-filled — an
+    rows is forward-filled from the most recent week that had data (never zero-filled - an
     average of nothing is undefined, not 0, and STL needs a complete series to decompose). If a
-    key has no data at all across the whole window, every week is NaN — callers must handle that
+    key has no data at all across the whole window, every week is NaN - callers must handle that
     (the anomaly detector's `UnstableSeriesError` path already treats zero-variance/NaN-heavy
     series as unusable, per the module-level convention every anomaly-input series follows)."""
     calendar = pd.date_range(week_start, periods=n_weeks, freq="W-MON")

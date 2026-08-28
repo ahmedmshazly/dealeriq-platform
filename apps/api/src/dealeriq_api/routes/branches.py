@@ -1,4 +1,4 @@
-"""GET/POST /branches (FR-020 — branches are a supporting lookup for inventory)."""
+"""GET/POST /branches (FR-020 - branches are a supporting lookup for inventory)."""
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session

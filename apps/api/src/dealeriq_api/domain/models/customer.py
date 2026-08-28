@@ -1,4 +1,4 @@
-"""Customer — FR-030."""
+"""Customer - FR-030."""
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column

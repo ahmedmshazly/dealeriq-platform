@@ -4,7 +4,7 @@
 **Last updated:** 2026-07-17  
 **Sources:** `.env.example`, `infra/prod.env.example`, `dealeriq_api.core.config.Settings`
 
-Laptop-only secret stash `.deploy-secrets/` is gitignored and **not** used by Compose on EC2 —
+Laptop-only secret stash `.deploy-secrets/` is gitignored and **not** used by Compose on EC2 -
 production uses `/etc/dealeriq/prod.env`.
 
 ## Application (`Settings` / API)
@@ -51,7 +51,7 @@ production uses `/etc/dealeriq/prod.env`.
 |----------|-------|-------|
 | `API_HOST_PORT` | `infra/prod.env.example` | Published API port on host |
 | `DEALERIQ_DATA_ROOT` | prod env | EBS mount root; default `/var/lib/dealeriq` |
-| `BACKUP_S3_URI` | `/etc/dealeriq/backup.env` | e.g. `s3://bucket/prod` — not in git |
+| `BACKUP_S3_URI` | `/etc/dealeriq/backup.env` | e.g. `s3://bucket/prod` - not in git |
 | `COMPOSE_FILE` / `COMPOSE_ENV_FILE` | backup scripts | Defaults to prod compose + `/etc/dealeriq/prod.env` |
 
 ## Web

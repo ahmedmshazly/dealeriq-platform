@@ -1,7 +1,7 @@
 """POST /jobs/{job_name}/run, GET /jobs/{job_name}/runs (FR-070..072, C-03).
 
 `job_name` is a path segment (not yet an enum) since later phases register more jobs (alerts,
-...) against the same two endpoints — Phase 4 added "forecast", Phase 5 adds "inventory".
+...) against the same two endpoints - Phase 4 added "forecast", Phase 5 adds "inventory".
 """
 
 from collections.abc import Callable

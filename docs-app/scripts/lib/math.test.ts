@@ -22,8 +22,8 @@ describe("inline math delimiters", () => {
   });
 
   /**
-   * The five above all begin with a digit. Rejecting "digit after the opener" —
-   * the obvious way to exclude currency — silently swallows every one of them.
+   * The five above all begin with a digit. Rejecting "digit after the opener" -
+   * the obvious way to exclude currency - silently swallows every one of them.
    */
   it("does not reject expressions that begin with a number", () => {
     expect(tex("$2\\pi$ radians")).not.toEqual([]);
@@ -85,7 +85,7 @@ describe("display math", () => {
   });
 });
 
-/** Soft corpus checks — DealerIQ may have little or no KaTeX. */
+/** Soft corpus checks - DealerIQ may have little or no KaTeX. */
 describe("against the corpus", () => {
   const walk = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((e) =>

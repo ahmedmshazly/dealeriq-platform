@@ -33,7 +33,7 @@
 
 - All items pass. Two judgment calls recorded in spec.md's Assumptions, both following direct
   precedent from earlier phases: rule (f)'s score-cutoff deferred to Phase 7 (DS-CUST doesn't
-  exist yet — same pattern as DS-INV-005/DS-FC-008/009 deferrals), and inventory/anomaly
+  exist yet - same pattern as DS-INV-005/DS-FC-008/009 deferrals), and inventory/anomaly
   detection sharing one scheduled slot rather than DS-OPS-001's literal two (Phase 5 already
   built them as one combined job).
 - Ready for planning.

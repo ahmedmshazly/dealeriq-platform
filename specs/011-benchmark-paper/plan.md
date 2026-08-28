@@ -4,61 +4,61 @@
 
 ## Summary
 
-A new `packages/analytics/src/dealeriq_analytics/benchmark/` subpackage — the project's first
-`__main__.py` CLI entry point — orchestrates the existing, already-validated
+A new `packages/analytics/src/dealeriq_analytics/benchmark/` subpackage - the project's first
+`__main__.py` CLI entry point - orchestrates the existing, already-validated
 `generate_demand()` → `classify_with_stats()` → `run_forecast_pipeline()` pipeline (exactly the
 pattern `test_qa003a_scientific_validation.py` already uses for one dataset) across several
 independently-seeded synthetic datasets, aggregates per-series results into a per-SBC-class
 leaderboard, runs a paired Wilcoxon signed-rank test (champion vs. Seasonal Naive MASE, paired by
 series), and writes a results parquet + markdown leaderboard under `docs/paper/results/`. A LaTeX
 paper draft (`docs/paper/paper.tex`) reports the real numbers this produces, compiled to a real
-PDF with `pdflatex`/`bibtex` (both already available in this environment — no Quarto dependency).
+PDF with `pdflatex`/`bibtex` (both already available in this environment - no Quarto dependency).
 `make benchmark-paper` is the one-command reproduction path.
 
 ## Technical Context
 
-**Language/Version**: Python 3.12 (`packages/analytics`) — unchanged. LaTeX (`pdflatex`,
-`bibtex`) for the paper — already installed, no new environment dependency.
+**Language/Version**: Python 3.12 (`packages/analytics`) - unchanged. LaTeX (`pdflatex`,
+`bibtex`) for the paper - already installed, no new environment dependency.
 
-**Primary Dependencies**: `pyarrow` and `scipy` — both already present transitively (installed,
+**Primary Dependencies**: `pyarrow` and `scipy` - both already present transitively (installed,
 confirmed importable) but not yet declared as direct `packages/analytics` dependencies; this
 phase adds them explicitly since it imports both directly (`pyarrow` for parquet writes,
-`scipy.stats.wilcoxon` for the paired test). No other new dependency — the forecasting pipeline,
+`scipy.stats.wilcoxon` for the paired test). No other new dependency - the forecasting pipeline,
 metrics, SBC classifier, and generator are all reused unchanged.
 
-**Storage**: None (no database). Output is two files under `docs/paper/results/` —
+**Storage**: None (no database). Output is two files under `docs/paper/results/` -
 `benchmark_results.parquet` (raw per-series-per-method-per-dataset rows) and `leaderboard.md`
-(the aggregated, human-readable rollup) — both committed to the repo as the "reproducible
+(the aggregated, human-readable rollup) - both committed to the repo as the "reproducible
 benchmark artifact" the phase's exit criterion names. `docs/paper/paper.tex` +
 `docs/paper/references.bib` + the compiled `docs/paper/paper.pdf` are the paper deliverable.
 
-**Testing**: `packages/analytics/tests/test_benchmark_aggregate.py` — the aggregation and
+**Testing**: `packages/analytics/tests/test_benchmark_aggregate.py` - the aggregation and
 Wilcoxon-test logic get a hand-constructed fixture (a small set of known per-series MASE pairs
 with a known expected win rate and a known-computable Wilcoxon statistic), matching this
 project's "validate against a hand-computed fixture before trusting the pipeline" convention
-(QA-002) — this is the one genuinely new piece of logic; the generation/CV/champion-selection
+(QA-002) - this is the one genuinely new piece of logic; the generation/CV/champion-selection
 steps it orchestrates are already fixture-tested from Phase 4 and not re-tested here.
 
 **Target Platform**: Local CLI, no service. `python -m dealeriq_analytics.benchmark` runs
 standalone; `make benchmark-paper` wraps it and the LaTeX compile.
 
-**Project Type**: Extends `packages/analytics` — no new top-level package. `docs/paper/` is a
+**Project Type**: Extends `packages/analytics` - no new top-level package. `docs/paper/` is a
 new documentation directory, following `docs/adr/` and `docs/runbooks/`'s
 existing precedent of doc content living under `docs/`.
 
 **Performance Goals**: Not applicable in the NFR-003/004 sense (this is a one-time reproducible
-research artifact, not an operational path with a latency budget) — but real wall-clock cost
+research artifact, not an operational path with a latency budget) - but real wall-clock cost
 matters for how many datasets (`K`) are practical to run. A single dataset's full
 generate→classify→CV-across-8-methods→champion-select pipeline measured ~10-15 minutes in
-`test_qa003a_scientific_validation.py`'s own docstring (Phase 4) — `K=3` (this phase's chosen,
+`test_qa003a_scientific_validation.py`'s own docstring (Phase 4) - `K=3` (this phase's chosen,
 documented default; see spec.md's Assumptions) keeps total runtime to roughly 30-45 minutes
 while still yielding ~240+ paired per-series observations for the Wilcoxon test (each dataset
 already spans all four demand patterns on its own, per Phase 4's SBC-coverage validation).
 
-**Constraints**: `packages/analytics` stays DB-free (Principle I) — the benchmark harness never
+**Constraints**: `packages/analytics` stays DB-free (Principle I) - the benchmark harness never
 touches Postgres, matching every function it composes. NFR-007's 15-minute bootstrap/seed/dev
 budget is unaffected (`make benchmark-paper` is a separate, opt-in target, not part of
-`bootstrap`/`seed`/`dev`). No fabricated numbers anywhere in the paper — every figure is
+`bootstrap`/`seed`/`dev`). No fabricated numbers anywhere in the paper - every figure is
 generated by actually running the harness and reading its real output (Principle V's "scientific
 integrity" extended to this phase's own new artifact, not just the operational QA-003 gates).
 
@@ -75,22 +75,22 @@ bibliography + compiled PDF + the two result artifacts). No changes to `apps/api
   `packages/analytics` package, not a new top-level project. `pyarrow`/`scipy` are additive,
   already-present-transitively dependencies being declared explicitly, not new stack components.
 - **Principle II (Free, Local-First, Zero Paid Services)**: `pdflatex`/`bibtex` are free,
-  already-installed, fully local — no paid typesetting service, no network call to render the
+  already-installed, fully local - no paid typesetting service, no network call to render the
   paper.
-- **Principle IV (Migrations & Append-Only Data Integrity)**: not applicable — no database
+- **Principle IV (Migrations & Append-Only Data Integrity)**: not applicable - no database
   involvement in this phase at all.
 - **Principle V (Analytics Reproducibility & Scientific Integrity, NON-NEGOTIABLE)**: this phase
-  is a direct extension of this principle to a new artifact — every benchmark run is seeded
+  is a direct extension of this principle to a new artifact - every benchmark run is seeded
   (`GeneratorConfig(seed=k)` per dataset, `k` recorded in the run's own output), and the paper's
   claims are verified against the harness's actual output before being written down, not assumed.
   Reuses Seasonal-Naive-must-be-beaten champion selection (`select_champion`, DS-FC-006)
-  unchanged — no weakening of that gate to produce more favorable-looking numbers.
+  unchanged - no weakening of that gate to produce more favorable-looking numbers.
 - **Principle VII (Testing & Quality Bar)**: the one genuinely new piece of logic (aggregation +
   Wilcoxon test) gets a hand-computed-fixture test before being trusted, per QA-002's standing
   discipline.
 - **Principle VIII (Documentation & Traceability)**: the paper itself *is* this phase's
   documentation deliverable; ADR not needed (no architectural decision beyond what's captured in
-  spec.md's Assumptions — K's value, LaTeX-over-Quarto, synthetic-only scope).
+  spec.md's Assumptions - K's value, LaTeX-over-Quarto, synthetic-only scope).
 - **Principle IX (Reproducible Onboarding)**: `make benchmark-paper` is this phase's own
   reproducibility contract, verified by actually re-running it and confirming the same
   deterministic output, mirroring NFR-007's discipline applied to this new artifact rather than
@@ -160,7 +160,7 @@ package) and adds `docs/paper/` as a new documentation directory alongside the e
 `generate_demand(GeneratorConfig(seed=seed))` unchanged, classifies each series via the existing
 `classify_with_stats()` unchanged (a `DegenerateSeriesError` series is recorded with
 `sbc_class="degenerate"` and excluded from the four-class leaderboard rollup, not silently
-dropped — spec.md's Edge Cases), builds a `pd.Series` per key with a fixed weekly
+dropped - spec.md's Edge Cases), builds a `pd.Series` per key with a fixed weekly
 `DatetimeIndex` (the exact `pd.date_range(WEEK_START, periods=..., freq="W-MON")` pattern already
 proven in `test_qa003a_scientific_validation.py`), and calls the existing
 `run_forecast_pipeline()` unchanged. Each series' `metrics_by_method` (already computed by the
@@ -171,11 +171,11 @@ pinball_q10/q50/q90, coverage80, is_champion)`.
 ## Aggregation & statistical comparison (§15 protocol step 4)
 
 `aggregate.build_leaderboard(results)`: groups `PerSeriesResult` rows by `(sbc_class, method)`
-and computes mean MASE/sMAPE/pinball/coverage80 — the leaderboard table. Separately, for each
+and computes mean MASE/sMAPE/pinball/coverage80 - the leaderboard table. Separately, for each
 SBC class (and overall), extracts the paired `(champion_mase, seasonal_naive_mase)` per series
-(the champion may *be* Seasonal Naive for some series — those pairs are ties, which
+(the champion may *be* Seasonal Naive for some series - those pairs are ties, which
 `scipy.stats.wilcoxon`'s default handling accounts for) and runs `scipy.stats.wilcoxon`, reporting
-the real statistic, p-value, and — spec.md's Edge Cases — the real sample size next to every
+the real statistic, p-value, and - spec.md's Edge Cases - the real sample size next to every
 result, so a class with too few series for a meaningful test is visibly disclosed as such rather
 than presented with false confidence.
 
@@ -183,12 +183,12 @@ than presented with false confidence.
 
 Working title from SRS §15 verbatim. Structure: Abstract; Introduction; Related Work (the SRS's
 own 15 references, `docs/paper/references.bib`, already correctly cited); Methodology (generator,
-DS-FC-003 method pool, DS-FC-004 rolling-origin CV, SBC classification — all citing the already-
+DS-FC-003 method pool, DS-FC-004 rolling-origin CV, SBC classification - all citing the already-
 implemented, already-tested code this phase composes rather than rebuilds); Results (the real
-leaderboard table by SBC class, the real Wilcoxon results); Operational Integration (§15 step 5 —
+leaderboard table by SBC class, the real Wilcoxon results); Operational Integration (§15 step 5 -
 how a forecast's `yhat`/interval feeds `reorder_point` computation and the `forecast_stockout`
 alert rule, both already real and shipped in Phases 4-6); Limitations (synthetic-data bias,
-explicitly — spec.md's SC-005); Conclusion. Every number in Results is copied from an actual
+explicitly - spec.md's SC-005); Conclusion. Every number in Results is copied from an actual
 `docs/paper/results/leaderboard.md` run, not invented while drafting prose.
 
 ## Validation sequence (proves the phase works end-to-end)
@@ -196,7 +196,7 @@ explicitly — spec.md's SC-005); Conclusion. Every number in Results is copied 
 1. Run `test_benchmark_aggregate.py`'s hand-computed fixture before trusting the aggregation/
    Wilcoxon logic on real data (QA-002 discipline).
 2. Run the real benchmark (`K=3`, documented default) end-to-end; inspect the real parquet and
-   markdown leaderboard it produces — confirm real, non-placeholder numbers, a nonzero paired
+   markdown leaderboard it produces - confirm real, non-placeholder numbers, a nonzero paired
    sample size per SBC class, and record any real method/series failures rather than silently
    passing over them (SC-001, spec.md's Edge Cases).
 3. Re-run with the same configuration; confirm the same seeds reproduce the same per-series

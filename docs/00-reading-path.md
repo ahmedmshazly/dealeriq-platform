@@ -4,11 +4,11 @@ description: Three sittings to learn DealerIQ — onboarding, architecture/secur
 last-verified: 2026-07-17
 ---
 
-# Reading path — start here
+# Reading path - start here
 
 How to study the DealerIQ handbook. Three sittings; then the rest is reference.
 
-## Session 1 — onboarding
+## Session 1 - onboarding
 
 Bootstrap the stack, sign in, and know where day-to-day runbooks live.
 
@@ -18,7 +18,7 @@ Bootstrap the stack, sign in, and know where day-to-day runbooks live.
 | [Local development](./runbooks/local-dev.md) | ~10 min |
 | [Docs portal](./README.md) | ~5 min |
 
-## Session 2 — architecture and security
+## Session 2 - architecture and security
 
 Know the system shape, trust boundary, and who can do what.
 
@@ -29,7 +29,7 @@ Know the system shape, trust boundary, and who can do what.
 | [Permissions](./reference/permissions.md) | ~10 min |
 | [Visual catalog](./diagrams/README.md) | ~10 min |
 
-## Session 3 — analytics and operations
+## Session 3 - analytics and operations
 
 Forecasting jobs, domain lifecycles, and how to run / recover production.
 

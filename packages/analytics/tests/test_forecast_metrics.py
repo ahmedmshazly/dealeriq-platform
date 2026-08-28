@@ -1,4 +1,4 @@
-"""Forecast metrics (DS-FC-005) against hand-computed fixtures — every value below was computed
+"""Forecast metrics (DS-FC-005) against hand-computed fixtures - every value below was computed
 by hand before being encoded here, not reverse-engineered from the implementation."""
 
 import numpy as np

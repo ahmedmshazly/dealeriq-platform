@@ -1,4 +1,4 @@
-"""Shared integration-test helpers — login/user-creation boilerplate used across every
+"""Shared integration-test helpers - login/user-creation boilerplate used across every
 resource's integration test module."""
 
 import uuid

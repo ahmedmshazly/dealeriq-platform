@@ -9,7 +9,7 @@
 
 ADR-027 established the Diataxis docs portal under `docs/`. Markdown on GitHub is
 readable but lacks search, a guided reading path, doc↔code joins, and an offline
-pack. The owner’s portfolio and EduBridge already use a Vite + vanilla TypeScript
+pack. The owner's portfolio and EduBridge already use a Vite + vanilla TypeScript
 offline reader (`docs-app`) for that UX.
 
 DealerIQ needs the same surface without adopting MkDocs or rewriting the Diataxis
@@ -32,11 +32,11 @@ tree into numbered-only chapters.
 
 ## Alternatives considered
 
-- **MkDocs Material** — rejected: heavier; portfolio/EduBridge already proved the
+- **MkDocs Material** - rejected: heavier; portfolio/EduBridge already proved the
   handbook reader UX.
-- **Docusaurus / Starlight** — rejected: framework overhead for an offline-first
+- **Docusaurus / Starlight** - rejected: framework overhead for an offline-first
   reader that already exists.
-- **Rewrite all docs into `NN-*.md` only** — rejected: Diataxis layout from
+- **Rewrite all docs into `NN-*.md` only** - rejected: Diataxis layout from
   ADR-027 is the durable portal; the reader indexes it.
 
 ## Consequences

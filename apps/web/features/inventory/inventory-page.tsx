@@ -246,7 +246,7 @@ export function InventoryPage() {
               onChange={(e) => setNewUnit({ ...newUnit, model_id: e.target.value })}
               required
             >
-              <option value="">Model…</option>
+              <option value="">Model...</option>
               {(modelsQuery.data ?? []).map((m: VehicleModel) => (
                 <option key={m.id} value={m.id}>
                   {m.make} {m.model}
@@ -259,7 +259,7 @@ export function InventoryPage() {
               onChange={(e) => setNewUnit({ ...newUnit, branch_id: e.target.value })}
               required
             >
-              <option value="">Branch…</option>
+              <option value="">Branch...</option>
               {(branchesQuery.data ?? []).map((b: Branch) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
@@ -327,7 +327,7 @@ export function InventoryPage() {
           <tbody>
             {(unitsQuery.data?.items ?? []).map((u) => (
               <tr key={u.id} className="border-b border-border-hairline last:border-0">
-                <td className="px-4 py-3 font-mono text-xs">…{u.vin.slice(-8)}</td>
+                <td className="px-4 py-3 font-mono text-xs">...{u.vin.slice(-8)}</td>
                 <td className="px-4 py-3">
                   {modelById.get(u.model_id)
                     ? `${modelById.get(u.model_id)!.make} ${modelById.get(u.model_id)!.model}`

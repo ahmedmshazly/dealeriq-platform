@@ -7,7 +7,7 @@ import type { Corpus, Section } from "../types.js";
  * The index is built and serialized by `scripts/build-index.ts`; the client
  * deserializes rather than re-indexes, so the first keystroke is instant.
  *
- * Being told a phrase is "somewhere in vitae-srs.md" — a 15,000-word document —
+ * Being told a phrase is "somewhere in vitae-srs.md" - a 15,000-word document -
  * is not an answer. "vitae-srs § Cost model" is.
  */
 const OPTIONS = {

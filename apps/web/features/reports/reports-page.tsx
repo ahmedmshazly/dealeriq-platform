@@ -7,7 +7,7 @@ import { ApiRequestError } from "@/lib/api-error";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-// FR-054: monthly report — sales/margin, achieved accuracy, and alert statistics for one
+// FR-054: monthly report - sales/margin, achieved accuracy, and alert statistics for one
 // completed calendar month. `month` starts empty so the server resolves and returns the most
 // recently completed month (domain/monthly_report.py's most_recently_completed_month) rather
 // than duplicating that resolution logic client-side; the picker then reflects whatever the
@@ -60,13 +60,13 @@ export function ReportsPage() {
 
       {isBadRequest && (
         <Card className="p-6 text-sm text-critical-fg">
-          That month can&apos;t be reported on yet — pick a month that has already fully
+          That month can&apos;t be reported on yet - pick a month that has already fully
           completed.
         </Card>
       )}
 
       {!d && !isBadRequest && (
-        <Card className="p-6 text-sm text-text-muted">Loading…</Card>
+        <Card className="p-6 text-sm text-text-muted">Loading...</Card>
       )}
 
       {d && (
@@ -91,7 +91,7 @@ export function ReportsPage() {
               Achieved forecast accuracy
             </h2>
             <p className="px-6 pb-4 text-xs text-text-muted">
-              Real out-of-sample accuracy per series for this month — distinct from
+              Real out-of-sample accuracy per series for this month - distinct from
               training-time cross-validation metrics.
             </p>
             {d.achieved_accuracy.length === 0 ? (

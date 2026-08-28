@@ -2,8 +2,8 @@
 
 Access token claims are minimal per NFR-002: `sub` (user id), `role` (role key), `exp`, `jti`.
 The `kid` header names the signing key so rotation is possible later without invalidating
-already-issued tokens signed under a previous key (only one key exists today — `core.config`'s
-`jwt_key_id`/`jwt_secret_key` — but the lookup is already keyed by `kid` rather than assuming a
+already-issued tokens signed under a previous key (only one key exists today - `core.config`'s
+`jwt_key_id`/`jwt_secret_key` - but the lookup is already keyed by `kid` rather than assuming a
 single global secret, per ADR-010).
 """
 

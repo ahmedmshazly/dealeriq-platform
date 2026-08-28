@@ -10,7 +10,7 @@ last-verified: 2026-07-17
 **Last updated:** 2026-07-17  
 **Refs:** FR-031, FR-040..045, FR-062; `domain/services/order_service.py`,
 `lead_state_machine.py`, `domain/models/alerts.py`  
-**Diagrams:** [catalog D10–D12](../diagrams/README.md)
+**Diagrams:** [catalog D10-D12](../diagrams/README.md)
 
 State machines for the three primary operational entities.
 

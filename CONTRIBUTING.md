@@ -63,7 +63,34 @@ Do not treat `specs/` as the live system description after merge.
 See [`SECURITY.md`](SECURITY.md). Never commit secrets. Use waivers in
 `security/dependency-waivers.json` only with rationale and re-review dates.
 
+Two audit gates run in pre-commit and CI, both waiver-aware:
+
+- `scripts/ci/check_dependency_audit.py` cross-references pip-audit and npm audit against
+  `security/dependency-waivers.json`.
+- `scripts/ci/check_identity_strings.py` keeps local home paths, personal email addresses,
+  LAN hostnames and private IPs out of the repository. It matches on shape, not on literal
+  values, so `security/identity-policy.json` never has to contain the strings it rejects.
+
 ## Documentation
 
 Update the Diataxis portal (`docs/README.md`) when adding operator-facing behavior. Refresh
 `docs/reference/openapi.json` via `make docs-openapi` when the public API changes.
+
+## Writing style
+
+Keep punctuation plain ASCII: no em dashes, en dashes, curly quotes or ellipsis characters.
+Headings are sentence case. Bold marks a term being defined, not every noun in a list.
+
+Generated and historical files are out of scope: `CHANGELOG.md`, `LICENSE`, `SECURITY.md`,
+`docs/paper/results/`, `docs/paper/references.bib`, and anything under `apps/web/public/handbook/`.
+
+## Attribution
+
+The maintainer's name belongs only in the files listed under `identity.allowed_in` in
+`security/identity-policy.json`: `LICENSE`, `CITATION.cff`, the SRS header, the paper byline,
+and package metadata. The identity gate rejects it anywhere else, so put a byline in one of
+those files rather than in a source comment or a runbook.
+
+Package metadata carries the name without an address, on purpose. `SECURITY.md` routes
+vulnerability reports through the GitHub profile instead of publishing an inbox.
+

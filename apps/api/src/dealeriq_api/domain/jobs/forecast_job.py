@@ -1,10 +1,10 @@
 """Forecast job orchestration (FR-070..072): reads orders/vehicle_units/vehicle_models/branches
 from Postgres, calls `dealeriq_analytics.forecasting` (a pure, DB-free computation layer), and
-writes analytics_runs/series_profiles/forecasts/forecast_metrics — all inside the run's own
+writes analytics_runs/series_profiles/forecasts/forecast_metrics - all inside the run's own
 lifecycle (`running` -> `succeeded`/`failed`, never left dangling).
 
 Two series families (DS-FC-001): (model, branch) and (segment, branch). Both get the full
-profile/CV/champion pipeline — DS-FC-007 asks for 12-week forecasts "per series" without
+profile/CV/champion pipeline - DS-FC-007 asks for 12-week forecasts "per series" without
 carving out an exception for the aggregate family; only the *UI* (spec.md's Assumptions)
 narrows to (model, branch) for the leaderboard/fan-chart views this phase.
 """
@@ -46,7 +46,7 @@ def _series_key_str(key: tuple[str, ...]) -> str:
 
 
 def _prefixed_column(df: pd.DataFrame, source_col: str, prefix: str, new_col: str) -> pd.DataFrame:
-    """Adds a column whose values are `prefix + source_col`, e.g. "model:<uuid>" — so the
+    """Adds a column whose values are `prefix + source_col`, e.g. "model:<uuid>" - so the
     (model,branch) and (segment,branch) series families can share one combined dict of series
     without key collisions, and a `forecasts.series_key` string is self-describing (an API
     caller can tell which family a series belongs to just by reading the key)."""
@@ -83,13 +83,13 @@ def _load_orders_frame(db: Session) -> pd.DataFrame:
 def get_series_actuals(
     db: Session, series_key_str: str, *, week_start: date, data_to: date
 ) -> pd.Series | None:
-    """Reconstructs one series' actual weekly values on demand (for the fan-chart view) — not
+    """Reconstructs one series' actual weekly values on demand (for the fan-chart view) - not
     persisted separately, since it's fully derivable from the orders table already. Returns
     `None` for a malformed key rather than raising, since this is reachable from user input
     (a `series_key` path parameter).
 
     The calendar is built from *this series' own* orders' date range (`subset`, filtered to the
-    one model/branch or segment/branch pair), not the shared orders table's global min/max — the
+    one model/branch or segment/branch pair), not the shared orders table's global min/max - the
     table holds every series at once, so an unrelated order for a different model or a
     different, unrelated run would otherwise silently widen this series' calendar with weeks
     that were never part of it. `week_start`/`data_to` (the specific `AnalyticsRun` being

@@ -20,7 +20,7 @@ schedules (DS-OPS-001's default schedule), with every job also exposed as
 
 ## Consequences
 
-- No broker dependency — one fewer moving part in `docker compose up` (supports C-01).
+- No broker dependency - one fewer moving part in `docker compose up` (supports C-01).
 - Jobs must be written as idempotent, HTTP-triggerable functions from day one (DS-OPS-002),
   which naturally satisfies C-03's future-serverless-cron requirement.
 - Single-instance scheduling means no built-in horizontal scaling of the scheduler itself; not a

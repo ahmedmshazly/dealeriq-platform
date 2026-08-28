@@ -1,4 +1,4 @@
-"""Lead funnel simulation (GEN-003) — sign-recovery validation (spec.md SC-003)."""
+"""Lead funnel simulation (GEN-003) - sign-recovery validation (spec.md SC-003)."""
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression

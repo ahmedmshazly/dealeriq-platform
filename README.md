@@ -9,7 +9,7 @@ sales-and-inventory system of record.
 | Spec | [`docs/srs/DealerIQ-SRS.md`](docs/srs/DealerIQ-SRS.md) (DIQ-SRS-001 v1.0.0) |
 | Docs portal | [`docs/README.md`](docs/README.md) (Diataxis) |
 | Handbook | `make docs` · reading path [`docs/00-reading-path.md`](docs/00-reading-path.md) · `/handbook/` after `make docs-site` |
-| Diagrams | [`docs/diagrams/README.md`](docs/diagrams/README.md) (Mermaid D01–D18) |
+| Diagrams | [`docs/diagrams/README.md`](docs/diagrams/README.md) (Mermaid D01-D18) |
 | License | [MIT](LICENSE) |
 | Security | [`SECURITY.md`](SECURITY.md) |
 | Contributing | [`CONTRIBUTING.md`](CONTRIBUTING.md) |

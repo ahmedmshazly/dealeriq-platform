@@ -8,7 +8,7 @@ from functools import lru_cache
 from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Intentionally obvious placeholders — allowed only when app_env == "development".
+# Intentionally obvious placeholders - allowed only when app_env == "development".
 INSECURE_JWT_PLACEHOLDER = "dev-only-insecure-secret-change-me"
 INSECURE_BOOTSTRAP_PASSWORD = "ChangeMe123!"
 _MIN_JWT_SECRET_LENGTH = 32
@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000"
 
     # Auth (FR-001..006, ADR-009/010/019/020). jwt_secret_key MUST be overridden via .env for
-    # anything beyond local dev — the default here is intentionally an obvious placeholder.
+    # anything beyond local dev - the default here is intentionally an obvious placeholder.
     jwt_secret_key: str = INSECURE_JWT_PLACEHOLDER
     jwt_key_id: str = "dev-1"
     access_token_ttl_minutes: int = 15
@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     lockout_window_minutes: int = 15
     lockout_duration_minutes: int = 15
 
-    # Bootstrap Admin (seeded by Alembic migration 0001_auth_rbac — self-registration is
+    # Bootstrap Admin (seeded by Alembic migration 0001_auth_rbac - self-registration is
     # disabled per FR-004, so a first account must exist some other way).
     bootstrap_admin_email: str = "admin@dealeriq.dev"
     bootstrap_admin_password: str = INSECURE_BOOTSTRAP_PASSWORD
@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     order_approval_discount_threshold: float = 0.05
 
     # Digest email (FR-064): SMTP defaults match MailHog's own listener
-    # (infra/docker-compose.yml) — zero paid email service for local dev.
+    # (infra/docker-compose.yml) - zero paid email service for local dev.
     # Prefer IPv4: `localhost` → ::1 fails on some CI runners (Errno 99) when
     # Docker only publishes 0.0.0.0:1025.
     smtp_host: str = "127.0.0.1"
@@ -54,13 +54,13 @@ class Settings(BaseSettings):
     smtp_from_address: str = "alerts@dealeriq.dev"
 
     # Sales dashboard "vs. target" (FR-051, ADR-024): a single default applied uniformly to
-    # every Salesperson — not a per-salesperson quota system, which is backlogged (P2).
+    # every Salesperson - not a per-salesperson quota system, which is backlogged (P2).
     default_monthly_sales_target: float = 150000.0
 
     # DS-OPS-001 cron scheduling (ADR-004). Defaults OFF: scheduled jobs open their own DB
     # session directly from `core.db.engine`, bypassing FastAPI's `get_db` dependency-override
     # mechanism the test suite relies on to redirect every request to the ephemeral
-    # testcontainers Postgres (ADR-013) — a real scheduler firing during a test run would hit
+    # testcontainers Postgres (ADR-013) - a real scheduler firing during a test run would hit
     # the *real* dev database, not the test one. Only `make dev` (and real deployments) opt in
     # via the `ENABLE_SCHEDULER=true` environment variable; the test suite never sets it, so
     # this is safe by default rather than relying on every test file remembering to disable it.

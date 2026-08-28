@@ -12,7 +12,7 @@ def test_identical_distributions_have_zero_psi() -> None:
 
 def test_hand_computed_two_bin_psi() -> None:
     # Reference: 100 values split 50/50 across two bins by the median (edges: -inf, median, inf).
-    # Current: shifted so 90% falls in the upper bin, 10% in the lower -- a deliberate, large
+    # Current: shifted so 90% falls in the upper bin, 10% in the lower, a deliberate, large
     # shift computed by hand:
     #   ref_pct = [0.5, 0.5], cur_pct = [0.1, 0.9]
     #   PSI = (0.1-0.5)*ln(0.1/0.5) + (0.9-0.5)*ln(0.9/0.5)
@@ -64,7 +64,7 @@ def test_binary_one_hot_drift_is_detected_not_silently_zero() -> None:
     # on a 0/1 one-hot column collapses every quantile point onto the same value, producing a
     # single (-inf, +inf) bin that reports zero PSI no matter how large the actual shift in the
     # category's proportion is. 20% of the reference population is "1" (a realistic one-hot
-    # channel column); the current population is 100% "1" -- an unmistakable composition shift
+    # channel column); the current population is 100% "1", an unmistakable composition shift
     # that must not vanish into a degenerate single bin.
     reference = pd.Series([0.0] * 80 + [1.0] * 20)
     current = pd.Series([1.0] * 100)

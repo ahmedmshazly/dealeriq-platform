@@ -1,4 +1,4 @@
-# ADR-016: JS monorepo tooling — npm workspaces
+# ADR-016: JS monorepo tooling - npm workspaces
 
 - Status: Accepted
 - Date: 2026-07-10
@@ -11,7 +11,7 @@ SRS's own prerequisites (§2.2) name npm, not pnpm or a specific monorepo tool.
 
 ## Decision
 
-Use npm workspaces (root `package.json` with a `workspaces` field) — no Turborepo, no pnpm.
+Use npm workspaces (root `package.json` with a `workspaces` field) - no Turborepo, no pnpm.
 
 ## Consequences
 

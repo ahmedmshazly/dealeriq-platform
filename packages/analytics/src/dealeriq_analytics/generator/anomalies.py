@@ -4,8 +4,8 @@ range, plus identification of naturally-occurring near-miss points.
 Robust (modified) z-score, the same statistic DS-ANO-001's detector will use:
 `z = 0.6745 * (residual - median(residuals)) / MAD(residuals)`, residuals from an STL
 decomposition (ADR-018: statsmodels is used for STL only, nothing else). Shocks target
-z in [5, 8] — comfortably past DS-ANO-001's 3.5 detection threshold. A handful of
-naturally-occurring near-miss points (z in [2, 3], *not* injected — just found in the
+z in [5, 8] - comfortably past DS-ANO-001's 3.5 detection threshold. A handful of
+naturally-occurring near-miss points (z in [2, 3], *not* injected - just found in the
 unmodified series) are also identified, so Phase 5's false-positive-rate check
 (QA-003b) has real "should NOT be flagged" cases to test against, not just true positives.
 
@@ -13,11 +13,11 @@ IMPORTANT for whoever builds DS-ANO-001's real detector (Phase 5): STL is called
 `robust=False`, deliberately. With only 3 yearly cycles (156 weeks / period 52), STL's seasonal
 sub-series smoothing has just 3 points per phase; `robust=True`'s iterative downweighting
 converges to essentially interpolating through those 3 points on most series (empirically
-verified: median residual MAD was <0.01 — often exactly 0 — on 66/66 generated series with
+verified: median residual MAD was <0.01 - often exactly 0 - on 66/66 generated series with
 robust=True, vs. a healthy 0.01-1.3 range, median 0.31, with robust=False). A median/MAD
 z-score computed on robust=True residuals is numerically meaningless on data shaped like this.
 This is a property of the (STL, period=52, 3-cycle) combination, not of this generator's data
-specifically — the real detector will hit the same degeneracy if it also uses robust=True.
+specifically - the real detector will hit the same degeneracy if it also uses robust=True.
 """
 
 import dataclasses
@@ -58,10 +58,10 @@ class _SeriesResidualStats:
 MIN_STABLE_MAD = 0.2
 """With only 3 yearly cycles (156 weeks / period 52), STL's LOESS can fit low-count series
 almost exactly, leaving a residual distribution with the majority of points at (or extremely
-close to) zero — MAD then collapses towards machine epsilon and the modified z-score
+close to) zero - MAD then collapses towards machine epsilon and the modified z-score
 `0.6745*(resid-median)/MAD` becomes numerically meaningless (blows up from floating-point noise
 alone, sign included). Series/fits whose MAD falls below this floor are treated as unusable for
-z-score-based injection, not as a bug to route around — this count-data-plus-short-series
+z-score-based injection, not as a bug to route around - this count-data-plus-short-series
 degeneracy has no smaller value with the same detector this generator is targeting."""
 
 
@@ -91,12 +91,12 @@ def inject_demand_shocks(
     n_shocks: int = 20,
 ) -> tuple[dict[tuple[str, str], NDArray[np.int64]], list[AnomalyRecord]]:
     """Sizes each shock against the clean series' STL stats, then *independently re-decomposes
-    the mutated series* before accepting it — with only 3 yearly cycles (156 weeks / period 52),
+    the mutated series* before accepting it - with only 3 yearly cycles (156 weeks / period 52),
     STL's per-phase seasonal sub-series has just 3 points, so a single outlier can occasionally
     get partially absorbed into the refit seasonal/trend estimate rather than staying in the
     residual. Verifying post-injection (not just predicting analytically) is what actually
     guarantees SC-004's "independently confirmed" detectability, and what
-    `implied_z` records — the real, re-decomposed value, not the pre-injection target."""
+    `implied_z` records - the real, re-decomposed value, not the pre-injection target."""
     params_by_key: dict[tuple[str, str], SeriesParams] = {
         (p.model_key, p.branch_name): p for p in demand.series_params
     }
@@ -104,7 +104,7 @@ def inject_demand_shocks(
     records: list[AnomalyRecord] = []
 
     # Precompute stats once per series (not per attempt) and drop series whose STL fit is
-    # numerically unusable (see MIN_STABLE_MAD) — then shuffle the qualifying pool and try each
+    # numerically unusable (see MIN_STABLE_MAD) - then shuffle the qualifying pool and try each
     # series in turn, rather than repeatedly re-drawing at random from the full (mostly
     # disqualified or already-used) key set, which wastes almost all attempts once a handful of
     # series are used up.
@@ -175,7 +175,7 @@ def find_near_miss_points(
     exclude: set[tuple[tuple[str, str], int]] | None = None,
 ) -> list[AnomalyRecord]:
     """Scans the *unmodified* generated series for weeks whose robust z-score already falls in
-    [2, 3] by chance — real NB noise, not an injected shock. These are left in place; the point
+    [2, 3] by chance - real NB noise, not an injected shock. These are left in place; the point
     is to catalog them so a detector can be checked for *not* flagging them (QA-003b)."""
     exclude = exclude or set()
     candidates: list[AnomalyRecord] = []

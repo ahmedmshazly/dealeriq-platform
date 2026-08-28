@@ -80,10 +80,10 @@ export function CustomerDetailPage() {
       <Card className="p-6">
         <h2 className="mb-4 text-sm font-semibold text-text-primary">RFM profile</h2>
         {detail.rfm_segment == null ? (
-          <p className="text-sm text-text-muted">Not yet scored — run the customer-analytics job.</p>
+          <p className="text-sm text-text-muted">Not yet scored - run the customer-analytics job.</p>
         ) : detail.recency_score == null ? (
           <p className="text-sm text-text-muted">
-            No purchase history yet — segmented as <strong>New</strong>.
+            No purchase history yet - segmented as <strong>New</strong>.
           </p>
         ) : (
           <dl className="grid grid-cols-3 gap-4 text-sm">

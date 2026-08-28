@@ -12,29 +12,29 @@ export interface MathBlock {
  * quotes prices. Every one of these is a real string in `docs/`, and none of
  * them is math:
  *
- *   `[ -e "$f" ]`                      — shell, inside a fence
- *   `~$5/mo`  `$0–20`  `$0.50`         — currency, in tables
- *   `` `https://${site.domain}` ``     — template literal, inline code
- *   `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`     — a regex, inline code
- *   `` `\write18{rm -rf} & 100% $$` `` — a TeX-injection example, inline code
+ *   `[ -e "$f" ]` - shell, inside a fence
+ *   `~$5/mo`  `$0–20`  `$0.50` - currency, in tables
+ *   `` `https://${site.domain}` `` - template literal, inline code
+ *   `/^[^\s@]+@[^\s@]+\.[^\s@]+$/` - a regex, inline code
+ *   `` `\write18{rm -rf} & 100% $$` `` - a TeX-injection example, inline code
  *
  * Three rules kill all of them without a single special case:
  *
  *   1. Never look inside a fenced block or an inline code span.
  *   2. Display math (`$$`) must own its line, top and bottom.
  *   3. An inline `$` opener must be followed by a non-space and must close on
- *      the same line — and the closing `$` must not be followed by a digit.
+ *      the same line - and the closing `$` must not be followed by a digit.
  *
  * That last clause is the whole game, and it is not the obvious one. Rejecting
  * a *digit after the opener* looks like the natural way to exclude currency, and
- * it does exclude all of it — but it also silently swallows five real
+ * it does exclude all of it - but it also silently swallows five real
  * expressions that legitimately begin with a number (`$2\pi$`, `$2^{32}$`,
  * `$80 + 60 = 140$`). The only string in the corpus that survives every other
  * rule is a price *range*:
  *
- *     **≈$3–10 typical; $45 hard ceiling**
+ *     **≈$3-10 typical; $45 hard ceiling**
  *
- * There, the closing `$` is followed by `4` — because it is not a closer at all,
+ * There, the closing `$` is followed by `4` - because it is not a closer at all,
  * it is the next price. Real math is always followed by punctuation or a space.
  *
  * Only `docs/11b-math-foundation.md` contains real math (41 expressions), and

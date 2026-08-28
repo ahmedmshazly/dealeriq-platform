@@ -1,5 +1,5 @@
 """Vehicle models/units, the append-only stock-movement ledger, and stock adjustments
-(FR-020..024). Unit status is always changed alongside a ledger row in the same transaction —
+(FR-020..024). Unit status is always changed alongside a ledger row in the same transaction -
 there is no path that updates `vehicle_units.status` without a corresponding `stock_movements`
 insert (DAT-003).
 """
@@ -131,7 +131,7 @@ def list_vehicle_units(
     limit: int,
     offset: int,
 ) -> tuple[list[VehicleUnit], int]:
-    """Filtering, `days_on_lot` bounds, ordering, and pagination all happen in SQL -- an earlier
+    """Filtering, `days_on_lot` bounds, ordering, and pagination all happen in SQL, an earlier
     version loaded every unit into Python before filtering/sorting/slicing, an unbounded
     full-table load on every call regardless of filters (found via NFR-003 benchmarking, Phase
     9: p95 734ms on the real seeded ~15k-unit table vs. the 300ms target)."""

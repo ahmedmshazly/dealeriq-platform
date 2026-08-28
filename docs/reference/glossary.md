@@ -6,7 +6,7 @@
 
 | Term | Meaning |
 |------|---------|
-| **ADI** | Average Demand Interval — intermittence measure for SBC |
+| **ADI** | Average Demand Interval - intermittence measure for SBC |
 | **ABC-XYZ** | Inventory classification by value (ABC) and demand variability (XYZ) |
 | **Analytics run** | One execution of a job, row in `analytics_runs` |
 | **APScheduler** | In-process job scheduler used instead of Celery (ADR-004) |
@@ -18,9 +18,9 @@
 | **FR / NFR / DS / DAT / SEC** | Requirement ID prefixes in the SRS |
 | **httpOnly refresh** | Refresh token stored only in a non-JS-readable cookie |
 | **Inventory intel** | Reorder, risk, anomaly outputs from the inventory job |
-| **MASE** | Mean Absolute Scaled Error — primary forecast accuracy metric |
+| **MASE** | Mean Absolute Scaled Error - primary forecast accuracy metric |
 | **OpenAPI client** | Generated TS client in `packages/api-client` |
-| **PSI** | Population Stability Index — lead-score drift detector |
+| **PSI** | Population Stability Index - lead-score drift detector |
 | **RBAC** | Role-based access control (deny-by-default permissions) |
 | **RFM** | Recency, Frequency, Monetary customer segmentation |
 | **SBC** | Syntetos-Boylan Classification of demand patterns |
@@ -28,5 +28,5 @@
 | **Stock movement** | Append-only inventory ledger entry |
 | **Unit risk** | Per-vehicle-unit aging / survival risk score |
 
-Product roles: **Admin**, **Manager**, **Sales**, **Analyst** — see
+Product roles: **Admin**, **Manager**, **Sales**, **Analyst** - see
 [permissions.md](permissions.md).

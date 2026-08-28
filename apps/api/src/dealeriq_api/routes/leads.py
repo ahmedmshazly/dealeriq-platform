@@ -38,7 +38,7 @@ def _latest_succeeded_lead_scoring_run_id(db: Session) -> uuid.UUID | None:
 
 def _enrich_leads_with_scores(db: Session, leads: list[Lead]) -> list[LeadResponse]:
     """Batch-loads the latest lead-scoring run's `LeadScore`/`CustomerRfmProfile` rows for this
-    page of leads, rather than a per-lead query — one round-trip regardless of page size."""
+    page of leads, rather than a per-lead query - one round-trip regardless of page size."""
     run_id = _latest_succeeded_lead_scoring_run_id(db)
     if run_id is None or not leads:
         return [LeadResponse.from_model(lead) for lead in leads]

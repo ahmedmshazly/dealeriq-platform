@@ -20,7 +20,7 @@
 - [x] T008 `core/errors.py`: `{error: {code, message, details}}` envelope + exception handlers
 - [x] T009 `auth/service.py` + `routes/auth.py`: login (with lockout, FR-005), refresh (rotation +
       reuse detection), logout, logout-all, change-password (FR-006); slowapi rate limit on login;
-      plus `GET /auth/me` (added beyond the original plan — see phase report)
+      plus `GET /auth/me` (added beyond the original plan - see phase report)
 - [x] T010 `routes/users.py`: list/create/patch users (`users:view`/`users:manage`)
 - [x] T011 `routes/roles.py`, `routes/permissions.py`: list roles, permission matrix
       (`users:view`, `permissions:view`)

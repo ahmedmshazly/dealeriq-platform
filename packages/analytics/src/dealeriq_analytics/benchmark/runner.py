@@ -1,7 +1,7 @@
 """Runs the existing, already-validated generate -> classify -> CV -> champion pipeline
 (unchanged) across every seed in a BenchmarkConfig. The conversion from the generator's raw
 integer arrays to weekly pd.Series is the exact pattern already proven in
-test_qa003a_scientific_validation.py -- this module doesn't introduce a new one."""
+test_qa003a_scientific_validation.py; this module doesn't introduce a new one."""
 
 import dataclasses
 

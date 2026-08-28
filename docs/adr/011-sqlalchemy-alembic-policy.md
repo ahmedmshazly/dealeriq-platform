@@ -20,7 +20,7 @@ in CI.
 
 - Typed declarative models give mypy-checkable ORM code (supports the constitution's strict-mypy
   quality bar on domain code).
-- Autogenerate accelerates drafting migrations but is never trusted blindly — a human
+- Autogenerate accelerates drafting migrations but is never trusted blindly - a human
   reviews every generated diff for destructive operations before it's
   committed, consistent with ADR-008's "no implicit schema change" principle.
 - `alembic check` in CI catches the case where a model was changed but no migration was

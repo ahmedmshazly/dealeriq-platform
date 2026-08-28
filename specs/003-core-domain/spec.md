@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 2 — "FR-020..045, DAT-001..004, API-001..003"
+**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 2 - "FR-020..045, DAT-001..004, API-001..003"
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -28,7 +28,7 @@ movement.
 1. **Given** a Manager, **When** they create a vehicle model and add a unit by VIN, **Then** a
    `receipt` stock movement is recorded and the unit shows `in_stock` (FR-020, FR-021).
 2. **Given** an in-stock unit, **When** its status changes via any path (reservation, sale,
-   transfer, adjustment), **Then** a new stock_movements row is appended — existing rows are
+   transfer, adjustment), **Then** a new stock_movements row is appended - existing rows are
    never edited (DAT-003).
 3. **Given** the inventory list, **When** filtered by branch/model/segment/status/days-on-lot
    bucket, **Then** results are paginated and sorted correctly (FR-022, API-001).
@@ -41,7 +41,7 @@ As a Sales user, I create customers and leads, and the system prevents me from m
 status jumps (e.g., `new` straight to `won`).
 
 **Why this priority**: The lead funnel is the input to the conversion-scoring model that arrives
-in Phase 7 — its state machine has to be correct now.
+in Phase 7 - its state machine has to be correct now.
 
 **Independent Test**: Attempt an invalid transition (`new` → `won`) and confirm it's rejected;
 attempt each valid transition and confirm it succeeds.
@@ -78,7 +78,7 @@ business-critical workflow in the whole product.
    `pending_approval` and requires a Manager/Admin decision (FR-041).
 3. **Given** an approved order, **When** delivered, **Then** the unit is marked `sold` and the
    ledger records a `sale` movement atomically with the order's status change (FR-042).
-4. **Given** an order's margin (negotiated price − acquisition cost), **When** viewed by a Sales
+4. **Given** an order's margin (negotiated price - acquisition cost), **When** viewed by a Sales
    user, **Then** it is not present in the response at all; **when** viewed by Manager+, **then**
    it is (FR-043).
 5. **Given** an approved order, **When** cancelled, **Then** the unit's reservation is released
@@ -90,7 +90,7 @@ business-critical workflow in the whole product.
   status is checked at approval time inside the same transaction that reserves it; the second
   approval fails with a conflict rather than double-booking.
 - What happens when a lead's owner is deactivated? → the lead keeps its `owner_id`; only an
-  Admin/Manager reassignment (not built this phase — FR-034 bulk reassignment is backlogged)
+  Admin/Manager reassignment (not built this phase - FR-034 bulk reassignment is backlogged)
   changes it.
 - What happens when a stock adjustment has no reason? → rejected (FR-024, mandatory reason).
 
@@ -100,12 +100,12 @@ business-critical workflow in the whole product.
 
 Inventory: FR-020 (create/edit models & units), FR-021 (append-only stock_movements, derived
 stock), FR-022 (filter/sort/paginate), FR-023 (computed days-on-lot; ABC/XYZ/aging-risk fields
-exist on the schema now, populated once analytics land in Phase 5 — see Assumptions), FR-024
+exist on the schema now, populated once analytics land in Phase 5 - see Assumptions), FR-024
 (stock adjustment with mandatory reason, audit-logged).
 
 Customers & Leads: FR-030 (create/edit customers, dedup warning), FR-031 (leads with a validated
 state machine), FR-032 (conversion score/explanation fields exist on the schema now, populated
-once DS-CUST-003 lands in Phase 7 — see Assumptions), FR-033 (RFM segment display — same),
+once DS-CUST-003 lands in Phase 7 - see Assumptions), FR-033 (RFM segment display - same),
 FR-012 (Sales edit-own, Manager/Admin edit-any, for leads and orders).
 
 Orders: FR-040 (create order: customer + specific unit + price/discount/payment_type/status),
@@ -114,7 +114,7 @@ atomically; deliver marks sold + ledger row), FR-043 (margin visible Manager+ on
 (order timeline), FR-045 (cancel approved releases reservation, requires reason).
 
 Cross-cutting: DAT-001..004 (Alembic-only, FK/CHECK integrity, analytics/transactional
-separation — N/A until Phase 3+ analytics tables exist, but the principle is upheld by never
+separation - N/A until Phase 3+ analytics tables exist, but the principle is upheld by never
 writing analytics tables here; required indices), API-001..003 (pagination/filter/sort on all
 list endpoints, idempotency-safe mutations, rate limiting already covers auth per Phase 1).
 
@@ -142,7 +142,7 @@ list endpoints, idempotency-safe mutations, rate limiting already covers auth pe
 - FR-023's ABC/XYZ class and aging-risk score, and FR-032/033's conversion score and RFM
   segment, are genuinely analytics outputs (DS-INV, DS-CUST) that don't exist until Phases 5 and
   7. This phase adds the schema columns/relations needed to display them later
-  (`unit_risk`/`lead_scores` tables are analytics tables per DAT-003 and are NOT created here —
+  (`unit_risk`/`lead_scores` tables are analytics tables per DAT-003 and are NOT created here -
   they arrive with their owning phase) and the UI renders "—" / "not yet scored" placeholders
   where a later phase's analytics haven't run yet.
 - FR-034 (bulk lead reassignment, P2) and FR-025 (CSV import dry-run, P1) remain backlogged per

@@ -1,10 +1,10 @@
 """Achieved forecast accuracy (FR-073): compares real historical forecasts to the real actuals
 that have since materialized, reusing Phase 4's already-validated `mase()` metric unchanged
-(ADR-024) — only the selection of which (forecast, actual) pairs to compare is new.
+(ADR-024) - only the selection of which (forecast, actual) pairs to compare is new.
 
 A given future week is typically forecast by several weekly runs at different lead times before
 it arrives (DS-OPS-001: forecasting runs weekly, 12-week horizon). Deduplicated to one `yhat` per
-week by taking the *earliest* run that forecast it — the longest genuine lead time, and the
+week by taking the *earliest* run that forecast it - the longest genuine lead time, and the
 strictest honest out-of-sample comparison (ADR-024).
 """
 

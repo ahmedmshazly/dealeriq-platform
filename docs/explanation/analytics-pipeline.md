@@ -8,8 +8,8 @@ last-verified: 2026-07-17
 
 **Audience:** data-science-minded engineers and paper reviewers.  
 **Last updated:** 2026-07-17  
-**Refs:** SRS §6, Principle V, ADRs 004/005/017/018/021–025, `packages/analytics`  
-**Diagrams:** [catalog D13–D14](../diagrams/README.md)
+**Refs:** SRS §6, Principle V, ADRs 004/005/017/018/021-025, `packages/analytics`  
+**Diagrams:** [catalog D13-D14](../diagrams/README.md)
 
 ## D14 Forecast to digest pipeline
 
@@ -45,7 +45,7 @@ Every run:
 4. Is idempotent per (job, data snapshot) and concurrency-guarded.
 
 On-demand: `POST /api/v1/jobs/{name}/run` (`jobs:trigger`). Cron: APScheduler when
-`ENABLE_SCHEDULER=true` (ADR-004 — not Celery).
+`ENABLE_SCHEDULER=true` (ADR-004 - not Celery).
 
 ### D13 Analytics job run and concurrency guard
 
@@ -95,7 +95,7 @@ sequenceDiagram
 ## Alerts + digest
 
 - `domain/alerts/alert_rules.py` evaluates built-in rules (stock reorder, aging, anomaly,
-  forecast stockout, discount approval, lead idle, score drift, …).
+  forecast stockout, discount approval, lead idle, score drift, ...).
 - Opens/dedups `alerts` + fan-out `notifications` by subscribed roles.
 - Digest job emails unread/critical summaries (MailHog locally).
 

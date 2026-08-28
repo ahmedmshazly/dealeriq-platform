@@ -11,7 +11,7 @@ import { state } from "../lib/store.js";
 /**
  * The reference layer: everything on screen that can explain itself.
  *
- * Five kinds, one popover. What distinguishes them is provenance — three come
+ * Five kinds, one popover. What distinguishes them is provenance - three come
  * from the repository, one from `glossary.md`, and one from a file I wrote. The
  * last is the only one that must never be mistaken for the others, so it alone
  * carries a dashed badge.
@@ -79,7 +79,7 @@ export function buildRefIndex(corpus: Corpus): RefIndex {
  * most once per section, and never on the page that defines it.
  *
  * This restraint is the whole feature. Mark up every occurrence of every term
- * and `05-code-reference.md` — the densest document in the corpus — becomes a
+ * and `05-code-reference.md` - the densest document in the corpus - becomes a
  * field of dotted underlines that nobody can read through.
  */
 const SKIP = new Set([

@@ -1,5 +1,5 @@
 """Manager and Sales dashboard aggregation (FR-050, FR-051). Each function composes several
-already-persisted analytics/operational outputs into one summary payload — purpose-built summary
+already-persisted analytics/operational outputs into one summary payload - purpose-built summary
 queries, not calls into the existing detail-view routes, whose response shapes serve a different
 need (full heatmap cell membership, full anomaly lists) than a dashboard's aggregate counts.
 """
@@ -136,7 +136,7 @@ def _open_anomaly_count(db: Session) -> int:
 
 
 def _unacknowledged_alert_count(db: Session, user_id: uuid.UUID) -> int:
-    """Mirrors `routes/alerts.py`'s own per-user notification scoping exactly — the same query
+    """Mirrors `routes/alerts.py`'s own per-user notification scoping exactly - the same query
     shape, purpose-built here to avoid an internal HTTP round-trip."""
     return db.execute(
         select(func.count())

@@ -180,7 +180,7 @@ export function renderDoc(md: string, ctx: RenderContext): RenderResult {
         }
 
         // A relative link that resolves to nothing indexable. Keep the text, drop
-        // the href — a dead link that looks alive is worse than plain prose.
+        // the href - a dead link that looks alive is worse than plain prose.
         return `<span class="lk lk-dead" title="Unresolved: ${escapeAttr(href)}">${inner}</span>`;
       },
 
@@ -239,7 +239,7 @@ function classify(raw: string, ctx: RenderContext): Ref | null {
 
   if (ctx.files.has(t)) return { kind: "file", value: t };
 
-  // `src/lib/db/comments.ts:42` — a path with a line number.
+  // `src/lib/db/comments.ts:42` - a path with a line number.
   const withLine = /^([\w./[\]-]+\.\w+):\d+$/.exec(t);
   if (withLine && ctx.files.has(withLine[1]))
     return { kind: "file", value: withLine[1] };
@@ -247,7 +247,7 @@ function classify(raw: string, ctx: RenderContext): Ref | null {
   // Two characters is not a symbol reference, it is a variable in a formula.
   if (t.length >= 3 && ctx.symbols.has(t)) return { kind: "symbol", value: t };
 
-  // `getArticles()` — a call, not a reference.
+  // `getArticles()` - a call, not a reference.
   const called = /^([A-Za-z_$][\w$]*)\(\)$/.exec(t);
   if (called && called[1].length >= 3 && ctx.symbols.has(called[1]))
     return { kind: "symbol", value: called[1] };

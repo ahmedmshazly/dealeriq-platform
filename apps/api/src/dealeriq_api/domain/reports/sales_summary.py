@@ -1,5 +1,5 @@
 """Monthly sales/margin aggregation (FR-050, FR-051, FR-054). `Order` itself has no
-`delivered_at` column — delivery date is read from `OrderEvent` where `to_status="delivered"`,
+`delivered_at` column - delivery date is read from `OrderEvent` where `to_status="delivered"`,
 matching the existing order-timeline convention (`order_service.order_timeline`) and how
 `infra/seed/generate.py` itself records delivery for seeded orders.
 """
@@ -18,7 +18,7 @@ DELIVERED_TO_STATUS = OrderStatus.DELIVERED.value
 
 
 def month_bounds(month: date) -> tuple[date, date]:
-    """Returns `[start, end)` — the first day of `month`'s month and the first day of the next
+    """Returns `[start, end)` - the first day of `month`'s month and the first day of the next
     month, so a half-open `>=`/`<` range never double-counts a boundary timestamp."""
     start = month.replace(day=1)
     end = date(start.year + (1 if start.month == 12 else 0), (start.month % 12) + 1, 1)
@@ -76,7 +76,7 @@ def monthly_sales_by_salesperson(db: Session, salesperson_id: uuid.UUID, month: 
 
 def monthly_sales_and_margin(db: Session, month: date) -> tuple[float, float]:
     """Total revenue and total margin (`negotiated_price - acquisition_cost`) for every order
-    delivered in `month`, dealership-wide — the two totals FR-054's monthly report needs."""
+    delivered in `month`, dealership-wide - the two totals FR-054's monthly report needs."""
     start, end = month_bounds(month)
     revenue = 0.0
     margin = 0.0
@@ -91,7 +91,7 @@ def top_bottom_models(
     db: Session, *, window_start: date, window_end: date, n: int = 5
 ) -> tuple[list[ModelRevenue], list[ModelRevenue]]:
     """Ranked by delivered revenue within `[window_start, window_end)`. A model with zero
-    deliveries in the window is excluded entirely — it isn't "bottom," it's simply unranked."""
+    deliveries in the window is excluded entirely - it isn't "bottom," it's simply unranked."""
     rows = db.execute(
         select(
             VehicleModel.id, VehicleModel.make, VehicleModel.model, func.sum(Order.negotiated_price)

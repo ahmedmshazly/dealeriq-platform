@@ -1,6 +1,6 @@
 """Aggregates PerSeriesResult rows into a per-(sbc_class, method) leaderboard and a paired
 Wilcoxon signed-rank comparison (champion vs. Seasonal Naive MASE, paired by series) per SBC
-class and overall. `degenerate`-classified series are counted but excluded from both -- reported
+class and overall. `degenerate`-classified series are counted but excluded from both, reported
 honestly rather than silently folded into a real demand-pattern class."""
 
 import dataclasses
@@ -78,7 +78,7 @@ def _paired_champion_vs_seasonal_naive(
     results: list[PerSeriesResult],
 ) -> dict[tuple[int, str, str], tuple[float, float]]:
     """(dataset_seed, series_key, sbc_class) -> (champion_mase, seasonal_naive_mase), one pair
-    per series -- the atomic unit the Wilcoxon test and the win-rate are both built from."""
+    per series, the atomic unit the Wilcoxon test and the win-rate are both built from."""
     champion_mase: dict[tuple[int, str, str], float] = {}
     seasonal_naive_mase: dict[tuple[int, str, str], float] = {}
     for r in results:
@@ -112,7 +112,7 @@ def _wilcoxon_for_pairs(sbc_class: str, pairs: list[tuple[float, float]]) -> Wil
         return WilcoxonResult(sbc_class, n_pairs, float(statistic), float(p_value), win_rate)
     except ValueError:
         # scipy raises when every paired difference is exactly zero (champion == Seasonal
-        # Naive for every series in this class) -- a real, disclosable outcome, not a crash.
+        # Naive for every series in this class), a real, disclosable outcome, not a crash.
         return WilcoxonResult(sbc_class, n_pairs, None, None, win_rate)
 
 

@@ -1,11 +1,11 @@
-"""QA-003(b) — CI-blocking scientific validation, per the constitution's Phase 4+ mandate (the
+"""QA-003(b) - CI-blocking scientific validation, per the constitution's Phase 4+ mandate (the
 same standing QA-003(a) got in Phase 4): the anomaly detector recovers >=80% of injected
 anomalies at <=10% false-positive rate.
 
 Runs the real DS-ANO-001/002 detector (STL + robust z-score + generalized ESD) against Phase 3's
 real generator output, reconstructed in-memory with the *exact* same RNG spawning sequence
 `infra/seed/generate.py`'s `main()` uses (`SeedSequence(config.seed).spawn(7)`, taking only the
-first two spawned streams this test needs) — so the injected shocks and near-miss points here are
+first two spawned streams this test needs) - so the injected shocks and near-miss points here are
 byte-identical to what's actually in the seeded database's `infra/seed/ground_truth/
 anomalies.json`, not just a statistically-similar independent draw. This is the harder, more
 novel half of DS-ANO-001..004 (series-level STL/z-score/GESD); DS-ANO-003's transaction-level

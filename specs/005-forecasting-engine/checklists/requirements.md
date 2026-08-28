@@ -35,5 +35,5 @@
   DS-FC-008/009 (P1) are noted as backlogged, consistent with prior phases' P0-only discipline.
 - Method-pool library choice (statsforecast) and CV-harness mechanics are named in Requirements
   because they are SRS-fixed decisions (ADR-008), not open implementation choices this spec is
-  making — same treatment given to GEN-002's NB-GLM choice in the Phase 3 spec.
+  making - same treatment given to GEN-002's NB-GLM choice in the Phase 3 spec.
 - All items pass; ready for planning.

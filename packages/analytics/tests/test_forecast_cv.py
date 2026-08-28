@@ -1,4 +1,4 @@
-"""Rolling-origin CV harness (DS-FC-004) — fold count/boundaries against a 156-week series, and
+"""Rolling-origin CV harness (DS-FC-004) - fold count/boundaries against a 156-week series, and
 the too-short-series failure mode."""
 
 import numpy as np

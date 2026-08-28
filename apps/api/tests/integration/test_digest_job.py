@@ -1,4 +1,4 @@
-"""Integration test: the daily digest job sends a real email via SMTP to MailHog —
+"""Integration test: the daily digest job sends a real email via SMTP to MailHog -
 verified against MailHog's own `GET /api/v2/search` HTTP API, not a mocked `smtplib.SMTP`
 (FR-064).
 

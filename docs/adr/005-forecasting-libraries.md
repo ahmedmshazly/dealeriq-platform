@@ -20,5 +20,5 @@ alongside it as originally scoped.
   with a built-in rolling-origin CV utility, and is fast enough to comfortably clear NFR-004
   (≤500 series, <10 min).
 - During Phase 4 implementation it became clear `statsmodels` is not actually needed for any
-  method in the pool — see ADR-018, which narrows this decision to reduce two-library
+  method in the pool - see ADR-018, which narrows this decision to reduce two-library
   integration risk without changing the method pool itself.

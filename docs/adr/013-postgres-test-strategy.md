@@ -1,4 +1,4 @@
-# ADR-013: Postgres test strategy — testcontainers for CI/integration, Compose for dev
+# ADR-013: Postgres test strategy - testcontainers for CI/integration, Compose for dev
 
 - Status: Accepted
 - Date: 2026-07-10
@@ -19,7 +19,7 @@ remains a separate, long-lived instance used only for `make dev` and manual seed
 
 - Test runs are hermetic and parallel-safe (each test session gets its own container), avoiding
   state leakage between test runs and between test runs and the dev database.
-- Developers can run `pytest` without first remembering to `docker compose up` — testcontainers
+- Developers can run `pytest` without first remembering to `docker compose up` - testcontainers
   manages its own container lifecycle.
 - Two Postgres-launching mechanisms exist for two different purposes; this is intentional, not a
   duplication to clean up.

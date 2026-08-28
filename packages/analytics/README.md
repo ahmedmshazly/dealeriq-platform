@@ -1,4 +1,4 @@
-# packages/analytics — DealerIQ Analytics
+# packages/analytics - DealerIQ Analytics
 
 Python library for forecasting, inventory intelligence, anomaly detection, and customer/lead
 analytics (SRS §6). Imported by `apps/api` job pipelines; also runnable standalone for

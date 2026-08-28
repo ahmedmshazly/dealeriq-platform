@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 10 — "DS-OPS-004, §15"
+**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 10 - "DS-OPS-004, §15"
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -14,8 +14,8 @@
 
 As a reader evaluating this project's forecasting claims, I want to see, across multiple
 independently-generated synthetic datasets spanning every demand pattern (smooth, erratic,
-intermittent, lumpy), how each candidate forecasting method actually performs — not just a
-single lucky run — with a real statistical test showing whether the winning method's advantage
+intermittent, lumpy), how each candidate forecasting method actually performs - not just a
+single lucky run - with a real statistical test showing whether the winning method's advantage
 is genuine or noise, and an honest discussion of what a synthetic-data benchmark can and can't
 prove.
 
@@ -50,7 +50,7 @@ own numbers came from, so the benchmark is a real, checkable artifact rather tha
 report I have to take on faith.
 
 **Why this priority**: Reproducibility is this project's foundational discipline (NFR-007,
-Principle IX) applied to its own research claim — a benchmark nobody else can re-run isn't
+Principle IX) applied to its own research claim - a benchmark nobody else can re-run isn't
 evidence, it's an assertion.
 
 **Independent Test**: On a clean checkout, run the one reproduction command; confirm it produces
@@ -76,7 +76,7 @@ actually feeds real dealership decisions (reorder points, stockout alerts) in th
 the benchmark reads as evidence for a working system, not an abstract academic exercise
 disconnected from what was actually built.
 
-**Why this priority**: P2 — §15's own protocol step 5, valuable applied context but not required
+**Why this priority**: P2 - §15's own protocol step 5, valuable applied context but not required
 for the benchmark's own statistical validity (User Story 1) or its reproducibility
 (User Story 2).
 
@@ -94,7 +94,7 @@ forecast-implied stockout becomes an alert) rather than a hypothetical descripti
 
 - What happens if a candidate method fails to fit on a particular series (e.g. a numerical
   convergence failure)? That series/method combination is recorded as a real failure in the
-  results data, not silently dropped or replaced with a fabricated number — the leaderboard and
+  results data, not silently dropped or replaced with a fabricated number - the leaderboard and
   paper disclose the failure rate if nonzero.
 - What happens if the paired statistical test's assumptions are questionable for a given
   demand-pattern subgroup (e.g. too few series in a class for the test to be meaningful)? The
@@ -131,9 +131,9 @@ forecast-implied stockout becomes an alert) rather than a hypothetical descripti
 *(names describe the concepts introduced; exact schema is a planning-phase decision.)*
 
 - **Benchmark run**: one full execution of the harness across all configured datasets and
-  methods — a random seed per dataset, the set of methods evaluated, and a timestamp, so a
+  methods - a random seed per dataset, the set of methods evaluated, and a timestamp, so a
   specific run's provenance is always traceable.
-- **Per-series result**: one method's accuracy metrics on one series from one dataset — the
+- **Per-series result**: one method's accuracy metrics on one series from one dataset - the
   atomic unit both the leaderboard aggregation and the paired statistical test are built from.
 - **Leaderboard**: the human-readable rollup of per-series results into per-method,
   per-demand-pattern summary statistics.
@@ -152,7 +152,7 @@ forecast-implied stockout becomes an alert) rather than a hypothetical descripti
   checkout with zero manual steps beyond that command, and re-running it with the same
   configuration reproduces the same datasets (deterministic given the seed).
 - **SC-004**: The paper draft renders to a final, readable document using only tools already
-  available in this project's environment, with zero fabricated numbers — every figure in the
+  available in this project's environment, with zero fabricated numbers - every figure in the
   paper traces back to the benchmark's own output.
 - **SC-005**: The paper's limitations section explicitly and honestly discloses the synthetic-
   data bias rather than presenting the benchmark's conclusions as generalizing to real dealership
@@ -161,15 +161,15 @@ forecast-implied stockout becomes an alert) rather than a hypothetical descripti
 ## Assumptions
 
 - **The candidate method pool is exactly the set already implemented and operationally used**
-  (Naive, Seasonal Naive, Simple Exponential Smoothing, ETS, AutoARIMA, Croston, SBA, TSB) — no
+  (Naive, Seasonal Naive, Simple Exponential Smoothing, ETS, AutoARIMA, Croston, SBA, TSB) - no
   new forecasting method is introduced this phase; the benchmark's contribution is rigorous
   *evaluation* of what already exists, not new methods.
 - **The number of independent synthetic datasets is chosen to balance statistical power against
   runtime**: each dataset's full evaluation (all methods × all series) takes on the order of 15
   minutes based on the single-dataset run already measured in an earlier phase. A handful of
   independent datasets (each already spanning all four demand patterns on its own) yields several
-  hundred paired per-series observations for the statistical comparison — enough for a
-  meaningful paired test — while keeping total runtime on the order of an hour, not many hours.
+  hundred paired per-series observations for the statistical comparison - enough for a
+  meaningful paired test - while keeping total runtime on the order of an hour, not many hours.
   The exact count is a planning-phase decision, documented with this reasoning.
 - **The optional public dataset (§15 protocol step 2) is out of scope for this phase.** No
   public retail/vehicle-sales dataset can be sourced, licensed, and vendored into the repository
@@ -177,8 +177,8 @@ forecast-implied stockout becomes an alert) rather than a hypothetical descripti
   SRS itself marks this step optional. Recorded as a backlog item for a future revisit rather
   than built now.
 - **The paper targets whatever document-preparation tooling is already available in this
-  project's environment** for producing a final, renderable document — no new toolchain
+  project's environment** for producing a final, renderable document - no new toolchain
   installation is required to view the deliverable in its intended final form.
-- **The paper is a draft, not a submission-ready manuscript** — §15 itself frames the target
+- **The paper is a draft, not a submission-ready manuscript** - §15 itself frames the target
   venue as "arXiv preprint + portfolio write-up," and this phase's own exit criterion is "paper
   draft," not peer-review-ready copy.

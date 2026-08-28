@@ -1,9 +1,9 @@
-"""AlertRule, Alert, Notification — Phase 6's alert-rule engine (FR-060..065). Schema per SRS
+"""AlertRule, Alert, Notification - Phase 6's alert-rule engine (FR-060..065). Schema per SRS
 §7's representative-resources list verbatim.
 
 Unlike Phase 4/5's analytics tables (DAT-003, never touched by transactional code), `alerts` and
 `notifications` are operational tables mutated by application code as alerts move through their
-lifecycle — that's correct and expected, not a DAT-003 violation, since DAT-003 is specifically
+lifecycle - that's correct and expected, not a DAT-003 violation, since DAT-003 is specifically
 about the analytics-vs-transactional boundary and these tables are neither: they're a
 notification concern that reads from both sides.
 """

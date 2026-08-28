@@ -1,7 +1,7 @@
 /**
  * The generated OpenAPI client (packages/api-client), wired with an auth middleware that
  * attaches the in-memory access token and transparently refreshes-and-retries once on a 401
- * (ADR-014, C-05). This is the ONLY sanctioned way apps/web talks to the API — no bare `fetch`
+ * (ADR-014, C-05). This is the ONLY sanctioned way apps/web talks to the API - no bare `fetch`
  * calls to the API elsewhere in this app.
  */
 import { createApiClient } from "@dealeriq/api-client";

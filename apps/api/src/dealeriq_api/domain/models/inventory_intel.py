@@ -1,6 +1,6 @@
-"""InventoryIntel, UnitRisk, Anomaly — Phase 5's analytics tables (DS-INV-001..004,
+"""InventoryIntel, UnitRisk, Anomaly - Phase 5's analytics tables (DS-INV-001..004,
 DS-ANO-001..004). Schema per SRS §7's representative-resources list verbatim, all FK'd back to
-Phase 4's `analytics_runs` (reused, not duplicated — FR-070 already covers "every analytics
+Phase 4's `analytics_runs` (reused, not duplicated - FR-070 already covers "every analytics
 execution," not just forecasting). DAT-003: analytics tables, never touched by transactional
 code, never mutated in place once a run completes.
 
@@ -10,7 +10,7 @@ ranking per the SRS's own DS-INV-001 wording is model-wide) denormalized alongsi
 branch-specific reorder point, so a caller gets everything about one model at one branch from a
 single row rather than a join.
 
-`Anomaly.esd_confirmed` is an addition beyond SRS §7's abbreviated column list — DS-ANO-002
+`Anomaly.esd_confirmed` is an addition beyond SRS §7's abbreviated column list - DS-ANO-002
 explicitly requires "both scores are stored," which needs a column to hold the ESD result
 (nullable: `None` when the series had too little history for ESD to run at all, not merely
 "not confirmed").
@@ -45,7 +45,7 @@ class InventoryIntel(IdMixin, Base):
     service_level: Mapped[float | None] = mapped_column(Float, default=None)
     skipped_reason: Mapped[str | None] = mapped_column(String(255), default=None)
     """Set (with reorder_point/safety_stock/service_level left null) when this (model, branch)
-    has no succeeded Phase 4 forecast run yet — never fabricated (spec.md User Story 2)."""
+    has no succeeded Phase 4 forecast run yet - never fabricated (spec.md User Story 2)."""
 
 
 class UnitRisk(IdMixin, Base):

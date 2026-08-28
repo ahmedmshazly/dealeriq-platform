@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 7 — "DS-CUST-001..005, FR-032/033, FR-074"
+**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 7 - "DS-CUST-001..005, FR-032/033, FR-074"
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -17,7 +17,7 @@ into (Champion, At-Risk, Hibernating, etc.) and their purchase history, so I kno
 whether this is a customer worth prioritizing or one who's drifting away.
 
 **Why this priority**: RFM segmentation is the simpler, foundational half of this phase's
-analytics — it requires no model training, has no cold-start problem, and everything else
+analytics - it requires no model training, has no cold-start problem, and everything else
 (lead scoring's customer-RFM feature, the customer detail page) either consumes it or displays
 it. It can ship and be independently valuable before lead scoring exists.
 
@@ -48,7 +48,7 @@ top reasons driving that score, so I know which leads deserve my attention first
 my prioritization to a manager.
 
 **Why this priority**: This is the phase's own named exit demo ("calibrated lead scores with
-explanations in UI") — the single most externally visible deliverable of the phase, and the
+explanations in UI") - the single most externally visible deliverable of the phase, and the
 reason RFM (User Story 1) is a prerequisite (it's one of the model's own input features).
 
 **Independent Test**: Run the lead-scoring job against seeded leads with known outcomes; open the
@@ -65,7 +65,7 @@ reveals its top 3 contributing features in plain language.
    (DS-CUST-004).
 3. **Given** the full population of scored, resolved (won/lost) historical leads, **When** scores
    are grouped into probability buckets, **Then** each bucket's actual win rate is close to its
-   predicted probability — the model is calibrated, not just rank-ordered (DS-CUST-003).
+   predicted probability - the model is calibrated, not just rank-ordered (DS-CUST-003).
 4. **Given** a lead that has not yet been scored (job hasn't run since it was created), **When**
    its row is displayed, **Then** it shows a clear "not yet scored" state rather than a stale or
    fabricated number (existing UI behavior, confirmed still correct this phase).
@@ -76,9 +76,9 @@ reveals its top 3 contributing features in plain language.
 
 As a Manager, the existing "lead idle" alert (built in Phase 6 as idle-days-only) now also
 considers the lead's conversion score, so I'm only alerted about idle leads that were actually
-promising — not every lead that's gone quiet regardless of how likely it ever was to convert.
+promising - not every lead that's gone quiet regardless of how likely it ever was to convert.
 
-**Why this priority**: P2 — an additive refinement of an alert rule that already works and
+**Why this priority**: P2 - an additive refinement of an alert rule that already works and
 already fires without it (Phase 6 shipped idle-days-only deliberately, documented as deferred to
 this phase). Not part of the phase's own named exit demo, but explicitly promised as this phase's
 follow-through.
@@ -93,7 +93,7 @@ high-score lead's alert opens.
    evaluation runs, **Then** only idle leads whose conversion score is at or above the cutoff open
    an alert (FR-061f completion).
 2. **Given** `score_cutoff` is left unconfigured (null), **When** alert evaluation runs, **Then**
-   the rule behaves exactly as it did in Phase 6 — idle-days only, no score filter applied (no
+   the rule behaves exactly as it did in Phase 6 - idle-days only, no score filter applied (no
    regression for dealers who don't configure it).
 
 ---
@@ -103,7 +103,7 @@ high-score lead's alert opens.
 As an Admin, if the population of leads coming in starts looking meaningfully different from what
 the model was trained on, I get warned automatically instead of silently trusting a stale model.
 
-**Why this priority**: P2 — a monitoring/operational safety net on top of User Story 2's model,
+**Why this priority**: P2 - a monitoring/operational safety net on top of User Story 2's model,
 not required for the model to be useful on day one, but required by this phase's own requirement
 scope (FR-074) and consistent with the project's established "never silently trust an unmonitored
 model" posture from Phase 4/5's own run-tracking discipline.
@@ -123,7 +123,7 @@ unchanged population; confirm no alert opens.
 ### Edge Cases
 
 - What happens to RFM segmentation for a customer with zero completed orders? They receive an
-  explicit "New" segment (not Champion/At-Risk/etc., and not an error) — RFM is fundamentally
+  explicit "New" segment (not Champion/At-Risk/etc., and not an error) - RFM is fundamentally
   undefined without at least one transaction, so a distinct segment name is the honest answer,
   not a fabricated quintile score.
 - What happens to lead scoring for a lead whose model-of-interest, channel, or budget band is
@@ -139,7 +139,7 @@ unchanged population; confirm no alert opens.
   leads, but past scores are not deleted.
 - What happens if a Manager sets `lead_idle`'s `score_cutoff` to a value no lead can satisfy
   (e.g. above 1.0 is rejected by validation, but a very high in-range value is allowed)? The rule
-  simply fires less often or never — a valid, intentional configuration outcome, not an error.
+  simply fires less often or never - a valid, intentional configuration outcome, not an error.
 
 ## Requirements *(mandatory)*
 
@@ -155,11 +155,11 @@ unchanged population; confirm no alert opens.
   aggregate), verified by reporting discrimination (ROC-AUC, PR-AUC) and calibration (reliability
   curve, Brier score) metrics for every model-training run. A more complex challenger model MAY
   be evaluated and promoted only if it demonstrably outperforms the baseline on a held-out,
-  time-based validation split — this is optional and not required for the phase to be complete.
+  time-based validation split - this is optional and not required for the phase to be complete.
 - **DS-CUST-004**: Every displayed lead score SHALL be accompanied by its top 3 contributing
   factors, expressed in a form a non-technical user can understand.
-- **DS-CUST-005**: Model training SHALL use a temporal (time-based) train/validation split — no
-  future leads leaking into the training set — and SHALL handle any class imbalance between
+- **DS-CUST-005**: Model training SHALL use a temporal (time-based) train/validation split - no
+  future leads leaking into the training set - and SHALL handle any class imbalance between
   won/lost outcomes via training-time weighting, never by altering the validation set's true
   composition.
 - **FR-032**: Each open lead SHALL display its current conversion probability score and score
@@ -173,9 +173,9 @@ unchanged population; confirm no alert opens.
 
 *(names describe the concepts introduced; exact schema is a planning-phase decision.)*
 
-- **Customer RFM profile**: one computed record per customer per analytics run — recency/
+- **Customer RFM profile**: one computed record per customer per analytics run - recency/
   frequency/monetary quintile scores and the named segment they map to.
-- **Lead score**: one computed record per open lead per analytics run — conversion probability,
+- **Lead score**: one computed record per open lead per analytics run - conversion probability,
   the model version/run that produced it, and its top-3 contributing factors.
 - **Lead-scoring model run**: the trained model artifact and its evaluation metrics (ROC-AUC,
   PR-AUC, calibration) for one training cycle, tracked the same way every prior phase's analytics
@@ -193,25 +193,25 @@ unchanged population; confirm no alert opens.
 - **SC-002**: Every open lead in the seeded database has a conversion probability and a top-3
   explanation visible in the UI, with zero leads showing a stale or fabricated score.
 - **SC-003**: When historical (already won/lost) leads are grouped into score deciles, actual win
-  rate per decile tracks predicted probability closely — the model is demonstrably calibrated,
+  rate per decile tracks predicted probability closely - the model is demonstrably calibrated,
   not just rank-ordered, verified against real seeded data (not only a synthetic fixture).
 - **SC-004**: The `lead_idle` alert rule, once a score cutoff is configured, only fires for idle
-  leads meeting both the idle-days and score conditions — verified against real seeded data.
+  leads meeting both the idle-days and score conditions - verified against real seeded data.
 - **SC-005**: A deliberately drifted scoring population triggers a warning alert; an undrifted one
-  does not — verified with both a real and a synthetic/injected drift scenario.
-- **SC-006**: The phase's own exit demo — a user opens the leads list and sees calibrated
+  does not - verified with both a real and a synthetic/injected drift scenario.
+- **SC-006**: The phase's own exit demo - a user opens the leads list and sees calibrated
   conversion scores with explanations, with zero manual steps beyond the initial job triggers.
 
 ## Assumptions
 
 - **RFM segment names use a standard, documented five-segment mapping** (e.g. Champions / Loyal
   Customers / At-Risk / Hibernating / New), since the SRS gives illustrative examples
-  ("Champions, At-Risk, Hibernating") rather than an exact table — recorded as an ADR at planning
+  ("Champions, At-Risk, Hibernating") rather than an exact table - recorded as an ADR at planning
   time, following the same "pick an industry-standard convention and document it" approach used
   for Phase 5's ABC/XYZ cutoffs and Kaplan-Meier censoring choice.
 - **Lead interaction-count, as a model feature, is derived from the existing lead status-history
   audit trail** (the count of recorded status transitions for a lead), since no dedicated
-  interaction/touch-log table exists in the schema and this phase does not add one — a real,
+  interaction/touch-log table exists in the schema and this phase does not add one - a real,
   already-available proxy rather than a new persisted concept invented for this phase alone.
 - **The gradient-boosted challenger model (DS-CUST-003's "MAY be promoted") is optional for this
   phase's completion.** The P0 requirement is a calibrated logistic-regression baseline; the
@@ -219,20 +219,20 @@ unchanged population; confirm no alert opens.
   phase's P0 scope, it is deferred to `docs/backlog.md` as a P1/P2 follow-up rather than blocking
   this phase's exit.
 - **FR-074's drift monitoring is evaluated as part of the lead-scoring job itself**, not a
-  separately-scheduled job — the population being checked for drift is exactly the population
+  separately-scheduled job - the population being checked for drift is exactly the population
   that job just scored, so checking it inline (and opening its own alert, reusing the alert
   lifecycle machinery Phase 6 already built) avoids inventing a second, redundant schedule entry
   for the same underlying data.
-- **Rule (f)'s (`lead_idle`) score-cutoff completion is additive, not a rework** — Phase 6 already
+- **Rule (f)'s (`lead_idle`) score-cutoff completion is additive, not a rework** - Phase 6 already
   built the rule's dedup-key/lifecycle/idle-days logic and left `score_cutoff` as a `None`
   placeholder specifically so this phase could complete it without touching anything else about
   how the rule fires or how alerts are managed.
 - **Model training here fits directly against the persisted seeded database** (real leads/
-  customers/orders), not the Phase 3 seed generator's own in-memory ground-truth simulation —
+  customers/orders), not the Phase 3 seed generator's own in-memory ground-truth simulation -
   that simulation's coefficients and sign-recovery were already validated independently in Phase
   3. This phase's own scientific-validation gate is a fresh calibration/discrimination check
   against real, persisted data, matching the precedent QA-003(b) set in Phase 5 (validate against
-  real seeded data, not only a synthetic fixture) — full detail is a planning-phase decision.
+  real seeded data, not only a synthetic fixture) - full detail is a planning-phase decision.
 - **Lead scoring's DS-OPS-001 04:00 daily schedule slot is activated this phase**, alongside the
-  four cron jobs Phase 6 already registered — the placeholder Phase 6 left unfilled in its own
+  four cron jobs Phase 6 already registered - the placeholder Phase 6 left unfilled in its own
   scheduler configuration.

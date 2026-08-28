@@ -1,4 +1,4 @@
-# ADR-026: Production data durability — EBS bind-mount + S3 backups
+# ADR-026: Production data durability - EBS bind-mount + S3 backups
 
 - Status: Accepted
 - Date: 2026-07-16
@@ -16,7 +16,7 @@ ADR-003 noted a future swap to managed free-tier Postgres (Neon/Supabase). For
 the current showcase host we keep Compose Postgres and make the data survive
 instance replace without that migration.
 
-The API stores no uploads/blobs on local disk — durability is Postgres-only.
+The API stores no uploads/blobs on local disk - durability is Postgres-only.
 
 ## Decision
 
@@ -33,10 +33,10 @@ The API stores no uploads/blobs on local disk — durability is Postgres-only.
 
 ## Alternatives considered
 
-- **Amazon RDS / Neon / Supabase** — managed backups/PITR; deferred. Revisit if
+- **Amazon RDS / Neon / Supabase** - managed backups/PITR; deferred. Revisit if
   backup ops become a burden or horizontal scale requires it. Would supersede
   Compose Postgres.
-- **EBS snapshots alone** — useful defense-in-depth but slower/less portable than
+- **EBS snapshots alone** - useful defense-in-depth but slower/less portable than
   logical dumps; optional owner add-on, not the primary documented path.
 
 ## Consequences
@@ -45,5 +45,5 @@ The API stores no uploads/blobs on local disk — durability is Postgres-only.
   provision EBS + S3 + IAM once (`docs/runbooks/durability.md`).
 - Terminating EC2 keeps the data volume; if the volume is also lost, restore
   from S3.
-- ADR-003's "Stage-2 = managed Postgres" consequence is deferred, not revoked —
+- ADR-003's "Stage-2 = managed Postgres" consequence is deferred, not revoked -
   this ADR is the interim ops path for the single-EC2 showcase.

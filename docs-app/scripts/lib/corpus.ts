@@ -37,10 +37,10 @@ const HANDBOOK_ORDER: Record<string, number> = {
  * Discover and classify the DealerIQ docs corpus (Diataxis + ADR-028).
  *
  * Tiers:
- * - handbook — reading path, explanation, getting-started, diagrams catalog
- * - meta — portal README, how-to, reference, runbooks, ADRs, SRS, glossary, backlog
- * - background — paper markdown
- * - stub — unused (type compatibility)
+ * - handbook - reading path, explanation, getting-started, diagrams catalog
+ * - meta - portal README, how-to, reference, runbooks, ADRs, SRS, glossary, backlog
+ * - background - paper markdown
+ * - stub - unused (type compatibility)
  */
 export function discoverDocs(root: string): DocFile[] {
   const docsDir = join(root, "docs");
@@ -171,7 +171,7 @@ export function readEnvNames(root: string): Set<string> {
   return names;
 }
 
-/** No Firestore collections in DealerIQ — keep empty set for indexer compatibility. */
+/** No Firestore collections in DealerIQ - keep empty set for indexer compatibility. */
 export function readCollections(_root: string): Set<string> {
   return new Set();
 }

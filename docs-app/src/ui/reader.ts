@@ -249,7 +249,7 @@ function installSpy(doc: Doc, main: HTMLElement, rail: HTMLElement): void {
       bar.style.width = `${height > 0 ? Math.min(100, (top / height) * 100) : 100}%`;
 
     // The active heading is the last one whose top has passed a line a third of
-    // the way down the viewport — the place the eye actually reads.
+    // the way down the viewport, the place the eye actually reads.
     const line = main.getBoundingClientRect().top + main.clientHeight * 0.32;
     let current = heads[0];
     for (const el of heads) {
@@ -352,7 +352,7 @@ function citedFiles(doc: Doc, deps: ReaderDeps): HTMLElement {
 }
 
 /**
- * "Referenced by" — the direction the corpus could never be read in. 411 links
+ * "Referenced by" - the direction the corpus could never be read in. 411 links
  * point forward; this is the only place they point back.
  */
 function backlinks(doc: Doc, deps: ReaderDeps): HTMLElement {

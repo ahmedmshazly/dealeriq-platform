@@ -11,7 +11,7 @@ last-verified: 2026-07-17
 **Format:** Mermaid embedded in Markdown (renders on GitHub / Cursor). No separate PNG/SVG assets.
 
 Canonical diagrams live **inline** on the topic page that owns them. This catalog indexes every
-diagram (D01–D18) with a deep link.
+diagram (D01-D18) with a deep link.
 
 | ID | Type | Title | Location |
 |----|------|-------|----------|

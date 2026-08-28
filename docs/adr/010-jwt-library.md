@@ -1,4 +1,4 @@
-# ADR-010: JWT library — PyJWT
+# ADR-010: JWT library - PyJWT
 
 - Status: Accepted
 - Date: 2026-07-10

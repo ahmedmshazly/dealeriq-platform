@@ -1,4 +1,4 @@
-# ADR-015: Python packaging — uv workspaces
+# ADR-015: Python packaging - uv workspaces
 
 - Status: Accepted
 - Date: 2026-07-10

@@ -13,7 +13,7 @@ import { type FormEvent, useState } from "react";
 type Customer = ApiResponse<"/api/v1/customers", "get">["items"][number];
 type VehicleModel = ApiResponse<"/api/v1/vehicle-models", "get">[number];
 
-// Mirrors apps/api/src/dealeriq_api/domain/lead_state_machine.py — UI-only convenience so we
+// Mirrors apps/api/src/dealeriq_api/domain/lead_state_machine.py - UI-only convenience so we
 // only offer buttons for transitions the server will actually accept; the server is still the
 // real enforcement point.
 const NEXT_STATUSES: Record<string, string[]> = {
@@ -128,7 +128,7 @@ export function LeadsPage() {
             onChange={(e) => setForm({ ...form, customer_id: e.target.value })}
             required
           >
-            <option value="">Customer…</option>
+            <option value="">Customer...</option>
             {(customersQuery.data?.items ?? []).map((c: Customer) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -141,7 +141,7 @@ export function LeadsPage() {
             onChange={(e) => setForm({ ...form, model_id: e.target.value })}
             required
           >
-            <option value="">Model of interest…</option>
+            <option value="">Model of interest...</option>
             {(modelsQuery.data ?? []).map((m: VehicleModel) => (
               <option key={m.id} value={m.id}>
                 {m.make} {m.model}

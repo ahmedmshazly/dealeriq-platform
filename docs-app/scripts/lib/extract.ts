@@ -12,7 +12,7 @@ const renderInline = (md: string): string =>
   inline.parseInline(md, { async: false }) as string;
 
 /**
- * `docs/glossary.md` is a flat list of `### term` headings with 1–2 prose
+ * `docs/glossary.md` is a flat list of `### term` headings with 1-2 prose
  * paragraphs each.
  */
 export function extractGlossary(md: string): GlossaryTerm[] {
@@ -76,7 +76,7 @@ const DOC_HREF_G =
 
 function pathToDocId(relPath: string): string {
   const clean = relPath.replace(/\\/g, "/").replace(/^\.\//, "");
-  // Drop leading ../ segments — reading-path lives at docs/ root
+  // Drop leading ../ segments - reading-path lives at docs/ root
   const parts = clean.split("/");
   while (parts[0] === "..") parts.shift();
   const joined = parts.join("/").replace(/\.md$/i, "");
@@ -122,7 +122,7 @@ export function extractEntities(md: string): Entity[] {
 }
 
 /**
- * `docs/00-reading-path.md` — sessions + checkpoints for the study UI.
+ * `docs/00-reading-path.md` - sessions + checkpoints for the study UI.
  */
 export function extractReadingPath(md: string): {
   sessions: ReadingSession[];
@@ -141,7 +141,7 @@ export function extractReadingPath(md: string): {
       session = null;
       inCheckpoints = /^## Checkpoints/i.test(line);
 
-      const sh = /^## Session (\d+)\s*[—–-]\s*(.+?)\s*$/.exec(line);
+      const sh = /^## Session (\d+)\s*[---]\s*(.+?)\s*$/.exec(line);
       if (sh) {
         session = {
           n: Number(sh[1]),

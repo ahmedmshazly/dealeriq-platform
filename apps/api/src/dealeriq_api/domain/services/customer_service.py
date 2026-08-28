@@ -1,4 +1,4 @@
-"""Customers, with a server-side dedup warning on matching phone/email (FR-030) — creation is
+"""Customers, with a server-side dedup warning on matching phone/email (FR-030) - creation is
 never blocked, only flagged, since a real duplicate might legitimately be a different person at
 the same address/shared line."""
 

@@ -12,7 +12,7 @@
 - [x] T003 `apps/api`: Alembic wired up (`alembic.ini`, `env.py`, empty `versions/`), `alembic
       upgrade head` runs cleanly against an empty chain
 - [x] T004 `apps/api`: `pyproject.toml` (deps: fastapi, uvicorn, sqlalchemy, alembic, pydantic-
-      settings, argon2-cffi, pyjwt, slowapi — pinned per ADR-009/010/020 for later phases even
+      settings, argon2-cffi, pyjwt, slowapi - pinned per ADR-009/010/020 for later phases even
       though unused yet), ruff+mypy config, pytest smoke test for `/health`
 - [x] T005 `packages/analytics`: installable package skeleton, pyproject.toml, one smoke test
 - [x] T006 `packages/api-client`: `scripts/generate.mjs` (fetch OpenAPI JSON from a running API,

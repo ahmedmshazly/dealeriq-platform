@@ -1,4 +1,4 @@
-"""Lead + LeadEvent — the sales funnel (FR-031). Status transitions are validated by
+"""Lead + LeadEvent - the sales funnel (FR-031). Status transitions are validated by
 `domain/lead_state_machine.py` before any write happens here."""
 
 import enum

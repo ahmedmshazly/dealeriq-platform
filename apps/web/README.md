@@ -1,7 +1,7 @@
-# apps/web — DealerIQ Web
+# apps/web - DealerIQ Web
 
 Next.js 15 (App Router, TypeScript) frontend. Consumes the API exclusively through the
-generated client in `packages/api-client` (C-05, ADR-012) — no hand-written fetch calls to
+generated client in `packages/api-client` (C-05, ADR-012) - no hand-written fetch calls to
 undocumented endpoints.
 
 ## Project layout (ADR-027)
@@ -38,7 +38,7 @@ feature modules; pages stay thin shells.
 
 Design tokens are copied verbatim from the brand kit tokens into `app/tokens.css` and wired
 into `tailwind.config.ts` (colors/radius/shadow reference CSS custom properties so
-`[data-theme="dark"]` swaps them live — see `next-themes` usage in
+`[data-theme="dark"]` swaps them live - see `next-themes` usage in
 `components/layout/theme-provider.tsx`, `attribute="data-theme"`, `defaultTheme="light"`). Fonts
 (Inter + JetBrains Mono) are self-hosted via `next/font/google`, not the brand kit mockups' CDN
 `<link>` approach. Icons come from `lucide-react`, stroke-width 1.5 per the brand guidelines.

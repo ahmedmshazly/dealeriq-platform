@@ -14,17 +14,17 @@ following Phase 4/5/6's exact `AnalyticsRun` lifecycle pattern, completion of Ph
 ## Technical Context
 
 **Language/Version**: Python 3.12 (`apps/api`, `packages/analytics`), TypeScript/Next.js 15
-(`apps/web`) — unchanged.
+(`apps/web`) - unchanged.
 
-**Primary Dependencies**: `scikit-learn` (already a dependency since Phase 5's classifier work —
+**Primary Dependencies**: `scikit-learn` (already a dependency since Phase 5's classifier work -
 `LogisticRegression`, `CalibratedClassifierCV`, `roc_auc_score`/`average_precision_score`/
-`brier_score_loss` from `sklearn.metrics`) — no new package. PSI is small enough to hand-implement
+`brier_score_loss` from `sklearn.metrics`) - no new package. PSI is small enough to hand-implement
 in `packages/analytics` (a binned-distribution divergence sum), following the same "hand-implement
 small, well-defined statistical primitives with a unit-tested fixture" precedent as Phase 5's
 GESD test (ADR-017).
 
 **Storage**: PostgreSQL 16, two new tables (`customer_rfm_profiles`, `lead_scores`) per one new
-Alembic migration — both `run_id`-tagged per the established `AnalyticsRun` convention (Forecast/
+Alembic migration - both `run_id`-tagged per the established `AnalyticsRun` convention (Forecast/
 ForecastMetric/InventoryIntel/UnitRisk/Anomaly all follow this shape); no new columns added to the
 existing `customers`/`leads` tables, keeping analytics output separated from transactional state
 (constitution Principle IV).
@@ -35,13 +35,13 @@ mirroring QA-003(b)'s "validate against real seeded data" precedent from Phase 5
 testcontainers-python integration tests (ADR-013) for the job orchestration, score-cutoff alert
 completion, and new API endpoints.
 
-**Target Platform**: unchanged — Docker Compose local dev, single-instance.
+**Target Platform**: unchanged - Docker Compose local dev, single-instance.
 
 **Project Type**: Web application (existing `apps/api` + `apps/web` + `packages/analytics`
-monorepo) — no new top-level project.
+monorepo) - no new top-level project.
 
 **Performance Goals**: RFM computation over ~2000 seeded customers and lead-model training/scoring
-over ~6000 seeded leads (a small, low-dimensional feature matrix — logistic regression, not a
+over ~6000 seeded leads (a small, low-dimensional feature matrix - logistic regression, not a
 large ensemble) both complete in low single-digit seconds, consistent with Phase 5's inventory job
 performance envelope.
 
@@ -61,25 +61,25 @@ panel), one new cron registration (DS-OPS-001's 04:00 slot), one modified alert 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 - **Principle I (Monorepo & Stack Discipline)**: RFM/lead-scoring/PSI logic lives in
-  `packages/analytics` as pure, DB-free functions (Phase 4/5's established pattern — unlike
+  `packages/analytics` as pure, DB-free functions (Phase 4/5's established pattern - unlike
   Phase 6's alert-rule placement, this genuinely is statistical/ML computation over feature
   matrices, not a threshold comparison over already-computed rows); orchestration lives in
   `apps/api`'s domain layer, mirroring `forecast_job.py`/`inventory_job.py`. No new top-level
   package; no new runtime dependency (`scikit-learn` already present).
 - **Principle II (Free, Local-First, Zero Paid Services)**: nothing here calls any external
-  service — training and scoring both run against the local Postgres.
+  service - training and scoring both run against the local Postgres.
 - **Principle III (Security & RBAC by Default)**: customer detail page reuses the existing
   `customers:view`-class permission already gating the customer list; no new permission keys are
   needed beyond what Phase 2 already established for customers/leads.
 - **Principle IV (Migrations & Append-Only Data Integrity)**: `customer_rfm_profiles`/
   `lead_scores` are analytics-run-tagged output tables (DAT-003's analytics-vs-transactional
-  separation), not mutations of `customers`/`leads` — matching Forecast/InventoryIntel/Anomaly's
+  separation), not mutations of `customers`/`leads` - matching Forecast/InventoryIntel/Anomaly's
   precedent exactly, never overwriting a transactional row in place.
 - **Principle V (Analytics Reproducibility & Scientific Integrity, NON-NEGOTIABLE)**: every
   lead-scoring run is an `AnalyticsRun` with its seed, data-snapshot bounds, and evaluation
   metrics (ROC-AUC, PR-AUC, Brier score) recorded (DS-CUST-003, DS-OPS-002/003); the model is
   validated against real, persisted seeded data before being trusted in the pipeline (this
-  phase's own QA gate, same discipline as QA-003(a)/(b)) — no fabricated metrics, ever.
+  phase's own QA gate, same discipline as QA-003(a)/(b)) - no fabricated metrics, ever.
 - **Principle VII (Testing bar)**: RFM segment-boundary rules get hand-constructed fixture tests
   (ADR-022's four rules, evaluated in order); the lead-scoring model gets a real-seeded-data
   calibration/discrimination check (this phase's QA gate) plus a hand-constructed PSI fixture
@@ -165,7 +165,7 @@ apps/web/app/(authenticated)/
                                           # (top-3 contributing features) per scored lead row
 ```
 
-**Structure Decision**: extends the existing three-package monorepo — no new top-level
+**Structure Decision**: extends the existing three-package monorepo - no new top-level
 directories. Unlike Phase 6, this phase's core logic (RFM, lead scoring, PSI) lives in
 `packages/analytics`, following Phase 4/5's precedent, since it is genuine DB-free statistical/ML
 computation; only orchestration and the score-cutoff alert completion touch `apps/api`.
@@ -175,7 +175,7 @@ computation; only orchestration and the score-cutoff alert completion touch `app
 Per customer: `recency = (as_of - max(Order.created_at) for that customer's delivered orders)`,
 `frequency = count(delivered orders)`, `monetary = sum(negotiated_price for delivered orders)`.
 Quintiles (1-5, 5 = best) are computed by ranking the customer population on each dimension per
-run (pandas `qcut`-style), independent of any fixed global thresholds — consistent with a quintile
+run (pandas `qcut`-style), independent of any fixed global thresholds - consistent with a quintile
 being defined relative to the current population, standard RFM practice. Customers with zero
 delivered orders skip quintile scoring entirely and receive the `"New"` segment directly (never a
 fabricated 0/undefined quintile). Segment-name mapping follows ADR-022's four ordered rules.
@@ -184,16 +184,16 @@ fabricated 0/undefined quintile). Segment-name mapping follows ADR-022's four or
 
 Trained fresh each run (ADR-023) on every lead that has reached a terminal `won`/`lost` status by
 the run's data-snapshot date, temporally split (earliest ~80% by `created_at` train, most recent
-~20% validate — DS-CUST-005). Features, all derived from already-persisted data (no schema
+~20% validate - DS-CUST-005). Features, all derived from already-persisted data (no schema
 changes to `Lead`/`Customer`):
 
 - **Channel**: one-hot from `Customer.source_channel`.
 - **Budget band**: an ordinal encoding over the seed data's fixed set of band strings.
 - **Model segment**: one-hot from `VehicleModel.segment` (joined via `Lead.model_id`).
 - **Days since creation**: `(as_of - Lead.created_at).days`.
-- **Interaction count**: `count(LeadEvent) for that lead_id` — the real, already-available proxy
+- **Interaction count**: `count(LeadEvent) for that lead_id` - the real, already-available proxy
   for touches (spec.md's Assumptions), not a new persisted concept.
-- **Customer RFM**: the customer's own average quintile score from this run's RFM pass — the
+- **Customer RFM**: the customer's own average quintile score from this run's RFM pass - the
   reason RFM (this phase's other half) must compute before lead scoring in the job's own
   pipeline order.
 - **Seasonality**: a cyclical (sin/cos) encoding of `Lead.created_at`'s month.
@@ -210,22 +210,22 @@ coefficients.
 
 `packages/analytics/customer/psi.py` computes PSI per monitored feature, comparing this run's own
 training-set distribution against this run's own scoring-population (open leads) distribution
-(ADR-023 — no cross-run persisted baseline). If any monitored feature's PSI exceeds 0.25, the job
+(ADR-023 - no cross-run persisted baseline). If any monitored feature's PSI exceeds 0.25, the job
 opens a `lead_score_drift` warning-severity alert via Phase 6's existing rule_key-agnostic
-`open_alert()` helper — no new alert-lifecycle mechanism, reusing FR-062's machinery as-is.
+`open_alert()` helper - no new alert-lifecycle mechanism, reusing FR-062's machinery as-is.
 
 ## Completing `lead_idle`'s score-cutoff (User Story 3)
 
 `evaluate_lead_idle` (unchanged idle-days logic) additionally reads
 `rule.params.get("score_cutoff")`; when non-null, it joins each idle lead's latest `LeadScore` row
 and only opens the alert when `conversion_probability >= score_cutoff` (the SRS's literal "score
-above cutoff" — a promising lead going quiet is the urgent case, not a lead that was never likely
+above cutoff" - a promising lead going quiet is the urgent case, not a lead that was never likely
 to convert). When `score_cutoff` is null (Phase 6's shipped default), behavior is unchanged from
-Phase 6 — no regression for configurations that never touch this param.
+Phase 6 - no regression for configurations that never touch this param.
 
 ## Customer detail page (FR-033)
 
-New route `apps/web/app/(authenticated)/customers/[id]/page.tsx` — no existing template, built
+New route `apps/web/app/(authenticated)/customers/[id]/page.tsx` - no existing template, built
 fresh following the leads/inventory pages' Card/Badge/table conventions: an RFM segment badge at
 the top, and a purchase-history table (order date, model, negotiated price, status) below,
 sourced from the new `GET /customers/{id}` endpoint.
@@ -238,7 +238,7 @@ sourced from the new `GET /customers/{id}` endpoint.
 2. Run the lead-scoring job; confirm every open lead has a probability and top-3 explanation
    visible via the API/UI, with no stale/fabricated scores (SC-002).
 3. Bucket resolved leads by score decile against real seeded data; confirm actual win rate per
-   decile tracks predicted probability (SC-003) — the phase's principal scientific-validation
+   decile tracks predicted probability (SC-003) - the phase's principal scientific-validation
    gate, run before the model is trusted anywhere in the pipeline (constitution Principle V).
 4. Configure a non-null `score_cutoff` on `lead_idle`; seed one high-score and one low-score idle
    lead; run alert evaluation; confirm only the high-score lead's alert opens (SC-004).

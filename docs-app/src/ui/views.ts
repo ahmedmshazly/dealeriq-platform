@@ -154,8 +154,8 @@ const link = (text: string, onclick: () => void): HTMLElement =>
 
 /**
  * Rank every indexed source file by how many documents cite it. The top of the
- * list is the system's documented spine. The bottom — 117 files nothing
- * references — is the more useful half of the answer.
+ * list is the system's documented spine. The bottom - 117 files nothing
+ * references - is the more useful half of the answer.
  */
 export function renderAtlas(deps: ViewDeps): void {
   const { corpus, main, rail } = deps;
@@ -354,7 +354,7 @@ export function renderNotes(deps: ViewDeps): void {
 
 /**
  * The eight self-test questions from `00-reading-path.md`, as flashcards. The
- * question comes first and the answer's *location* second — because the point is
+ * question comes first and the answer's *location* second - because the point is
  * to find out whether you can answer it, not to read the answer.
  */
 export function renderCheckpoints(deps: ViewDeps): void {

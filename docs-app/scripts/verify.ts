@@ -1,5 +1,5 @@
 /**
- * `npm run docs:verify` — mechanical audit of the generated DealerIQ corpus.
+ * `npm run docs:verify` - mechanical audit of the generated DealerIQ corpus.
  *
  * Soft floors (not portfolio exact counts). Run `npm run index` first.
  */

@@ -4,7 +4,7 @@ reason). FR-040..045.
 
 Approving an order and reserving its unit happen in one DB transaction, with the unit row
 locked (`SELECT ... FOR UPDATE`) so two concurrent approval attempts on the same unit cannot
-both succeed — the loser gets a 409 conflict, never a double-booked unit.
+both succeed - the loser gets a 409 conflict, never a double-booked unit.
 """
 
 import uuid
@@ -91,7 +91,7 @@ def _discount_fraction(db: Session, order: Order) -> float:
 
 def _reserve_unit(db: Session, *, order: Order, actor_id: uuid.UUID) -> None:
     """Locks the unit row, verifies it's still available, reserves it, and writes the ledger
-    row — all inside the caller's transaction."""
+    row - all inside the caller's transaction."""
     unit = db.execute(
         select(VehicleUnit).where(VehicleUnit.id == order.unit_id).with_for_update()
     ).scalar_one()
@@ -355,7 +355,7 @@ def order_margin(db: Session, order: Order) -> float:
 
 
 def order_timeline(db: Session, order_id: uuid.UUID) -> list[OrderEvent]:
-    """FR-044: status changes, actor, timestamp — chronological."""
+    """FR-044: status changes, actor, timestamp - chronological."""
     return list(
         db.execute(
             select(OrderEvent).where(OrderEvent.order_id == order_id).order_by(OrderEvent.at)

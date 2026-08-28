@@ -3,7 +3,7 @@
 Test data is inserted directly via the ORM (not the lead/order-lifecycle API), same rationale as
 `test_forecast_job.py`/`test_inventory_job.py`: what's under test is the job itself. The too-few-
 resolved-leads failure path (DS-OPS-002) is already covered at the pure-function level by
-`packages/analytics/tests/test_lead_scoring.py` — with dozens of other test files sharing this
+`packages/analytics/tests/test_lead_scoring.py` - with dozens of other test files sharing this
 session-scoped testcontainers Postgres (ADR-013), the shared container always has well over
 `MIN_RESOLVED_LEADS_TO_TRAIN` leads by the time this file runs, so that path can't be reliably
 re-triggered here.
@@ -45,7 +45,7 @@ def _new_model_and_branch(db: Session) -> tuple[VehicleModel, Branch]:
 def _seed_rfm_customer(
     db: Session, model: VehicleModel, branch: Branch, owner_id: uuid.UUID
 ) -> Customer:
-    """A customer with several recent, high-value delivered orders -- should land in a "good"
+    """A customer with several recent, high-value delivered orders, should land in a "good"
     RFM segment (Champions/At Risk/Loyal), never the zero-order "New" segment."""
     customer = Customer(name=f"RFM Test Customer {uuid.uuid4().hex[:6]}", source_channel="referral")
     db.add(customer)
@@ -78,7 +78,7 @@ def _seed_rfm_customer(
 
 def _seed_resolved_leads(db: Session, model: VehicleModel, owner_id: uuid.UUID) -> None:
     """A strongly-separable population (referral leads win, social_ad leads lose) so the job has
-    real, checkable signal to fit -- comfortably clears MIN_RESOLVED_LEADS_TO_TRAIN regardless of
+    real, checkable signal to fit, comfortably clears MIN_RESOLVED_LEADS_TO_TRAIN regardless of
     whatever other test files have already added to the shared container."""
     now = datetime.now(UTC)
     for i in range(N_RESOLVED_LEADS):

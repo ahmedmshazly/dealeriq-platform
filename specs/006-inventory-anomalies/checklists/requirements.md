@@ -32,6 +32,6 @@
 ## Notes
 
 - All items pass. QA-003(b) was deliberately added to scope beyond the SRS phase table's literal
-  ID list, with the reasoning documented in spec.md's Assumptions section — the same judgment
+  ID list, with the reasoning documented in spec.md's Assumptions section - the same judgment
   call already made explicit for QA-003(a) in Phase 4's own table row.
 - Ready for planning.

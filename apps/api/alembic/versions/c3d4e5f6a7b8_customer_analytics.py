@@ -5,13 +5,13 @@ Revises: b2c3d4e5f6a7
 Create Date: 2026-07-11 12:00:00.000000
 
 Hand-authored to mirror the CustomerRfmProfile/LeadScore model definitions (reviewed per
-ADR-011 — verified by running `alembic upgrade head` against a real Postgres instance, and
+ADR-011 - verified by running `alembic upgrade head` against a real Postgres instance, and
 confirming a subsequent `alembic revision --autogenerate` produces an empty diff). No new
 permissions: the customer detail page (FR-033) and the leads list's score/explanation fields
 (FR-032) both reuse the existing `customers:view`/`leads:view` permissions Phase 2 already
 established.
 
-Also seeds a seventh `alert_rules` row, `lead_score_drift` (FR-074) — reusing Phase 6's
+Also seeds a seventh `alert_rules` row, `lead_score_drift` (FR-074) - reusing Phase 6's
 rule_key-agnostic `alert_rules`/`alerts`/`notifications` machinery as-is (`GET /alert-rules` and
 its admin UI are already generic over whatever rows exist, not hardcoded to the six FR-061
 rules), so no new alert-lifecycle code or permissions are needed for this phase's drift alert.

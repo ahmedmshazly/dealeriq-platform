@@ -4,14 +4,14 @@ import { viteSingleFile } from "vite-plugin-singlefile";
 /**
  * Three build targets, one source tree.
  *
- * - default — `dist/`, code-split, for `vite preview` and local checks.
- * - `PACK=1` — `dist/handbook.html`, one self-contained file with every asset,
+ * - default - `dist/`, code-split, for `vite preview` and local checks.
+ * - `PACK=1` - `dist/handbook.html`, one self-contained file with every asset,
  *   chunk and font inlined. It must run from `file://` with the network off,
  *   which is why the router is hash-based and nothing is ever `fetch`ed.
- * - `SITE=1` — `../apps/web/public/handbook/`, served at `/handbook/` by Next.js.
+ * - `SITE=1` - `../apps/web/public/handbook/`, served at `/handbook/` by Next.js.
  *   Code-split on purpose: the shell stays small and mermaid only loads when needed.
  *
- * `SITE` writes outside its own root, so `emptyOutDir` has to be explicit —
+ * `SITE` writes outside its own root, so `emptyOutDir` has to be explicit -
  * and `apps/web/public/handbook/` is gitignored and rebuilt by `npm run docs:site`.
  */
 const pack = process.env.PACK === "1";

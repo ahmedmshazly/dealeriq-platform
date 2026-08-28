@@ -37,15 +37,15 @@ Dev seed accounts (never production):
 | Sales | `sales1@dealeriq.dev` | `SeedUser123!` |
 | Analyst | `analyst1@dealeriq.dev` | `SeedUser123!` |
 
-Admin’s first login forces a password change.
+Admin's first login forces a password change.
 
 ## 4. Role tour (10 minutes)
 
-1. **Admin** — `/admin/users`, `/admin/permissions`, `/admin/audit-log`, `/admin/alert-rules`;
-   trigger jobs from the admin surface / API (`jobs:trigger`).
-2. **Manager** — Manager dashboard, order approvals, margin-visible inventory/orders, alerts.
-3. **Sales** — Sales dashboard, create leads/orders; UI hides peer controls (API is the real gate).
-4. **Analyst** — Forecasts, inventory intelligence, anomalies, customer analytics (read-heavy).
+1. Admin: `/admin/users`, `/admin/permissions`, `/admin/audit-log`, `/admin/alert-rules`;
+   trigger jobs from the admin surface or API (`jobs:trigger`).
+2. Manager: Manager dashboard, order approvals, margin-visible inventory/orders, alerts.
+3. Sales: Sales dashboard, create leads/orders; the UI hides peer controls (the API is the real gate).
+4. Analyst: Forecasts, inventory intelligence, anomalies, customer analytics (read-heavy).
 
 Permission details: [reference/permissions.md](../reference/permissions.md).
 
@@ -53,7 +53,7 @@ Permission details: [reference/permissions.md](../reference/permissions.md).
 
 | Path | What |
 |------|------|
-| `apps/api` | FastAPI — sole security boundary |
+| `apps/api` | FastAPI - sole security boundary |
 | `apps/web` | Next.js 15 App Router + `features/` |
 | `packages/analytics` | Forecasting, inventory intel, scoring |
 | `packages/api-client` | Generated OpenAPI TypeScript client |

@@ -50,12 +50,12 @@ set, then exercised end-to-end in the leads and orders integration tests.
 - **vehicle_units**(id, vin unique, model_id FK, branch_id FK, status
   enum[in_stock,reserved,sold,transferred] via CHECK, acquisition_date, acquisition_cost)
 - **stock_movements**(id, unit_id FK, type enum[receipt,reservation,sale,transfer,adjustment],
-  from_branch_id FK nullable, to_branch_id FK nullable, actor_id FK, reason nullable, occurred_at)
-  — append-only, DAT-003
+  from_branch_id FK nullable, to_branch_id FK nullable, actor_id FK, reason nullable, occurred_at),
+  append-only, DAT-003
 - **customers**(id, name, phone, email, city, source_channel)
 - **leads**(id, customer_id FK, model_id FK, budget_band, status
   enum[new,contacted,test_drive,negotiating,won,lost] via CHECK, owner_id FK, last_activity_at)
-- **lead_events**(id, lead_id FK, type, notes, actor_id FK, at) — activity/state-change log
+- **lead_events**(id, lead_id FK, type, notes, actor_id FK, at) - activity/state-change log
 - **orders**(id, customer_id FK, unit_id FK, salesperson_id FK, negotiated_price, discount,
   payment_type enum[cash,finance], status
   enum[draft,pending_approval,approved,delivered,cancelled] via CHECK)
@@ -66,7 +66,7 @@ Indices (DAT-004 pattern): `orders(created_at)`, `stock_movements(unit_id, occur
 
 Status enums use `sa.Enum(..., native_enum=False)` (VARCHAR + CHECK constraint) for the same
 portability reason as any future custom-value extension, consistent with how Phase 1 treated
-`roles.key` — except here the value set is genuinely fixed by the SRS (not meant to be
+`roles.key` - except here the value set is genuinely fixed by the SRS (not meant to be
 end-user-extensible), so a CHECK constraint is the correct DAT-002 mechanism, unlike roles.
 
 ## Lead state machine

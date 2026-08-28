@@ -9,7 +9,7 @@
 Stand up the full monorepo skeleton (SRS §3.2) with a working hello-world vertical slice: FastAPI
 health endpoint with structured logging, Next.js 15 app shell wired to the Brand Kit tokens, an
 installable (empty) analytics package, a generated-client codegen pipeline, Docker Compose
-(Postgres 16 + MailHog), a Makefile encoding the full dev lifecycle, and a CI workflow shell —
+(Postgres 16 + MailHog), a Makefile encoding the full dev lifecycle, and a CI workflow shell -
 so every later phase has a working foundation to build on and a reproducibility gate to be
 re-verified against.
 
@@ -21,7 +21,7 @@ re-verified against.
 15, React 19, Tailwind CSS, next-themes, lucide-react (web); openapi-typescript + openapi-fetch
 (api-client, ADR-012)
 
-**Storage**: PostgreSQL 16 (Docker) — no tables yet this phase, only Alembic wired up and able to
+**Storage**: PostgreSQL 16 (Docker) - no tables yet this phase, only Alembic wired up and able to
 run `upgrade head` against an empty migration chain
 
 **Testing**: pytest (API/analytics smoke tests), Vitest (web smoke test), `make ci` orchestrates
@@ -35,19 +35,19 @@ ubuntu-latest (GitHub Actions), not executed remotely at the time (no git remote
 
 **Performance Goals**: N/A at this phase (no real workloads yet); NFR-003/004 apply from Phase 2+
 
-**Constraints**: C-01 (free/local-only), C-02 (stateless auth — not yet implemented but the
-skeleton must not preclude it), C-05 (frontend/generated-client-only — codegen pipeline must
+**Constraints**: C-01 (free/local-only), C-02 (stateless auth - not yet implemented but the
+skeleton must not preclude it), C-05 (frontend/generated-client-only - codegen pipeline must
 exist even against the trivial `/health` schema)
 
-**Scale/Scope**: Infrastructure only — no domain entities this phase
+**Scale/Scope**: Infrastructure only - no domain entities this phase
 
 ## Constitution Check
 
 *GATE: checked against `docs/constitution.md` v1.0.0.*
 
-- Principle I (Monorepo & Stack Discipline): satisfied by construction — this phase *is* the
+- Principle I (Monorepo & Stack Discipline): satisfied by construction - this phase *is* the
   layout.
-- Principle II (Free/Local-First): satisfied — only Postgres 16 + MailHog via Compose, no paid
+- Principle II (Free/Local-First): satisfied - only Postgres 16 + MailHog via Compose, no paid
   services.
 - Principle IV (Migrations, no auto-create): Alembic is wired up from this phase even though the
   migration chain starts empty; no `Base.metadata.create_all` anywhere.
@@ -68,7 +68,7 @@ specs/001-constitution-skeleton/
 └── spec.md              # feature spec
 ```
 
-(No `research.md`/`data-model.md`/`contracts/` — this phase has no domain research or data model;
+(No `research.md`/`data-model.md`/`contracts/` - this phase has no domain research or data model;
 those begin meaningfully in Phase 1/2.)
 
 ### Source Code (repository root)
@@ -128,4 +128,4 @@ SRS fixes this.
 
 ## Complexity Tracking
 
-None — no constitution violations at this phase.
+None - no constitution violations at this phase.

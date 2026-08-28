@@ -90,7 +90,7 @@ def test_trigger_inventory_job_succeeds_and_persists_results(
     client: TestClient, db_session: Session
 ) -> None:
     # The job correctly processes the *entire* orders/units tables each run (mirroring real
-    # production behavior over the whole dealership) -- in the full suite (not just this file in
+    # production behavior over the whole dealership), in the full suite (not just this file in
     # isolation) other integration test files (e.g. test_inventory_flow.py) seed their own
     # IN_STOCK units into this same shared, session-scoped container (ADR-013), so every
     # assertion below is scoped to this test's own model, not an unfiltered run-wide count.
@@ -148,12 +148,12 @@ def test_reorder_point_skipped_when_series_has_no_persisted_forecast(
     # Deliberately does NOT trigger a forecast job for this model/branch pair (each test uses a
     # fresh, uniquely-named model+branch, so even though an earlier test in this shared,
     # session-scoped container may have already produced a *succeeded* forecast run for *its own*
-    # series, that prior run has nothing for THIS test's series -- exercising the real skip path
+    # series, that prior run has nothing for THIS test's series, exercising the real skip path
     # ("no persisted forecast for this series"), not a global "no forecast run has ever run" state
     # this shared-container test setup can't actually produce once any earlier test has run one.
     #
     # The inventory job itself correctly processes the *whole* orders table (not just this
-    # test's rows, mirroring real production behavior over the whole dealership's inventory) --
+    # test's rows, mirroring real production behavior over the whole dealership's inventory),
     # so the run's InventoryIntel rows include every other test's models too, each with whatever
     # forecast status *they* have. This test filters down to its own model before asserting.
     model = _seed_minimal_dataset(db_session, with_in_stock_units=False)
@@ -178,7 +178,7 @@ def test_reorder_point_skipped_when_series_has_no_persisted_forecast(
     for row in intel_rows:
         assert row.reorder_point is None
         assert row.skipped_reason is not None
-        # abc/xyz don't depend on forecasts -- still populated even when reorder is skipped.
+        # abc/xyz don't depend on forecasts, still populated even when reorder is skipped.
         assert row.abc in ("A", "B", "C")
 
 
@@ -276,7 +276,7 @@ def test_heatmap_model_detail_units_and_anomalies_endpoints(
     )
     assert units_resp.status_code == 200
     # This endpoint is unfiltered by model (global aging list, mirroring a real manager's
-    # dealership-wide view) -- other tests in this shared container seed their own aging units
+    # dealership-wide view), other tests in this shared container seed their own aging units
     # too, so assert this test's own unit is present rather than an exact total count.
     aging_units = units_resp.json()["units"]
     assert len(aging_units) >= 1
@@ -284,7 +284,7 @@ def test_heatmap_model_detail_units_and_anomalies_endpoints(
 
     anomalies_resp = client.get("/api/v1/anomalies", headers={"Authorization": f"Bearer {token}"})
     assert anomalies_resp.status_code == 200
-    # Existence check only -- this synthetic fixture has no injected anomalies, unlike the real
+    # Existence check only; this synthetic fixture has no injected anomalies, unlike the real
     # seeded dataset QA-003(b) validates against.
     assert isinstance(anomalies_resp.json()["anomalies"], list)
 

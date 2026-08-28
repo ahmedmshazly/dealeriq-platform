@@ -6,15 +6,15 @@
 
 **Status**: Draft
 
-**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 3 — "GEN-001..006"
+**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 3 - "GEN-001..006"
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - A statistically realistic, reproducible dataset (Priority: P1)
 
 As anyone running `make seed`, I get a deterministic (same seed → same data), 3-year, 3-branch,
-25-model dataset whose weekly demand genuinely spans all four Syntetos–Boylan–Croston demand
-patterns — not because a downstream classifier is told to output that answer, but because the
+25-model dataset whose weekly demand genuinely spans all four Syntetos-Boylan-Croston demand
+patterns - not because a downstream classifier is told to output that answer, but because the
 underlying generative process was designed to produce it.
 
 **Why this priority**: Every later analytics phase (4, 5, 7) is validated against this dataset;
@@ -37,7 +37,7 @@ ADI/CV² per (model,branch) series; confirm ≥10 series land in each of the 4 S
 ### User Story 2 - A lead funnel with known, recoverable ground truth (Priority: P1)
 
 As a future consumer of DS-CUST-003 (Phase 7), I need leads whose won/lost outcome is driven by
-a real logistic relationship with documented, signed coefficients — so a correctly-implemented
+a real logistic relationship with documented, signed coefficients - so a correctly-implemented
 lead-scoring model can be shown to recover those signs (QA-003c).
 
 **Independent Test**: Fit a plain logistic regression on the generated leads' features against
@@ -63,16 +63,16 @@ identifiable deviation in the generated data at the stated week/order.
 **Acceptance Scenarios**:
 
 1. **Given** an injected demand shock, **When** computing a robust z-score on that series' STL
-   residuals, **Then** the shock's implied z clears 3.5 by a comfortable margin (target 5-8) —
+   residuals, **Then** the shock's implied z clears 3.5 by a comfortable margin (target 5-8) -
    validated now with a throwaway script, not left to Phase 5 to discover it doesn't (GEN-004).
 
 ### Edge Cases
 
 - What happens when a (model,branch) series' demand parameters produce zero total sales across
   all 156 weeks? → per-model jitter is bounded so this doesn't happen in practice, and the SBC
-  coverage test would fail loudly if it did — treated as a generator bug, not tolerated silently.
+  coverage test would fail loudly if it did - treated as a generator bug, not tolerated silently.
 - What happens if two orders would need the same vehicle unit? → the generator receives a unit
-  immediately before "selling" it within the same simulated week — there is always exactly one
+  immediately before "selling" it within the same simulated week - there is always exactly one
   unit per generated order, never a shared/double-booked unit (mirrors the real uniqueness
   constraint FR-042 enforces at runtime).
 
@@ -87,13 +87,13 @@ identifiable deviation in the generated data at the stated week/order.
   coefficients stored for later validation.
 - **GEN-004**: labeled anomalies (demand shocks, pricing errors) injected at known timestamps.
 - **GEN-005** *(P1, backlogged per existing `docs/backlog.md` entry)*: persona-driven discount
-  variation — not built this phase.
+  variation - not built this phase.
 - **GEN-006**: generator parameters and injected ground truth exported to
   `infra/seed/ground_truth/`.
 
 ### Key Entities
 
-No new domain tables — the generator populates the existing Phase 2 schema (branches,
+No new domain tables - the generator populates the existing Phase 2 schema (branches,
 vehicle_models, vehicle_units, stock_movements, customers, leads, lead_events, orders,
 order_events) and writes ground-truth artifacts as JSON files, not database tables (they're
 inputs to future test suites, not application data).
@@ -116,10 +116,10 @@ inputs to future test suites, not application data).
 
 - The generator writes directly to the transactional tables via bulk inserts, bypassing the
   Phase 1/2 API/service layer, since it is a one-time seed-time data-loading operation (like a
-  fixture loader), not a runtime analytics job — DAT-003's separation is about protecting
+  fixture loader), not a runtime analytics job - DAT-003's separation is about protecting
   transactional data from *runtime* analytics jobs and vice versa, not about how the initial
   dataset is loaded. Every row still matches the exact schema/constraints those tables enforce.
 - SBC classification (ADI/CV² computation, the DS-FC-002 algorithm) is implemented now, in
-  `packages/analytics`, as a minimal, well-tested, reusable utility — a deliberate pull-forward
+  `packages/analytics`, as a minimal, well-tested, reusable utility - a deliberate pull-forward
   from Phase 4, since GEN-002 cannot be validated without it. No forecasting methods or CV
   harness are pulled forward; those remain Phase 4 scope.

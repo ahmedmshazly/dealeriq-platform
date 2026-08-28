@@ -42,9 +42,9 @@
       `UnitRisk`, `Anomaly` SQLAlchemy models (schema per SRS §7 verbatim column names)
 - [x] T013 Alembic migration: `inventory_intel`, `unit_risk`, `anomalies` tables + indices, all
       FK'd to `analytics_runs.id`; no new permission keys needed (reuses `jobs:trigger`/
-      `forecasts:view`-equivalent — add `inventory:view` granted to admin/manager/analyst per the
+      `forecasts:view`-equivalent - add `inventory:view` granted to admin/manager/analyst per the
       SRS role table's existing analytics-facing pattern)
-- [x] T014 `apps/api/src/dealeriq_api/domain/inventory_job.py`: orchestration — reads
+- [x] T014 `apps/api/src/dealeriq_api/domain/inventory_job.py`: orchestration - reads
       orders/vehicle_units/stock_movements + Phase 4's latest succeeded forecast run, calls
       `packages/analytics` inventory + anomaly modules, writes
       run/inventory_intel/unit_risk/anomalies inside the run's transaction
@@ -53,7 +53,7 @@
       `job_name="inventory"` (mirrors `jobs/forecast.py`'s pattern)
 - [x] T016 `apps/api/src/dealeriq_api/routes/jobs.py`: add `"inventory"` to `KNOWN_JOBS` (the
       existing `POST /jobs/{job_name}/run` / `GET /jobs/{job_name}/runs` routes already generalize
-      to any registered job — no new route code needed, just the registry entry)
+      to any registered job - no new route code needed, just the registry entry)
 - [x] T017 `apps/api/src/dealeriq_api/routes/inventory_intel.py` +
       `apps/api/src/dealeriq_api/schemas/inventory_intel.py`: `GET /inventory/abc-xyz` (heatmap,
       latest succeeded run by default), `GET /inventory/units` (aging/risk list, filterable by
@@ -68,7 +68,7 @@
       each showing member models) + anomaly list (filterable by scope/severity), consuming only
       the generated client
 - [x] T021 `apps/web/app/(authenticated)/inventory-intel/[modelId]/page.tsx`: per-model
-      drill-down — reorder point + safety stock, aging units list, survival-curve-derived 30-day
+      drill-down - reorder point + safety stock, aging units list, survival-curve-derived 30-day
       sale probabilities for that model's units
 - [x] T022 Sidebar nav: add an Inventory Intelligence entry, gated on `inventory:view`
 - [x] T023 `packages/analytics/tests/test_qa003b_scientific_validation.py`: run the anomaly
@@ -80,7 +80,7 @@
       Phase 4 forecast run first); verify every model with order history has an ABC/XYZ cell and
       every (model,branch) with a succeeded forecast has a reorder point (SC-001, SC-002)
 - [x] T025 Verify SC-003 directly: every in-stock unit has a `unit_risk` row with a plausible
-      `days_on_lot`; units past threshold are flagged — a real DB query, not just unit-test
+      `days_on_lot`; units past threshold are flagged - a real DB query, not just unit-test
       assertions
 - [x] T026 Verify SC-004/QA-003(b) directly against the real seeded database's known-injected
       anomalies (cross-check T023's in-memory result against the DB-backed run's actual detected

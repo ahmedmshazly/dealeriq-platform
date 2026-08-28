@@ -3,7 +3,7 @@
 Test data is inserted directly via the ORM (not the order-lifecycle API), same rationale as
 `test_forecast_job.py`: what's under test is `achieved_accuracy.py` itself. A real `mase()`
 calculation needs `SEASON_LENGTH + 1` (53) weeks of history for its naive-error denominator to be
-non-empty (the same constraint `test_forecast_job.py`'s own N_WEEKS=70 works around) — the
+non-empty (the same constraint `test_forecast_job.py`'s own N_WEEKS=70 works around) - the
 fixture here uses exactly 53 weeks so the denominator reduces to a single, hand-computable value.
 """
 
@@ -22,7 +22,7 @@ from dealeriq_api.domain.models.vehicle import UnitStatus, VehicleModel, Vehicle
 from dealeriq_api.domain.reports.achieved_accuracy import compute_achieved_accuracy
 
 # 49 "quiet" weeks at a constant 3 orders/week, then 4 "evaluation" weeks with known, distinct
-# actuals -- chosen so the full 53-week history makes mase()'s naive-error denominator collapse
+# actuals, chosen so the full 53-week history makes mase()'s naive-error denominator collapse
 # to a single value: |y_train[52] - y_train[0]| = |4 - 3| = 1.
 N_QUIET_WEEKS = 49
 WEEKLY_COUNTS = [3] * N_QUIET_WEEKS + [3, 5, 2, 4]
@@ -153,7 +153,7 @@ def test_achieved_accuracy_returns_none_when_no_forecast_is_old_enough(
     series_key = f"model:{model.id}::branch:{branch.id}"
 
     run = _new_run(db_session, finished_at=datetime.now(UTC))
-    # Forecast for a week that is still in the future as of `as_of` -- never evaluable.
+    # Forecast for a week that is still in the future as of `as_of`, never evaluable.
     future_week = date.today() + timedelta(weeks=2)
     db_session.add(
         Forecast(

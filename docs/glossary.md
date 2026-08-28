@@ -6,14 +6,14 @@ last-verified: 2026-07-17
 
 # Glossary
 
-Study and product vocabulary. Authoritative definitions; the reader’s lexicon
+Study and product vocabulary. Authoritative definitions; the reader's lexicon
 layer must not redefine these terms.
 
 Also see the table form in [reference/glossary.md](./reference/glossary.md) and SRS §16.
 
 ### ADI
 
-Average Demand Interval — intermittence measure used in Syntetos-Boylan classification (SBC).
+Average Demand Interval - intermittence measure used in Syntetos-Boylan classification (SBC).
 
 ### ABC-XYZ
 
@@ -61,7 +61,7 @@ Reorder, risk, and anomaly outputs from the inventory analytics job.
 
 ### MASE
 
-Mean Absolute Scaled Error — primary forecast accuracy metric.
+Mean Absolute Scaled Error - primary forecast accuracy metric.
 
 ### OpenAPI client
 
@@ -69,7 +69,7 @@ Generated TypeScript client in `packages/api-client`.
 
 ### PSI
 
-Population Stability Index — lead-score drift detector.
+Population Stability Index - lead-score drift detector.
 
 ### RBAC
 

@@ -13,7 +13,7 @@
 #   DRY_RUN=1            print actions without uploading
 #
 # Auth: prefer an EC2 instance IAM role. Do not put long-lived AWS keys in git.
-# Blobs: the API stores no uploads on disk — DB-only backup is sufficient.
+# Blobs: the API stores no uploads on disk - DB-only backup is sufficient.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

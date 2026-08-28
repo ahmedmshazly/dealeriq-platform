@@ -3,7 +3,7 @@ import { $$, h } from "../lib/dom.js";
 /**
  * In-page find (⌘F), reimplemented rather than deferred to the browser.
  *
- * The browser's own find would work — but it cannot tell the outline which
+ * The browser's own find would work - but it cannot tell the outline which
  * match is active, cannot skip the code gutters, and vanishes the moment the
  * pane re-renders. Owning it costs sixty lines and makes `n`/`N` behave the way
  * they do in an editor.

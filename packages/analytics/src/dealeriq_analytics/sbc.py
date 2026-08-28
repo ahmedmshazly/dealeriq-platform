@@ -2,7 +2,7 @@
 
 Pulled forward from Phase 4 (see specs/004-synthetic-data/spec.md Assumptions): the generator
 needs this to validate its own SBC-class coverage (GEN-002) before Phase 4's forecasting
-pipeline is built. Only the classification math is pulled forward — no forecasting methods, no
+pipeline is built. Only the classification math is pulled forward - no forecasting methods, no
 CV harness.
 
 ADI (average inter-demand interval) = total periods / number of periods with nonzero demand.
@@ -27,7 +27,7 @@ class SbcClass(enum.StrEnum):
 
 
 class DegenerateSeriesError(ValueError):
-    """Raised when a series has no nonzero periods at all — ADI/CV² are undefined."""
+    """Raised when a series has no nonzero periods at all - ADI/CV² are undefined."""
 
 
 def compute_adi(series: NDArray[np.float64]) -> float:

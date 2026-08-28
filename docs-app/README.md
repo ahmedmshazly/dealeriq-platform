@@ -22,5 +22,5 @@ src/generated/   corpus.json, code.json — gitignored
 ```
 
 See the portfolio `docs-app/README.md` for the full design rationale; this tree keeps that
-method and visual language while indexing DealerIQ’s Diataxis `docs/` taxonomy and
+method and visual language while indexing DealerIQ's Diataxis `docs/` taxonomy and
 `apps/` / `packages/` / `infra/` source.

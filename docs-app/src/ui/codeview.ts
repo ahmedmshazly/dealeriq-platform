@@ -101,7 +101,7 @@ export async function renderCode(
  * `05#srclibdbarticlests--collection-articlesslug` → `05 § src/lib/db/articles.ts`.
  *
  * Annotations store slugs because that is what the router needs. A slug is not a
- * label — GitHub's rules strip the punctuation that made the heading legible —
+ * label - GitHub's rules strip the punctuation that made the heading legible -
  * so resolve it back to the heading's own text before showing it to anyone.
  */
 function labeller(corpus: Corpus): (target: string) => string {

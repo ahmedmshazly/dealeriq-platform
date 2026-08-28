@@ -9,7 +9,7 @@
 
 const KEY = "diqdocs:v1";
 
-/** DealerIQ handbook theme — independent of the portfolio `ae-theme` key. */
+/** DealerIQ handbook theme - independent of the portfolio `ae-theme` key. */
 const THEME_KEY = "diq-theme";
 
 export type Theme = "dark" | "light";
@@ -17,7 +17,7 @@ export type Theme = "dark" | "light";
 export interface Highlight {
   id: string;
   doc: string;
-  /** Anchor of the section the selection began in — where we start searching. */
+  /** Anchor of the section the selection began in - where we start searching. */
   anchor: string | null;
   /**
    * Text-quote anchoring, as used by Hypothesis and the W3C annotation model.
@@ -35,7 +35,7 @@ export interface Highlight {
 
 export interface Persisted {
   lastRoute: string;
-  /** doc id → deepest scroll fraction ever reached, 0…1. */
+  /** doc id → deepest scroll fraction ever reached, 0...1. */
   progress: Record<string, number>;
   /** doc id → last scrollTop, so returning restores the exact position. */
   scroll: Record<string, number>;
@@ -78,7 +78,7 @@ function load(): Persisted {
     if (!raw) return { ...DEFAULTS };
     return { ...DEFAULTS, ...(JSON.parse(raw) as Partial<Persisted>) };
   } catch {
-    // Private mode, corrupted JSON, quota — none of these should stop you
+    // Private mode, corrupted JSON, quota: none of these should stop you
     // reading. Fall back to defaults and keep going.
     return { ...DEFAULTS };
   }

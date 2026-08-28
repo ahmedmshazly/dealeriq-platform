@@ -1,7 +1,7 @@
 """GET /inventory/abc-xyz (heatmap), GET /inventory/models/{model_id} (drill-down),
-GET /inventory/units (aging/risk list), GET /anomalies (list) — DS-INV-001..004, DS-ANO-001..004.
+GET /inventory/units (aging/risk list), GET /anomalies (list) - DS-INV-001..004, DS-ANO-001..004.
 
-All default to the latest `succeeded` "inventory" run; pass `?run_id=` for a historical one —
+All default to the latest `succeeded` "inventory" run; pass `?run_id=` for a historical one -
 same convention Phase 4's forecasts routes established.
 """
 

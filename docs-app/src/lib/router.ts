@@ -9,7 +9,7 @@
  *   #/start
  *   #/doc/06#security-rules
  *   #/code/src/middleware.ts#L27
- *   #/graph  #/atlas  #/notes  #/checkpoints  #/search?q=…
+ *   #/graph  #/atlas  #/notes  #/checkpoints  #/search?q=...
  */
 
 export interface Route {

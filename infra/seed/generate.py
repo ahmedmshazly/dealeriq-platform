@@ -4,7 +4,7 @@ SQLAlchemy Core, then writes GEN-006's ground-truth JSON artifacts to
 `infra/seed/ground_truth/`.
 
 Bypasses the API/service layer deliberately (spec.md's Assumptions): this is a one-time,
-seed-time bulk load, not a runtime analytics job — DAT-003's transactional/analytics separation
+seed-time bulk load, not a runtime analytics job - DAT-003's transactional/analytics separation
 is about protecting live data from *runtime* jobs, not about how the initial dataset is loaded.
 Every row still matches the exact schema/constraints those tables enforce.
 
@@ -220,7 +220,7 @@ class CustomerPool:
     """Organically-growing customer list shared by both order and lead realization, so repeat
     purchases and repeat lead contacts land on the same people (plan.md: "~70% chance of an
     existing customer making a repeat purchase, ~30% a new one"). A newly-created customer's
-    `source_channel` is set to the acquiring lead's simulated channel when one is given — without
+    `source_channel` is set to the acquiring lead's simulated channel when one is given - without
     this, Customer.source_channel would be statistically independent of Lead.status in the
     database, even though `dealeriq_analytics.generator.leads` deliberately makes channel a real
     driver of the won/lost outcome (GEN-003's whole point is a *recoverable* channel signal)."""
@@ -367,7 +367,7 @@ def _realize_orders(
 ]:
     """Every unit of demand realized is one delivered order (plan.md's "Order/inventory
     realization"): a fresh vehicle unit, a receipt + sale stock movement, an order, and its
-    submit/[approve]/deliver event trail — all backdated within that (model, branch, week)."""
+    submit/[approve]/deliver event trail - all backdated within that (model, branch, week)."""
     n_weeks = 156
 
     sale_events: list[tuple[int, str, str]] = []
@@ -456,7 +456,7 @@ def _realize_orders(
                 "status": OrderStatus.DELIVERED,
                 "created_at": _as_datetime(acquisition_day, 10),
                 "updated_at": _as_datetime(deliver_day, 17),
-                # Not a real orders-table column — used to group by model for pricing-error
+                # Not a real orders-table column - used to group by model for pricing-error
                 # injection (GEN-004) and stripped before the bulk insert.
                 "_model_key": model_key,
             }
@@ -511,7 +511,7 @@ def _realize_current_inventory(
     manager_user_ids: list[uuid.UUID],
     rng: np.random.Generator,
 ) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
-    """`_realize_orders` only ever creates units tied to an already-delivered order — a real
+    """`_realize_orders` only ever creates units tied to an already-delivered order - a real
     dealership also carries current, not-yet-sold inventory on the lot, which Phase 5's
     DS-INV-003/004 (days-on-lot, survival-curve pricing review) needs to have anything to
     compute over. Sizes each series' current stock at a standard "weeks of supply" heuristic
@@ -596,7 +596,7 @@ def _inject_pricing_errors(
 ) -> list[PricingErrorRecord]:
     """GEN-004's other half: forces `negotiated_price` on a handful of orders below
     `list_price - k*sigma(historical discount fractions for that model)`, k=5 vs. the real
-    detector's default k=3 (DS-ANO-003) — comfortably past threshold, not a coin-flip."""
+    detector's default k=3 (DS-ANO-003) - comfortably past threshold, not a coin-flip."""
     orders_by_model: dict[str, list[int]] = {}
     for i, order in enumerate(orders):
         orders_by_model.setdefault(cast(str, order["_model_key"]), []).append(i)
@@ -654,7 +654,7 @@ def _inject_pricing_errors(
 def _walk_lead_funnel(won: bool, rng: np.random.Generator) -> list[tuple[LeadStatus, LeadStatus]]:
     """Walks ALLOWED_TRANSITIONS from `new` to a terminal state consistent with `won`, so the
     seeded event trail is a real, legal path through the same state machine the API enforces.
-    Filters WON out of the option set for lost-destined leads (and vice versa) at every step —
+    Filters WON out of the option set for lost-destined leads (and vice versa) at every step -
     `negotiating`'s only two exits are `won`/`lost`, so without this a lost-destined lead could
     randomly resolve to `won` there, contradicting the ground-truth `won` flag it was given."""
     path: list[tuple[LeadStatus, LeadStatus]] = []
@@ -690,7 +690,7 @@ def _realize_leads(
     calendar-time journey* to that outcome by "today" (`REFERENCE_LAST_WEEK_START` + 6 days, the
     same reference `_realize_current_inventory` uses). A lead created only a few real days ago
     can't have already walked its full funnel if that funnel's own gap-day spacing implies more
-    elapsed time than has actually passed — so its walk is truncated to however many steps would
+    elapsed time than has actually passed - so its walk is truncated to however many steps would
     plausibly have happened by today, leaving it at a genuinely open, non-terminal status. Leads
     created long enough ago always finish their walk unchanged. Without this, every lead in the
     seeded database resolves to won/lost and Phase 7's lead-scoring/idle-alert features would

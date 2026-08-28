@@ -1,8 +1,8 @@
-# packages/api-client — DealerIQ API Client
+# packages/api-client - DealerIQ API Client
 
 TypeScript client generated from `apps/api`'s OpenAPI 3.1 schema (`openapi-typescript` +
 `openapi-fetch`, ADR-012). This is the **only** sanctioned way `apps/web` talks to the API
-(C-05) — every request is typed by path + method directly from the schema, so calling an
+(C-05) - every request is typed by path + method directly from the schema, so calling an
 undocumented endpoint isn't possible through this client.
 
 ## Regenerating

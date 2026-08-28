@@ -153,7 +153,7 @@ def test_refresh_rotates_the_token_and_reuse_revokes_the_whole_family(
     assert reuse_resp.status_code == 401
     assert reuse_resp.json()["error"]["code"] == "unauthorized"
 
-    # The whole family — including the token just legitimately rotated to — is now revoked.
+    # The whole family - including the token just legitimately rotated to - is now revoked.
     second_refresh = client.post("/api/v1/auth/refresh")
     assert second_refresh.status_code == 401
 
@@ -188,7 +188,7 @@ def test_user_creation_writes_an_audit_row(client: TestClient) -> None:
 
 
 def test_permission_matrix_reflects_seeded_grants(client: TestClient) -> None:
-    # Checks the Phase 1 (auth/RBAC) permission set specifically, as a subset — later phases
+    # Checks the Phase 1 (auth/RBAC) permission set specifically, as a subset - later phases
     # (Phase 2's inventory/customers/leads/orders permissions, etc.) add more grants, and this
     # test shouldn't need updating every time a new permission ships. Phase-specific matrix
     # assertions live in that phase's own integration tests (e.g. test_inventory_flow.py).

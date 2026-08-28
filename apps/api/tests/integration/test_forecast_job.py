@@ -1,6 +1,6 @@
 """Integration tests: the forecast job end-to-end (FR-070..072, DS-FC-006/007).
 
-Test data is inserted directly via the ORM (not the order-lifecycle API) — what's under test
+Test data is inserted directly via the ORM (not the order-lifecycle API) - what's under test
 here is the forecast job itself, not order creation, and a real 64+ week order history would be
 prohibitively slow to build through repeated create/submit/deliver API round-trips.
 """
@@ -41,7 +41,7 @@ def _seed_minimal_series(db: Session) -> VehicleModel:
 
     admin = db.execute(select(User).order_by(User.created_at).limit(1)).scalar_one()
 
-    # Each call to this helper (one per test) needs its own VIN namespace — the shared
+    # Each call to this helper (one per test) needs its own VIN namespace - the shared
     # session-scoped container means a second test's identical week/i-based VINs would collide
     # with the first test's still-present rows.
     vin_prefix = uuid.uuid4().hex[:6].upper()
@@ -127,7 +127,7 @@ def test_concurrent_trigger_is_rejected_with_409(client: TestClient, db_session:
     assert resp.status_code == 409
 
     # Resolve the stuck row so it doesn't permanently block "forecast" triggers for every test
-    # that runs afterward in this shared, session-scoped container (ADR-013) -- this row would
+    # that runs afterward in this shared, session-scoped container (ADR-013); this row would
     # otherwise sit at status=running forever, since nothing else in this test ever completes it.
     in_progress.status = RunStatus.FAILED
     in_progress.finished_at = datetime.now(UTC)
@@ -138,7 +138,7 @@ def test_job_that_raises_ends_failed_not_stuck_running(
     db_session: Session, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # Seeds real (unique-named, so no cross-test collision) data, then forces the pipeline
-    # itself to raise mid-run -- verifies the running -> failed transition without touching any
+    # itself to raise mid-run, verifies the running -> failed transition without touching any
     # other test's data in this session-shared container (unlike deleting all orders would).
     _seed_minimal_series(db_session)
 
@@ -168,7 +168,7 @@ def test_job_that_raises_ends_failed_not_stuck_running(
 def test_leaderboard_and_series_detail_endpoints(client: TestClient, db_session: Session) -> None:
     # The shared, session-scoped testcontainers Postgres (ADR-013) means a forecast run
     # triggered here processes every order any earlier test in this run left behind, not just
-    # this test's own 70-week series -- so the leaderboard's *first* entry is not reliably this
+    # this test's own 70-week series, so the leaderboard's *first* entry is not reliably this
     # test's own series. Build the exact expected series_key from this test's own model/branch
     # instead of trusting entries[0].
     model = _seed_minimal_series(db_session)
@@ -197,7 +197,7 @@ def test_leaderboard_and_series_detail_endpoints(client: TestClient, db_session:
     assert any(m["is_champion"] for m in detail["metrics_by_method"])
 
     # FR-073: a just-triggered run's entire 12-week horizon is still in the future, so there's
-    # no forecast old enough to have real actuals yet -- honest None fields, not a fabricated
+    # no forecast old enough to have real actuals yet, honest None fields, not a fabricated
     # number. The alignment/dedup logic itself is validated separately, against a hand-computed
     # fixture, in test_achieved_accuracy.py.
     accuracy_resp = client.get(

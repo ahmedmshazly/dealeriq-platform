@@ -1,4 +1,4 @@
-"""GET /forecasts (leaderboard), GET /forecasts/{series_key} (fan chart + metrics) — DS-FC-007.
+"""GET /forecasts (leaderboard), GET /forecasts/{series_key} (fan chart + metrics) - DS-FC-007.
 
 Both default to the latest `succeeded` run (FR-071); pass `?run_id=` for a historical one.
 """
@@ -107,7 +107,7 @@ def leaderboard_route(
         if pattern_class is not None and series_pattern_class != pattern_class:
             continue
         # Only (model, branch) series surface in the leaderboard UI this phase (spec.md's
-        # Assumptions) — (segment, branch) aggregates are still profiled/forecast, just not
+        # Assumptions) - (segment, branch) aggregates are still profiled/forecast, just not
         # shown here.
         if not metric.series_key.startswith("model:"):
             continue

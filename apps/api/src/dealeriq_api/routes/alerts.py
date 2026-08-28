@@ -1,5 +1,5 @@
 """GET /alerts (notification center: badge count + filterable list), POST /alerts/{id}/
-acknowledge, POST /alerts/{id}/resolve — FR-062, FR-063.
+acknowledge, POST /alerts/{id}/resolve - FR-062, FR-063.
 
 The list is scoped to the current user's own `notifications` rows (role-based subscription
 fan-out already happened when the alert was opened, per `alert_rules.py`'s `open_alert`), so a

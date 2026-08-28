@@ -16,7 +16,7 @@ vi.mock("@/lib/auth-context", () => ({
 import AuthenticatedLayout from "@/app/(authenticated)/layout";
 
 // AppShell (rendered once authenticated) polls the alerts badge count via react-query, so any
-// render exercising the authenticated branch needs a real QueryClientProvider in the tree —
+// render exercising the authenticated branch needs a real QueryClientProvider in the tree -
 // retries disabled so a test never hangs waiting on the (unmocked, network-less) query to settle.
 function renderWithQueryClient(ui: React.ReactElement) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });

@@ -57,10 +57,10 @@ class VehicleUnitResponse(BaseModel):
     branch_id: uuid.UUID
     status: UnitStatus
     acquisition_date: date
-    # FR-043: cost/margin is Manager+ only — null for callers without orders:view_margin.
+    # FR-043: cost/margin is Manager+ only - null for callers without orders:view_margin.
     acquisition_cost: float | None
     days_on_lot: int
-    # Analytics outputs (DS-INV, Phase 5) — not populated until that phase's job has run.
+    # Analytics outputs (DS-INV, Phase 5) - not populated until that phase's job has run.
     abc_class: str | None = None
     xyz_class: str | None = None
     aging_risk_score: float | None = None

@@ -6,7 +6,7 @@ DealerIQ production layout:
 |---|---|
 | Web | Vercel project `dealeriq`, Root Directory `apps/web`, GitHub `ahmedmshazly/dealeriq` (private) |
 | API + Postgres | One EC2 `t3.micro` in `eu-central-1` running `infra/docker-compose.prod.yml` |
-| Durable DB disk | Dedicated EBS volume bind-mounted at `/var/lib/dealeriq/pgdata` (`DeleteOnTermination=false`) — [durability.md](durability.md) / ADR-026 |
+| Durable DB disk | Dedicated EBS volume bind-mounted at `/var/lib/dealeriq/pgdata` (`DeleteOnTermination=false`) - [durability.md](durability.md) / ADR-026 |
 | Off-box backups | Nightly `pg_dump` → S3 via `scripts/ops/backup-to-s3.sh` + systemd timer |
 | Auth cookies | Browser talks same-origin to Vercel; `API_REWRITE_ORIGIN` proxies `/api/*` to the EC2 API |
 
@@ -37,8 +37,8 @@ Catalog: [diagrams D05](../diagrams/README.md).
 
 ## Current production endpoints
 
-- Web: `https://dealeriq-nine.vercel.app`
-- API (direct, rewrite target): `http://<EIP>:8000` — health: `/api/v1/health`
+- Web: `https://dealeriq.ahmdmshazly.me` (also served at `https://dealeriq-nine.vercel.app`)
+- API (direct, rewrite target): `http://<EIP>:8000` - health: `/api/v1/health`
 - GitHub: `https://github.com/ahmedmshazly/dealeriq` (private)
 
 Vercel env (Production / Preview / Development):
@@ -56,7 +56,7 @@ Region: `eu-central-1`. Prefer the existing Elastic IP so Vercel rewrites stay v
 2. Launch Amazon Linux 2023 `t3.micro`, 20 GB gp3 root, key pair, associate EIP. Attach a **separate data EBS** with `DeleteOnTermination=false` (see [durability.md](durability.md)).
 3. User-data / first boot: install Docker + Compose plugin + AWS CLI, create a **2 GB swapfile**, `mkdir /opt/dealeriq /etc/dealeriq`, mount data volume at `/var/lib/dealeriq`.
 4. Clone the private repo into `/opt/dealeriq/src` (deploy key or short-lived `gh` token).
-5. Copy `infra/prod.env.example` → `/etc/dealeriq/prod.env`, set strong `POSTGRES_PASSWORD`, `JWT_SECRET_KEY`, `BOOTSTRAP_ADMIN_PASSWORD`, and `CORS_ORIGINS=https://dealeriq-nine.vercel.app`. Optionally set `DEALERIQ_DATA_ROOT=/var/lib/dealeriq`.
+5. Copy `infra/prod.env.example` → `/etc/dealeriq/prod.env`, set strong `POSTGRES_PASSWORD`, `JWT_SECRET_KEY`, `BOOTSTRAP_ADMIN_PASSWORD`, and `CORS_ORIGINS=https://dealeriq.ahmdmshazly.me` (list every origin actually served, comma-separated, or browsers on the other domain fail preflight). Optionally set `DEALERIQ_DATA_ROOT=/var/lib/dealeriq`.
 6. Start:
 
 ```bash
@@ -87,14 +87,14 @@ Project settings that matter:
 
 - Root Directory: `apps/web`
 - Install: `cd ../.. && npm install`
-- Build: `cd ../.. && npm run build:web`
+- Build: `cd ../.. && npm run build:vercel` (publishes the handbook, then builds Next; set in `apps/web/vercel.json`, not the dashboard)
 - Framework: Next.js
 - Rewrites: via `apps/web/next.config.ts` when `API_REWRITE_ORIGIN` is set
 
 ## Rotate secrets
 
 1. Generate new values (`python -c "import secrets; print(secrets.token_urlsafe(48))"`).
-2. Edit `/etc/dealeriq/prod.env` on EC2; `docker compose ... up -d --force-recreate api` (and postgres only if the DB password changed — that requires volume care).
+2. Edit `/etc/dealeriq/prod.env` on EC2; `docker compose ... up -d --force-recreate api` (and postgres only if the DB password changed - that requires volume care).
 3. After first Admin login, change the bootstrap password in-app (`must_change_password`).
 
 ## Cost guardrails
@@ -107,7 +107,7 @@ aws ec2 stop-instances --region eu-central-1 --instance-ids <INSTANCE_ID>
 aws ec2 start-instances --region eu-central-1 --instance-ids <INSTANCE_ID>
 ```
 
-EIP stays attached while stopped (small hourly EIP charge if unattached — keep it associated).
+EIP stays attached while stopped (small hourly EIP charge if unattached - keep it associated).
 - No RDS, ALB, NAT, Fargate, or Firestore. Postgres stays on Compose + EBS + S3 dumps (ADR-026), not a managed DB.
 - If the API OOMs under analytics load, bump once to `t3.small` rather than adding services.
 
@@ -118,12 +118,12 @@ Full procedure (EBS mount, S3 bucket, IAM, path A reattach / path B restore): [`
 ## Smoke checks
 
 ```bash
-curl -fsS https://dealeriq-nine.vercel.app/api/v1/health
-curl -fsS -X POST https://dealeriq-nine.vercel.app/api/v1/auth/login \
+curl -fsS https://dealeriq.ahmdmshazly.me/api/v1/health
+curl -fsS -X POST https://dealeriq.ahmdmshazly.me/api/v1/auth/login \
   -H 'Content-Type: application/json' \
   -d '{"email":"admin@dealeriq.dev","password":"<BOOTSTRAP_ADMIN_PASSWORD>"}' \
   -c /tmp/dj.txt
-# Expect access_token + Set-Cookie dealeriq_refresh on dealeriq-nine.vercel.app path /api/v1/auth
+# Expect access_token + Set-Cookie dealeriq_refresh on dealeriq.ahmdmshazly.me path /api/v1/auth
 ```
 
-Open `https://dealeriq-nine.vercel.app/login`, sign in, complete forced password change, reach `/dashboard`.
+Open `https://dealeriq.ahmdmshazly.me/login`, sign in, complete forced password change, reach `/dashboard`.

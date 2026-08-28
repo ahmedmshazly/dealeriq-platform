@@ -64,7 +64,7 @@ async function main(): Promise<void> {
 
   if (browser) {
     // A dedicated profile dir keeps the reader's window state, zoom level and
-    // localStorage separate from the user's day-to-day browsing profile — and
+    // localStorage separate from the user's day-to-day browsing profile, and
     // stops `--app` from merging into an already-running Chrome session.
     const args = [
       `--app=${URL}`,

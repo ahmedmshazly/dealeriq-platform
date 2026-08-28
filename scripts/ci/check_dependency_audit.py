@@ -1,6 +1,6 @@
 """QA-007: run pip-audit and npm audit for real, cross-reference every reported finding against
 security/dependency-waivers.json, and fail (non-zero exit) on anything not explicitly waived.
-Replaces the `pip-audit ... || true` / `npm audit ... || true` no-ops in CI -- those steps ran
+Replaces the `pip-audit ... || true` / `npm audit ... || true` no-ops in CI, where those steps ran
 but could never actually fail the build; this script is what makes the gate real.
 
 Usage: uv run python scripts/ci/check_dependency_audit.py
@@ -42,7 +42,7 @@ def run_pip_audit() -> list[dict[str, str]]:
         text=True,
         check=False,
     )
-    # pip-audit exits non-zero when it finds vulnerabilities -- that's expected, not a tool
+    # pip-audit exits non-zero when it finds vulnerabilities, which is expected, not a tool
     # failure; only a missing/unparsable report is a real error.
     try:
         data = json.loads(result.stdout)

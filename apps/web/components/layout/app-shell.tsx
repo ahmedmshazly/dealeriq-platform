@@ -29,18 +29,18 @@ const NAV_ITEMS = [
   { href: "/orders", label: "Orders", icon: ShoppingCart },
 ];
 
-// alerts:view is granted to every role (SRS role table) — always shown.
+// alerts:view is granted to every role (SRS role table) - always shown.
 const ALERTS_NAV_ITEM = { href: "/alerts", label: "Alerts", icon: Bell };
 
 // forecasts:view / inventory-intel:view are granted to admin/manager/analyst, not sales (SRS
-// role table) — the API enforces the real check, this just hides the links cosmetically for a
+// role table) - the API enforces the real check, this just hides the links cosmetically for a
 // role that would 403.
 const ANALYTICS_NAV_ITEMS = [
   { href: "/analytics", label: "Analytics", icon: LineChart },
   { href: "/inventory-intel", label: "Inventory Intel", icon: Grid3x3 },
 ];
 
-// alert-rules:manage is granted to admin/manager, not analyst/sales (SRS role table) — a
+// alert-rules:manage is granted to admin/manager, not analyst/sales (SRS role table) - a
 // broader group than the pure-admin section below.
 const OPS_NAV_ITEMS = [
   { href: "/admin/alert-rules", label: "Alert Rules", icon: SlidersHorizontal },
@@ -49,7 +49,7 @@ const OPS_NAV_ITEMS = [
 // dashboard:view_manager (reused by GET /reports/monthly per FR-054) is admin/manager only.
 const REPORTS_NAV_ITEMS = [{ href: "/reports", label: "Reports", icon: FileText }];
 
-// Admin-only nav — the API enforces the real permission check (FR-011); this hides the link
+// Admin-only nav - the API enforces the real permission check (FR-011); this hides the link
 // cosmetically for roles that would get a 403 anyway.
 const ADMIN_NAV_ITEMS = [
   { href: "/admin/users", label: "Users", icon: UsersIcon },

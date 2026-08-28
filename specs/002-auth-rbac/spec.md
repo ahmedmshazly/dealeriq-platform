@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 1 — "FR-001..013, SEC/NFR-001/002, audit basics
+**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 1 - "FR-001..013, SEC/NFR-001/002, audit basics
 FR-080"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -43,7 +43,7 @@ confirm a new access token works.
 ### User Story 2 - Every endpoint enforces its own permission (Priority: P1)
 
 As the system, I deny access by default: every endpoint declares the permission(s) it requires,
-and a request without them gets a 403 with a machine-readable error code — regardless of what
+and a request without them gets a 403 with a machine-readable error code - regardless of what
 the frontend does or doesn't show.
 
 **Why this priority**: This is the security boundary the entire RBAC principle depends on
@@ -71,7 +71,7 @@ self-registration in v1.0); every security-relevant action is recorded in an app
 log I can browse.
 
 **Why this priority**: Required for the exit demo ("log in as each role, prove a 403, audit rows
-visible") but depends on User Stories 1–2 existing first.
+visible") but depends on User Stories 1-2 existing first.
 
 **Independent Test**: Create a user as Admin; deactivate them; confirm two audit_log rows exist
 (`user.created`, `user.deactivated`) with actor, before/after, timestamp, IP.
@@ -85,7 +85,7 @@ visible") but depends on User Stories 1–2 existing first.
    attempt is made, **Then** the account is locked for 15 minutes or until an Admin unlocks it
    (FR-005).
 3. **Given** an Admin, **When** they call `GET /api/v1/audit-log`, **Then** they can filter by
-   actor/action/entity/date range with pagination (FR-081 — folded into this phase; see plan.md
+   actor/action/entity/date range with pagination (FR-081 - folded into this phase; see plan.md
    for why FR-081 has no explicit phase assignment in the SRS and the rationale for including it
    here rather than deferring).
 
@@ -125,7 +125,7 @@ visible") but depends on User Stories 1–2 existing first.
 - **FR-080**: An append-only audit log SHALL record actor, action, entity, before/after, IP, and
   timestamp for auth events, role changes, and approvals (approvals arrive Phase 2; auth/role
   events are this phase's scope).
-- **FR-081** *(folded in — see plan.md)*: Admins SHALL browse/filter/export the audit log.
+- **FR-081** *(folded in - see plan.md)*: Admins SHALL browse/filter/export the audit log.
 
 ### Key Entities
 
@@ -158,5 +158,5 @@ visible") but depends on User Stories 1–2 existing first.
   implemented and tested as a reusable mechanism now, demonstrated end-to-end once those
   resources exist.
 - A first Admin account must exist on a fresh seed for anyone to log in at all (self-registration
-  is disabled per FR-004) — seeded via `make seed` from an env-configurable default, documented
+  is disabled per FR-004) - seeded via `make seed` from an env-configurable default, documented
   in `.env.example`, forced to change password on first login.

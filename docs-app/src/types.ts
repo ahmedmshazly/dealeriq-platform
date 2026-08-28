@@ -1,8 +1,8 @@
 /**
  * The contract between the build-time indexer and the runtime client.
  *
- * Everything expensive — markdown parsing, syntax highlighting, math rendering,
- * search-index construction, the doc↔code join — happens once in
+ * Everything expensive - markdown parsing, syntax highlighting, math rendering,
+ * search-index construction, the doc↔code join - happens once in
  * `scripts/build-index.ts` and lands here. The client only reads.
  */
 
@@ -15,7 +15,7 @@ export type Tier = "handbook" | "meta" | "stub" | "background";
 
 export interface Heading {
   depth: number;
-  /** Plain text, entities decoded, tags stripped — what GitHub slugged. */
+  /** Plain text, entities decoded, tags stripped - what GitHub slugged. */
   text: string;
   slug: string;
 }
@@ -45,7 +45,7 @@ export interface Backlink {
   fromTitle: string;
   /** Which anchor of the *target* was cited. */
   anchor: string | null;
-  /** Which section of the *source* the link was written in — where to land. */
+  /** Which section of the *source* the link was written in - where to land. */
   fromAnchor: string | null;
   /** A human label for that source section, e.g. `06 § Security rules`. */
   context: string;
@@ -53,7 +53,7 @@ export interface Backlink {
 
 export interface MermaidBlock {
   id: string;
-  /** The diagram kind, e.g. `flowchart`, `erDiagram` — used for the caption. */
+  /** The diagram kind, e.g. `flowchart`, `erDiagram` - used for the caption. */
   kind: string;
   code: string;
 }
@@ -109,7 +109,7 @@ export interface SourceSymbol {
   kind: SymbolKind;
   /** 1-indexed. */
   line: number;
-  /** The declaration line, trimmed — enough to show in a popover. */
+  /** The declaration line, trimmed - enough to show in a popover. */
   signature: string;
   file: string;
   /** Doc ids whose prose mentions this symbol in backticks. */
@@ -124,7 +124,7 @@ export interface SourceFile {
   symbols: SourceSymbol[];
   /** Doc ids that cite this path in backticks. */
   citedBy: string[];
-  /** Total number of backtick mentions across the corpus — the Atlas ranking. */
+  /** Total number of backtick mentions across the corpus - the Atlas ranking. */
   mentions: number;
 }
 
@@ -133,7 +133,7 @@ export interface SourceFile {
  *
  * Dual-theme Shiki HTML measured 12.3× the source (13.2 MB). Instead we ship the
  * raw lines plus a run-length style encoding against a 17-entry palette: each
- * line becomes `"6A7B1C"` — decimal run length followed by a single letter that
+ * line becomes `"6A7B1C"` - decimal run length followed by a single letter that
  * indexes `palette`. Roughly 1.7 MB for all 212 files, and it leaves the client
  * owning the render, which is what makes per-line gutter annotations possible.
  */

@@ -5,10 +5,10 @@ Revises: f4a5b6c7d8e9
 Create Date: 2026-07-10 16:00:00.000000
 
 Hand-authored to mirror the InventoryIntel/UnitRisk/Anomaly model definitions (reviewed per
-ADR-011 — verified by running `alembic upgrade head` against a real Postgres instance, and
+ADR-011 - verified by running `alembic upgrade head` against a real Postgres instance, and
 confirming a subsequent `alembic revision --autogenerate` produces an empty diff). Adds
 inventory-intel:view permission grants (Admin/Manager/Analyst can view inventory intelligence
-output, mirroring forecasts:view's exact role split from Phase 4 — sales gets none, same
+output, mirroring forecasts:view's exact role split from Phase 4 - sales gets none, same
 analytics-facing pattern). Named distinctly from Phase 2's existing "inventory:view" (basic
 vehicle unit/model CRUD visibility, granted to all four roles including sales) since this is a
 different, more restricted capability, not a re-grant of the same key.

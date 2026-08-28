@@ -17,8 +17,8 @@ auto-creates or auto-alters tables at runtime, in any environment including loca
 ## Consequences
 
 - Every schema change has a diffable, reviewable artifact and a rollback path.
-- `alembic upgrade head` is a required, explicit step in `make bootstrap`/`make seed` — schema
+- `alembic upgrade head` is a required, explicit step in `make bootstrap`/`make seed` - schema
   state is never implicit.
 - Autogenerate (`alembic revision --autogenerate`) is used to draft migrations quickly but every
-  generated migration is manually reviewed before being committed (see ADR-011) — autogenerate
+  generated migration is manually reviewed before being committed (see ADR-011) - autogenerate
   drafts, it does not decide.

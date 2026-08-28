@@ -1,4 +1,4 @@
-# ADR-012: API client generator — openapi-typescript + openapi-fetch
+# ADR-012: API client generator - openapi-typescript + openapi-fetch
 
 - Status: Accepted
 - Date: 2026-07-10
@@ -16,7 +16,7 @@ fetch wrapper) rather than orval.
 
 ## Consequences
 
-- Smallest config surface and fastest CI codegen step — no mock-server generation or
+- Smallest config surface and fastest CI codegen step - no mock-server generation or
   multi-client-target flexibility that this single-frontend project doesn't need.
 - `openapi-fetch` types every request/response by path+method directly from the OpenAPI schema,
   which is what makes C-05 enforceable in practice (an undocumented endpoint literally isn't

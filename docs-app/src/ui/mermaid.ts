@@ -4,8 +4,8 @@ import { $$, h, toast } from "../lib/dom.js";
 /**
  * Diagrams.
  *
- * Mermaid is ~2.5 MB — by a wide margin the largest thing this application can
- * load — and only 10 of 29 documents contain a diagram. So it is imported on
+ * Mermaid is ~2.5 MB - by a wide margin the largest thing this application can
+ * load - and only 10 of 29 documents contain a diagram. So it is imported on
  * first sight of a `<figure class="mermaid">` and never before. In the packed
  * single file it is already inlined; the dynamic import simply resolves.
  *
@@ -39,7 +39,7 @@ function themeVars(): Record<string, string | boolean> {
     // `darkMode` is not cosmetic. Every colour mermaid does *not* receive here
     // is derived from one that it does, and the direction of that derivation is
     // chosen by this flag alone. Leave it false on a dark page and `rowOdd`
-    // becomes `lighten(mainBkg, 75)` — near-white — under near-white label text,
+    // becomes `lighten(mainBkg, 75)`, near-white, under near-white label text,
     // which is why the ER diagram's odd rows used to render blank.
     darkMode: dark,
     background: css("--surface"),
@@ -64,7 +64,7 @@ function themeVars(): Record<string, string | boolean> {
     rowEven: css("--panel"),
     attributeBackgroundColorOdd: css("--raised-2"),
     attributeBackgroundColorEven: css("--panel"),
-    // Sequence-diagram notes default to `#fff5ad` with near-black text — the one
+    // Sequence-diagram notes default to `#fff5ad` with near-black text, the one
     // hard-coded pair in the base theme that ignores every variable above.
     noteBkgColor: css("--panel"),
     noteTextColor: css("--text"),
@@ -174,7 +174,7 @@ interface Viewport {
  * Zoom by re-laying-out the SVG, never by transforming it.
  *
  * `transform: scale()` promotes the element to a composited layer, and the
- * browser rasterises that layer once at its pre-transform size — so scaling up
+ * browser rasterises that layer once at its pre-transform size - so scaling up
  * magnifies a bitmap of a ~690 px-wide render of a 2,020 px-wide diagram. It is
  * blurry by construction, and no amount of `will-change` fixes it.
  *
@@ -374,7 +374,7 @@ function toolbar(
 function toggleFull(fig: HTMLElement, view: Viewport): void {
   fig.classList.toggle("full");
   // `fit` means something different inside the overlay, and the mount has not
-  // been re-measured yet — wait for the layout the class change just scheduled.
+  // been re-measured yet - wait for the layout the class change just scheduled.
   requestAnimationFrame(() => view.reset());
 }
 

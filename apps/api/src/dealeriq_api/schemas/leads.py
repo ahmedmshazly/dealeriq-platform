@@ -33,7 +33,7 @@ class LeadResponse(BaseModel):
     status: LeadStatus
     owner_id: uuid.UUID
     last_activity_at: datetime
-    # Analytics outputs (DS-CUST, Phase 7) — null until the lead-scoring job has run for this lead.
+    # Analytics outputs (DS-CUST, Phase 7) - null until the lead-scoring job has run for this lead.
     conversion_probability: float | None = None
     rfm_segment: str | None = None
     top_features: list[FeatureContributionResponse] = []

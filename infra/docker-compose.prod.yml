@@ -30,7 +30,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
-    # Not published to the host — only reachable on the compose network.
+    # Not published to the host - only reachable on the compose network.
 
   api:
     build:

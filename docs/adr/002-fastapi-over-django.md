@@ -20,7 +20,7 @@ or without Django REST Framework).
 - OpenAPI 3.1 schema generation is native and drives the TypeScript client build (ADR-012),
   satisfying C-05 without a separate schema-authoring step.
 - Pydantic-typed request/response contracts catch shape mismatches at development time.
-- This deliberately complements rather than repeats the 2022 Django project — the two systems
+- This deliberately complements rather than repeats the 2022 Django project - the two systems
   demonstrate different, appropriate tool choices for different problem shapes.
 - Django's batteries (admin site, ORM migrations baked in) are not available for free; SQLAlchemy
   + Alembic (ADR-011) and a hand-built admin console (FR-082) substitute for them.

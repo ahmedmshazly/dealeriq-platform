@@ -36,6 +36,6 @@
 - Deliberately avoided naming specific method names, statistical test names, file formats, or
   tools in the Functional Requirements/Success Criteria sections themselves (kept to
   "scale-free error," "a real paired statistical comparison," "a renderable final document")
-  even though the Assumptions section and the originating context are more concrete — those
+  even though the Assumptions section and the originating context are more concrete - those
   concrete choices belong in plan.md.
-- All items pass on first draft — no revision iterations were needed.
+- All items pass on first draft - no revision iterations were needed.

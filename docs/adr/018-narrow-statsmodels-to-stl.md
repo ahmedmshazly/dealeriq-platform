@@ -22,7 +22,7 @@ STL decomposition (DS-ANO-001), which `statsforecast` does not provide.
 - Reduces integration risk: one library owns the forecasting method pool and its CV harness,
   rather than mixing two libraries' APIs for one evaluation loop.
 - This is a genuine capability finding (statsmodels turned out to be unnecessary for the
-  forecasting pool as specified), not a fabricated gap or a silent scope cut — flagged
+  forecasting pool as specified), not a fabricated gap or a silent scope cut - flagged
   transparently here and in the Phase 4 report, per the project's "never fabricate" rule.
 - If a future requirement needs a statsmodels-only method (e.g., a specific ARIMA variant not in
   statsforecast), that's a new ADR reopening this decision, not a silent reversion.

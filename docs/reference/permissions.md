@@ -38,7 +38,7 @@ Legend: **Y** = granted by seed migrations; blank = not granted.
 | `dashboard:view_sales` | Y | Y | Y | |
 
 Sales **write** paths additionally use ownership helpers (`assert_owner_or_permission`). List/read
-endpoints that only check `*:view` may return peer rows — see
+endpoints that only check `*:view` may return peer rows - see
 the CHANGELOG for audit notes vs product intent.
 
 ## How to inspect live

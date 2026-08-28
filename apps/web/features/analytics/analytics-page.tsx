@@ -176,7 +176,7 @@ export function AnalyticsPage() {
         </table>
         {leaderboardQuery.data?.entries.length === 0 && (
           <p className="p-6 text-center text-sm text-text-muted">
-            No successful forecast run yet — trigger one above.
+            No successful forecast run yet - trigger one above.
           </p>
         )}
       </Card>

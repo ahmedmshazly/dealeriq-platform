@@ -9,7 +9,7 @@ type Child = Node | string | number | null | undefined | false;
  *
  * The corpus is 62k words across 29 documents. Reconciling a virtual DOM buys
  * nothing at that scale, and hand-built nodes keep every interaction inside a
- * single frame — which is the difference between an application and a web page.
+ * single frame - which is the difference between an application and a web page.
  */
 export function h<K extends keyof HTMLElementTagNameMap>(
   tag: K,

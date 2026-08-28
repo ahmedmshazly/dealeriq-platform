@@ -1,7 +1,7 @@
 """NFR-003 latency benchmark: real p50/p95/mean latency for a representative set of CRUD
 endpoints plus the two Phase 8 dashboard endpoints, against a real running API and the real
 seeded database. Sequential requests, matching NFR-003's own framing ("p95 API latency... on a
-laptop") -- this is a measurement tool, not a concurrent-load generator.
+laptop"). This is a measurement tool, not a concurrent-load generator.
 
 Usage (against an already-running `make dev` stack, or `make benchmark`):
     uv run python scripts/ci/benchmark_api.py [--base-url http://localhost:8000] [--n 100]

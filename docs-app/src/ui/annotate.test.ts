@@ -8,7 +8,7 @@ const build = (html: string): HTMLElement => {
   return document.querySelector<HTMLElement>(".prose")!;
 };
 
-/** Select `text` inside `prose` using an *element* boundary — the hard case. */
+/** Select `text` inside `prose` using an *element* boundary - the hard case. */
 function selectContents(el: Element): void {
   const range = document.createRange();
   range.selectNodeContents(el);
@@ -50,7 +50,7 @@ describe("captureSelection", () => {
   });
 
   /**
-   * A `TreeWalker` rooted at a text node returns null from `nextNode()` — it only
+   * A `TreeWalker` rooted at a text node returns null from `nextNode()` - it only
    * descends. Resolving an element boundary must handle the root before walking.
    */
   it("resolves an element boundary whose first child is a text node", () => {

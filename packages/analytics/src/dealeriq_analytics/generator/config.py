@@ -1,4 +1,4 @@
-"""Generator configuration (GEN-001, GEN-002) — every magic number here traces to the
+"""Generator configuration (GEN-001, GEN-002) - every magic number here traces to the
 per-segment parameter table in specs/004-synthetic-data/plan.md."""
 
 from dataclasses import dataclass, field
@@ -19,7 +19,7 @@ DEFAULT_SEGMENTS: tuple[SegmentSpec, ...] = (
     # Empirically calibrated (see docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md and
     # phase report 03-synthetic-data.md for the calibration trace): ADI/CV2 classification is far
     # more sensitive to mu0 than a priori expected, and SBC-class-reachable mu0 for smooth/erratic
-    # is materially more expensive (in order-volume terms) than for intermittent/lumpy — getting
+    # is materially more expensive (in order-volume terms) than for intermittent/lumpy - getting
     # >=10 series into both bands costs ~15k units total, well over GEN-001's ~4-8k estimate.
     # ADR-021 documents the deliberate choice to satisfy GEN-002's four-class coverage SHALL over
     # GEN-001's approximate volume figure. Model counts below are imbalanced (more economy/sedan

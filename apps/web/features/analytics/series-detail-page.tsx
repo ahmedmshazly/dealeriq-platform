@@ -113,7 +113,7 @@ export function SeriesDetailPage() {
             variant="secondary"
             onClick={() => {
               // Recharts also renders a 14x14 <svg> icon per legend item inside this container
-              // -- a plain `querySelector("svg")` grabs the first one of those instead of the
+              //, a plain `querySelector("svg")` grabs the first one of those instead of the
               // actual chart, exporting a near-blank thumbnail. The main chart's <svg> is
               // always the direct child of .recharts-wrapper, so scope to that.
               const svg = chartRef.current?.querySelector<SVGSVGElement>(".recharts-wrapper > svg");
@@ -193,12 +193,12 @@ export function SeriesDetailPage() {
           Achieved accuracy (last {accuracyQuery.data?.n_weeks_evaluated ?? 12} weeks)
         </h2>
         <p className="mb-3 text-xs text-text-muted">
-          Real out-of-sample accuracy — how far past forecasts were from what actually happened,
+          Real out-of-sample accuracy - how far past forecasts were from what actually happened,
           distinct from the training-time cross-validation metrics below (FR-073).
         </p>
         {accuracyQuery.data?.mase == null ? (
           <p className="text-sm text-text-muted">
-            Not enough history yet — no forecast for this series is old enough to have real
+            Not enough history yet - no forecast for this series is old enough to have real
             actuals to compare against.
           </p>
         ) : (

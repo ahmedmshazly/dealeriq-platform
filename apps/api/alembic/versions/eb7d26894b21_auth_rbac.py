@@ -7,7 +7,7 @@ Create Date: 2026-07-10 04:35:19.196068
 Reviewed and hand-edited after `alembic revision --autogenerate` per ADR-011's
 draft-then-review policy: added indices (DAT-004-style access patterns for audit-log filtering
 and refresh-token lookups by user) and seed data (4 roles, the Phase 1 permission set, role
-grants, and one bootstrap Admin account — self-registration is disabled per FR-004, so this is
+grants, and one bootstrap Admin account - self-registration is disabled per FR-004, so this is
 how the first-ever login exists on a fresh seed).
 """
 

@@ -1,4 +1,4 @@
-"""GET /audit-log — paginated, filterable (FR-081, API-001)."""
+"""GET /audit-log - paginated, filterable (FR-081, API-001)."""
 
 import uuid
 from datetime import datetime

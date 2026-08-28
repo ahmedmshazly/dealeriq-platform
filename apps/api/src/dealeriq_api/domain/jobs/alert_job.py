@@ -2,12 +2,12 @@
 succeeded forecast/inventory runs, tracked via its own `AnalyticsRun` row (`job_name="alerts"`),
 mirroring `forecast_job.py`/`inventory_job.py`'s exact running->succeeded/failed lifecycle.
 
-Rule (e) is NOT run here — it fires inline from `order_service.submit_order` (FR-060's
+Rule (e) is NOT run here - it fires inline from `order_service.submit_order` (FR-060's
 transactional trigger case), never from this scheduled/on-demand job.
 
 DS-OPS-002: if the latest forecast or inventory run itself failed (or doesn't exist yet), the
 rules that depend on it are simply skipped for this cycle, not evaluated against stale or
-absent data — this is recorded in the run's own metrics, not treated as this job's failure.
+absent data - this is recorded in the run's own metrics, not treated as this job's failure.
 """
 
 import importlib.metadata

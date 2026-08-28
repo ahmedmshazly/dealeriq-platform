@@ -3,7 +3,7 @@ trusting it on a real multi-dataset run (QA-002 discipline).
 
 The Wilcoxon statistic/p-value below are not reverse-engineered from the implementation: for 5
 paired, non-tied, same-signed differences, the exact two-sided p-value under the null hypothesis
-is derived from first principles -- of the 2**5=32 equally-likely sign assignments a rank-sum
+is derived from first principles, of the 2**5=32 equally-likely sign assignments a rank-sum
 permutation test considers, exactly 1 assigns every rank to the same side (all differences
 negative), giving a one-sided exact p of 1/32 and a two-sided p of 2/32 = 0.0625, with the
 positive-rank-sum statistic at its minimum, 0. Independently confirmed against scipy directly
@@ -45,7 +45,7 @@ def _row(
 
 def _smooth_class_rows() -> list[PerSeriesResult]:
     # 5 series; champion (a stand-in "AutoARIMA") strictly beats Seasonal Naive (fixed at 1.0)
-    # on every one, by increasing margins -- see the module docstring for the exact Wilcoxon
+    # on every one, by increasing margins; see the module docstring for the exact Wilcoxon
     # derivation this produces.
     champion_mase_values = [0.5, 0.6, 0.7, 0.8, 0.9]
     rows = []

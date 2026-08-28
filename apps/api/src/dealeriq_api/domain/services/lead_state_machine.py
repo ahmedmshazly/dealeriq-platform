@@ -1,4 +1,4 @@
-"""Lead status state machine (FR-031). A pure function, deliberately decoupled from the DB —
+"""Lead status state machine (FR-031). A pure function, deliberately decoupled from the DB -
 unit-tested against every legal and illegal transition pair before being wired into the route.
 
 `lost` is reachable from any non-terminal state (real sales funnels abandon at any stage); `won`

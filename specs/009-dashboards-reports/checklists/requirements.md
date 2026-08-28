@@ -33,7 +33,7 @@
 
 - All items pass. Judgment calls recorded in spec.md's Assumptions, each following direct
   precedent from earlier phases: FR-052 is scoped as "mostly already delivered" (Phase 4/5
-  built the leaderboard, fan chart, and anomaly explorer already — this phase adds FR-073's new
+  built the leaderboard, fan chart, and anomaly explorer already - this phase adds FR-073's new
   rolling-accuracy diagnostic and light cross-linking, not a rebuild); FR-051's "vs. target"
   introduces the simplest viable single-default-target concept rather than a full quota-
   management system (deferred to `docs/backlog.md` as P2, the same pattern as FR-034/FR-082);

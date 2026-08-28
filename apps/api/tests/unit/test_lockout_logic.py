@@ -1,5 +1,5 @@
 """_record_failed_login's window/threshold arithmetic, tested in isolation (no DB) against a
-plain User instance — FR-005: lock after 5 consecutive failures *within 15 minutes*; a failure
+plain User instance - FR-005: lock after 5 consecutive failures *within 15 minutes*; a failure
 outside the window restarts the count rather than accumulating forever.
 """
 

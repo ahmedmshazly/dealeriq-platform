@@ -1,4 +1,4 @@
-"""NB-GLM weekly demand simulation (GEN-002). Pure numpy — no DB dependency, deterministic
+"""NB-GLM weekly demand simulation (GEN-002). Pure numpy - no DB dependency, deterministic
 given a seed, drawn in a fixed order so the same seed always produces the same output (GEN-001,
 SC-005).
 
@@ -7,7 +7,7 @@ log mu(t) = beta0 + beta_trend*(t/T) + sum_k[gamma_k*cos(2*pi*k*t/52) + delta_k*
 Y(t) ~ NegativeBinomial(mean=mu(t), dispersion=alpha)
 
 branch_effect is specified on the linear scale (e.g. 0.8 = 80% of the flagship branch's volume),
-so it enters the log-mean sum as log(branch_effect) — the only way "linear scale" and "additive
+so it enters the log-mean sum as log(branch_effect) - the only way "linear scale" and "additive
 in log-space" are both true at once.
 """
 
@@ -128,7 +128,7 @@ def _negative_binomial(rng: np.random.Generator, mean: float, dispersion: float)
 
 
 def compute_mu(params: SeriesParams, n_weeks: int) -> NDArray[np.float64]:
-    """The NB-GLM's weekly mean mu(t) — the deterministic, noise-free trajectory a given
+    """The NB-GLM's weekly mean mu(t) - the deterministic, noise-free trajectory a given
     (model, branch) series is drawn around. Shared by simulate_series and by anomaly injection,
     which needs mu(t) as the "expected value" a shock is sized relative to."""
     weeks = np.arange(n_weeks)

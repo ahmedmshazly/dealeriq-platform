@@ -1,5 +1,5 @@
 """Argon2id password hashing (ADR-009, FR-002). Parameters meet the SRS minimums
-(memory>=64MiB, iterations>=3) exactly. Passwords are never logged or returned — callers must
+(memory>=64MiB, iterations>=3) exactly. Passwords are never logged or returned - callers must
 not put a plaintext password into a log line or response model."""
 
 from argon2 import PasswordHasher

@@ -7,7 +7,41 @@ NFR-009).
 
 ## [Unreleased]
 
+### Added
+
+- **Identity gate (`scripts/ci/check_identity_strings.py`):** blocks local home paths,
+  personal email addresses, LAN hostnames and private IPs from reaching git, and confines
+  the maintainer name to designated attribution files. Rules in
+  `security/identity-policy.json` match by shape, not by value, so the policy never contains
+  the strings it rejects. Runs in pre-commit, CI, and `make audit`.
+- **`CITATION.cff`** and author metadata on every `package.json` / `pyproject.toml`
+  (name only; `SECURITY.md` routes reports through the GitHub profile rather than an inbox).
+- **Writing style and attribution sections in `CONTRIBUTING.md`**, which previously
+  documented no prose conventions at all.
+
+### Fixed
+
+- **Handbook 404 in production:** `apps/web/public/handbook/` is gitignored, so the reader
+  published by `make docs-site` never reached Vercel. `apps/web/vercel.json` now builds it
+  via a new `build:vercel` script.
+- **`make lint` failing on generated output:** ESLint 9 flat config does not inherit
+  `.gitignore`, so the minified handbook bundle was linted (240 errors, 7161 warnings).
+  Added `public/handbook/**` to the ESLint ignores.
+- **Dependency audit:** `npm audit fix` resolved 7 advisories in range (`next` 15.5.20 ->
+  15.5.24, `postcss` -> 8.5.26). Removed 5 waivers the fix made obsolete; added 3 for
+  `postcss` vendored inside Next, which only a Next 16 major would change.
+- **Stale `packages/api-client/src/schema.d.ts`** regenerated; it had drifted from the API.
+- **Stale production deploy runbook:** canonical web URL and the Vercel build command.
+
 ### Changed
+
+- **Typography normalized in documentation and comments:** em dashes, en dashes,
+  curly quotes, ellipsis characters and `--` dashes across `docs/`, `specs/`, `apps/`,
+  `packages/`, `infra/`, `docs-app/` and `scripts/`. Source edits are confined
+  to comments and docstrings, verified by token-stream comparison: no expression, control
+  flow or import changed. Generated files (
+  `packages/api-client/src/schema.d.ts`, `apps/web/public/handbook/`) and version-scoped
+  files (`CHANGELOG.md`, `LICENSE`, `SECURITY.md`) were excluded.
 
 - **ADR-027 internal layout + Diataxis docs portal:** API
   `domain/` split into `services/`, `alerts/`, `reports/`, `jobs/`; web screens extracted to

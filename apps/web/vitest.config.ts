@@ -8,7 +8,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./tests/setup.ts"],
     globals: true,
-    // e2e/ holds Playwright specs (QA-004) -- vitest's default include pattern would otherwise
+    // e2e/ holds Playwright specs (QA-004), vitest's default include pattern would otherwise
     // also pick up e2e/*.spec.ts and fail to collect them (they use @playwright/test's `test`,
     // not vitest's global). Otherwise the same defaults vitest itself ships.
     exclude: [

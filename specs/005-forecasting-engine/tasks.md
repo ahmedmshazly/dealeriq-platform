@@ -29,12 +29,12 @@
 - [x] T012 Alembic migration: `analytics_runs`, `series_profiles`, `forecasts`,
       `forecast_metrics` tables + indices (DAT-004: `forecasts(run_id, series_key)`); new
       permission keys (`jobs:trigger`, `forecasts:view`) granted per SRS role table
-- [x] T013 `apps/api/src/dealeriq_api/domain/forecast_job.py`: orchestration — reads
+- [x] T013 `apps/api/src/dealeriq_api/domain/forecast_job.py`: orchestration - reads
       orders/vehicle_units, calls `packages/analytics.forecasting`, writes
       run/series_profiles/forecasts/forecast_metrics inside the run's transaction
       (running→succeeded/failed lifecycle, never left dangling)
 - [x] T014 `apps/api/src/dealeriq_api/jobs/forecast.py`: register the job with APScheduler
-      (ADR-004) so it's addressable by `job_name="forecast"` — no cron trigger yet, just the
+      (ADR-004) so it's addressable by `job_name="forecast"` - no cron trigger yet, just the
       registry entry the HTTP trigger needs
 - [x] T015 `apps/api/src/dealeriq_api/routes/jobs.py`: `POST /jobs/{job_name}/run` (admin-only,
       C-03, FR-072 concurrency guard via conditional insert), `GET /jobs/{job_name}/runs`
@@ -47,7 +47,7 @@
       `succeeded` run + forecasts/metrics for every series; a second trigger while one is
       `running` is rejected (409); a run that raises mid-job ends `failed`, not `running` forever
 - [x] T018 Regenerate `packages/api-client` against the new endpoints
-- [x] T019 `apps/web/app/(authenticated)/analytics/page.tsx`: leaderboard — champion win counts
+- [x] T019 `apps/web/app/(authenticated)/analytics/page.tsx`: leaderboard - champion win counts
       + mean MASE by SBC class, filterable, consuming only the generated client
 - [x] T020 `apps/web/app/(authenticated)/analytics/[seriesKey]/page.tsx`: fan chart (actuals +
       point forecast + 80% interval band) and that series' CV metrics table
@@ -58,7 +58,7 @@
       ≥60% of intermittent-class series; wire this check as a CI-blocking pytest from this point
       forward (constitution Principle VII)
 - [x] T024 Verify SC-004: triggering a second run while one is in progress is rejected, not run
-      concurrently — a real HTTP-level check, not just a unit test of the guard function
+      concurrently - a real HTTP-level check, not just a unit test of the guard function
 - [x] T025 Verify SC-005 in a real browser: trigger a run, watch the leaderboard and at least one
       fan chart render real data from it
 - [x] T026 Re-verify `make bootstrap && make seed && make dev` (NFR-007) and `make ci` (now

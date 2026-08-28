@@ -1,4 +1,4 @@
-"""GET /alert-rules, PATCH /alert-rules/{key} — FR-065: Managers/Admins configure rule
+"""GET /alert-rules, PATCH /alert-rules/{key} - FR-065: Managers/Admins configure rule
 thresholds, schedules, and subscriptions; every change is versioned and audit-logged.
 """
 

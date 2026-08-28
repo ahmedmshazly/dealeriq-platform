@@ -1,10 +1,10 @@
-"""QA-003(a) — CI-blocking scientific validation, per the constitution's Phase 4+ mandate:
+"""QA-003(a) - CI-blocking scientific validation, per the constitution's Phase 4+ mandate:
 champion methods must beat Seasonal Naive on >=60% of intermittent-class series.
 
 Runs the full DS-FC-003..007 pipeline (all 8 methods x rolling-origin CV) against Phase 3's real
-generator output (in-memory, seed=42 — the same 66 series the actual seeded database gets,
+generator output (in-memory, seed=42 - the same 66 series the actual seeded database gets,
 without the DB/HTTP round-trip). This is a genuinely slow test (~10-15 minutes: the CV harness's
-own compute cost dominates, not I/O) — deliberately kept in the default suite rather than a
+own compute cost dominates, not I/O) - deliberately kept in the default suite rather than a
 separate "nightly" tier, since the constitution's own language ("CI fails if these regress") is
 specific about QA-003 being a blocking gate from this phase forward, not an optional extra.
 """

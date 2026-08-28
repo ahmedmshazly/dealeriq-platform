@@ -5,11 +5,11 @@ import { state, save, type Highlight } from "../lib/store.js";
  * Highlights and margin notes, anchored by text quote.
  *
  * A character offset is the obvious way to remember "the reader highlighted
- * characters 4,120–4,180 of document 06". It is also wrong the moment anyone
+ * characters 4,120-4,180 of document 06". It is also wrong the moment anyone
  * edits a paragraph above, because every offset below silently shifts and the
  * highlight reappears in the middle of an unrelated sentence.
  *
- * So we store the quote itself plus ~32 characters of context on each side — the
+ * So we store the quote itself plus ~32 characters of context on each side - the
  * W3C annotation model's `TextQuoteSelector`. Re-anchoring searches for the
  * quote, disambiguating by context. If the sentence is gone, the highlight is
  * reported as orphaned rather than reattached to the wrong place. Being honest
@@ -22,7 +22,7 @@ const uid = (): string => Math.random().toString(36).slice(2, 10);
 /**
  * Prose text nodes only.
  *
- * `element.textContent` is not the text of a document — it is the text of every
+ * `element.textContent` is not the text of a document - it is the text of every
  * node inside it, and Mermaid injects a `<style>` block into each rendered
  * figure. Left unfiltered, an anchor's prefix comes back as
  * `(16, 40, 26)!important;}`. Every function that indexes characters must walk
@@ -53,7 +53,7 @@ export function proseText(root: HTMLElement): string {
 /**
  * The first / last text node at or within `node`.
  *
- * A `TreeWalker` rooted at a text node returns `null` from `nextNode()` — it
+ * A `TreeWalker` rooted at a text node returns `null` from `nextNode()` - it
  * only ever descends, and a text node has no children. So the root must be
  * handled before the walk, not by it.
  */
@@ -107,7 +107,7 @@ export function captureSelection(
   const start = offsetOf(prose, range.startContainer, range.startOffset);
 
   // A selection inside a Mermaid label lives in a `foreignObject`, which the
-  // prose walker rejects — so it has no offset in prose space. Refusing is the
+  // prose walker rejects - so it has no offset in prose space. Refusing is the
   // only honest answer: offset 0 would anchor the note to the document's title.
   if (start < 0 || full.slice(start, start + quote.length) !== quote)
     return null;
@@ -128,7 +128,7 @@ export function captureSelection(
  *
  * Matching text nodes on identity looks sufficient and is not: a Range's
  * `startContainer` is an *element* whenever the selection begins at an element
- * boundary — which is exactly what a double-click, a triple-click or
+ * boundary - which is exactly what a double-click, a triple-click or
  * `selectNodeContents` produces. The walker then never matches, the function
  * falls through to the total length, and the annotation records the tail of the
  * document as its prefix. So resolve the boundary onto a text node first.
@@ -231,8 +231,8 @@ function rangeAt(
  * The text nodes a range covers, split so each one is entirely inside it.
  *
  * The offsets must be read *before* the first `splitText`. Splitting a text node
- * mutates any live Range that points into it — Chrome moves the boundaries onto
- * the new node, jsdom leaves them alone — so reading `range.endOffset` after the
+ * mutates any live Range that points into it - Chrome moves the boundaries onto
+ * the new node, jsdom leaves them alone - so reading `range.endOffset` after the
  * split gives a different answer in each. That is how a highlight of `TARGET`
  * ends up painting `T`.
  */

@@ -1,12 +1,12 @@
-"""AnalyticsRun, SeriesProfile, Forecast, ForecastMetric — the run-tracking backbone every
+"""AnalyticsRun, SeriesProfile, Forecast, ForecastMetric - the run-tracking backbone every
 analytics job (Phase 4+) reuses (FR-070..072). Schema per SRS §7's representative-resources
 list. DAT-003: these are analytics tables, never touched by transactional code, and never
-mutated in place once a run completes — a re-run creates a new `run_id`, it never updates an old
+mutated in place once a run completes - a re-run creates a new `run_id`, it never updates an old
 run's rows.
 
 `mase` is a plain `Float` (double precision), not `Numeric`: a degenerate series (constant
 in-sample seasonal-naive error) makes MASE mathematically `inf` for an imperfect forecast
-(`forecasting/metrics.py`'s own documented behavior) — Postgres `NUMERIC` cannot store infinity,
+(`forecasting/metrics.py`'s own documented behavior) - Postgres `NUMERIC` cannot store infinity,
 `double precision` can.
 """
 

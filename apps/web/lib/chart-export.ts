@@ -1,4 +1,4 @@
-/** FR-053: export any on-screen chart as PNG, and its underlying data as CSV — both pure
+/** FR-053: export any on-screen chart as PNG, and its underlying data as CSV - both pure
  * client-side (`canvas.toBlob`, `Blob`/`URL.createObjectURL`), no new dependency. Reusable
  * across any Recharts SVG and any tabular data, not coupled to a specific chart. */
 
@@ -53,7 +53,7 @@ export async function exportChartAsPng(
   canvas.height = height;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas 2D context unavailable.");
-  // A white backing fill -- the source SVG has a transparent background, and a PNG dropped into
+  // A white backing fill, the source SVG has a transparent background, and a PNG dropped into
   // a slide deck or document should never assume a transparent/dark viewer background.
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, width, height);

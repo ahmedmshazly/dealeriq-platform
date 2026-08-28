@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 0 — "§3 layout, C-01..05, NFR-006/007/009, CI shell,
+**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 0 - "§3 layout, C-01..05, NFR-006/007/009, CI shell,
 docker-compose, Makefile, ADR-001..020"
 
 ## User Scenarios & Testing *(mandatory)*
@@ -108,7 +108,7 @@ deliberately-inserted fake secret in a scratch file is caught before commit.
 
 ### Key Entities
 
-None — this phase introduces no domain data model (that begins in Phase 1/2).
+None - this phase introduces no domain data model (that begins in Phase 1/2).
 
 ## Success Criteria *(mandatory)*
 
@@ -126,7 +126,7 @@ None — this phase introduces no domain data model (that begins in Phase 1/2).
 
 - Docker Desktop/Engine + Compose v2, Python 3.12, Node 20+, uv are present (verified already in
   this environment).
-- No real domain logic, auth, or database tables are expected at this phase — this is
+- No real domain logic, auth, or database tables are expected at this phase - this is
   infrastructure only.
 - "CI green" for this phase means `make ci` passes locally; there was no git remote yet,
   so the GitHub Actions workflow is authored but not remotely executed (documented explicitly in

@@ -116,7 +116,7 @@ export function OrdersPage() {
             onChange={(e) => setForm({ ...form, customer_id: e.target.value })}
             required
           >
-            <option value="">Customer…</option>
+            <option value="">Customer...</option>
             {(customersQuery.data?.items ?? []).map((c: Customer) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -129,10 +129,10 @@ export function OrdersPage() {
             onChange={(e) => setForm({ ...form, unit_id: e.target.value })}
             required
           >
-            <option value="">In-stock unit…</option>
+            <option value="">In-stock unit...</option>
             {(unitsQuery.data?.items ?? []).map((u: VehicleUnit) => (
               <option key={u.id} value={u.id}>
-                …{u.vin.slice(-8)}
+                ...{u.vin.slice(-8)}
               </option>
             ))}
           </select>

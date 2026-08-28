@@ -23,7 +23,7 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-surface-canvas text-text-muted">
-        Loading…
+        Loading...
       </div>
     );
   }

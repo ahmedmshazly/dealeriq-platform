@@ -4,7 +4,7 @@
 # Required env:
 #   BACKUP_S3_URI   e.g. s3://dealeriq-prod-backups/prod
 # Optional env:
-#   BACKUP_DAY            YYYY-MM-DD (default: contents of …/postgres/LATEST)
+#   BACKUP_DAY            YYYY-MM-DD (default: contents of .../postgres/LATEST)
 #   DEALERIQ_DATA_ROOT    default /var/lib/dealeriq
 #   COMPOSE_FILE          default infra/docker-compose.prod.yml
 #   COMPOSE_ENV_FILE      default /etc/dealeriq/prod.env
@@ -100,7 +100,7 @@ CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};
 SQL
 
 echo "restore: pg_restore"
-# Copy into the container — pg_restore needs a seekable file path, not only stdin.
+# Copy into the container - pg_restore needs a seekable file path, not only stdin.
 compose cp "${DUMP_PATH}" "postgres:/tmp/dealeriq.dump"
 compose exec -T postgres \
   pg_restore -U "${POSTGRES_USER}" -d "${POSTGRES_DB}" --no-owner --no-acl \

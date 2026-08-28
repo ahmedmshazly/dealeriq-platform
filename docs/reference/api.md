@@ -10,8 +10,8 @@
 |----------|------|
 | Live OpenAPI | `GET /api/v1/openapi.json` (development only) |
 | Swagger UI | `http://localhost:8000/api/v1/docs` (development only) |
-| Committed snapshot | [`openapi.json`](openapi.json) — `make docs-openapi` |
-| TypeScript client | `packages/api-client` — only sanctioned web→API path |
+| Committed snapshot | [`openapi.json`](openapi.json) - `make docs-openapi` |
+| TypeScript client | `packages/api-client` - only sanctioned web→API path |
 
 Production disables OpenAPI/docs URLs when `APP_ENV` ≠ `development`.
 
@@ -20,8 +20,8 @@ Production disables OpenAPI/docs URLs when `APP_ENV` ≠ `development`.
 All business routes are under **`/api/v1`**. Breaking contract changes require a deliberate
 version bump and regenerated client (QA-005). Health probes:
 
-- `GET /api/v1/health` — liveness
-- `GET /api/v1/ready` — readiness (DB)
+- `GET /api/v1/health` - liveness
+- `GET /api/v1/ready` - readiness (DB)
 
 ## Authentication
 

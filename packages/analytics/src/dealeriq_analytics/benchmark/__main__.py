@@ -1,5 +1,5 @@
 """DS-OPS-004: `python -m dealeriq_analytics.benchmark [--n-datasets N] [--base-seed S]
-[--output-dir DIR]`. No database, no running service -- pure composition of the already-tested
+[--output-dir DIR]`. No database, no running service, pure composition of the already-tested
 generator/forecasting/SBC pipeline."""
 
 import argparse

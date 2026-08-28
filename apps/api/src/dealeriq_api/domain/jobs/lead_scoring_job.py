@@ -1,9 +1,9 @@
 """Customer analytics job orchestration (DS-CUST-001..005, FR-074): RFM segmentation, then a
 calibrated lead-conversion model trained fresh on this run's own resolved leads, then a PSI
 drift check comparing this run's own training population against its own scoring population
-(ADR-023 — no cross-run persisted baseline). Reads customers/orders/leads/lead_events, calls
+(ADR-023 - no cross-run persisted baseline). Reads customers/orders/leads/lead_events, calls
 `dealeriq_analytics.customer` (pure, DB-free computation), and writes run/customer_rfm_profiles/
-lead_scores — reusing the shared `AnalyticsRun` run-tracking table (FR-070), mirroring
+lead_scores - reusing the shared `AnalyticsRun` run-tracking table (FR-070), mirroring
 `inventory_job.py`'s exact `running -> succeeded/failed` lifecycle.
 
 RFM must compute before lead scoring within the same run: a lead's `customer_rfm_score` feature
@@ -89,7 +89,7 @@ INTERACTION_COUNT_WINDOW_DAYS = 21
 """`LeadEvent` only records status-transition events (Phase 2), and Phase 3's seed generator
 walks each lead's funnel with a path *length* that already depends on the ground-truth won/lost
 outcome (a won lead always completes the full new -> ... -> won path; a lost lead has a 40%
-chance of an early exit at every step) -- so counting a resolved lead's *entire* event history
+chance of an early exit at every step), so counting a resolved lead's *entire* event history
 would leak the outcome back in as a feature (more events almost always means "won", not because
 more engagement caused the win, but because the generator's own branching already knew the
 answer). Bounding the count to events within this many days of creation keeps the feature to

@@ -23,5 +23,5 @@ Use `lifelines` for Kaplan-Meier estimation. Hand-implement the generalized ESD 
   hand-roll Kaplan-Meier.
 - GESD is small enough (a repeated max-deviation test with a decreasing critical-value table) to
   implement and test like any other metric under QA-002's "validate against hand-computed/
-  published fixtures before wiring into a pipeline" discipline — this is a deliberate,
+  published fixtures before wiring into a pipeline" discipline - this is a deliberate,
   documented implementation, not a fabricated shortcut.

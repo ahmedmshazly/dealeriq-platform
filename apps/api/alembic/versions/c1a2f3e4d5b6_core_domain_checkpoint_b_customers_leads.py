@@ -5,7 +5,7 @@ Revises: 4b56a387ffd2
 Create Date: 2026-07-10 06:10:00.000000
 
 Hand-authored to mirror `alembic revision --autogenerate`'s output for the Customer/Lead/
-LeadEvent models (reviewed the same way per ADR-011 — this is not a shortcut, the DDL was
+LeadEvent models (reviewed the same way per ADR-011 - this is not a shortcut, the DDL was
 derived directly from the SQLAlchemy model definitions and will be verified by actually running
 `alembic upgrade head` against a real Postgres instance before this phase is considered done).
 Adds customers:view/manage and leads:view/manage_own/manage_any permission grants.

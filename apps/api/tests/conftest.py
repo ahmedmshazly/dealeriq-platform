@@ -1,8 +1,8 @@
 """Integration test infrastructure (ADR-013): a real, ephemeral Postgres via
 testcontainers-python, migrated once per test session with Alembic, then a fresh SQLAlchemy
 session per test. Tests use randomized/unique test data (emails, etc.) rather than relying on
-an empty table per test, since the container — and its seed data (roles/permissions/bootstrap
-admin) — is shared across the whole test session for speed.
+an empty table per test, since the container - and its seed data (roles/permissions/bootstrap
+admin) - is shared across the whole test session for speed.
 """
 
 import os

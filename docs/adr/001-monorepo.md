@@ -20,7 +20,7 @@ Use one GitHub repository (`dealeriq/`) containing `apps/api`, `apps/web`, `pack
 - Atomic commits across the API contract, generated client, and frontend consumer are possible
   and expected (supports C-05: the frontend must consume the generated client, never drift from
   it silently).
-- One CI pipeline, one review surface — appropriate for a single-team, single-cadence project.
+- One CI pipeline, one review surface - appropriate for a single-team, single-cadence project.
 - Vercel's native monorepo support (Root Directory = `apps/web`) keeps the Stage-2 deployment
   path (§12.4) simple later.
 - Two repos would only be justified by independent teams or release cadences, neither of which

@@ -17,7 +17,7 @@ from dealeriq_api.domain.models.rbac import User
 
 
 def require_any_permission(*permission_keys: str) -> Callable[..., User]:
-    """At least one of the given permissions must be granted — used for routes where the finer
+    """At least one of the given permissions must be granted - used for routes where the finer
     own-vs-any distinction is resolved later by `assert_owner_or_permission`."""
 
     def dependency(
@@ -37,7 +37,7 @@ def require_any_permission(*permission_keys: str) -> Callable[..., User]:
 def may_act_on(
     *, granted: set[str], any_permission_key: str, user_id: uuid.UUID, owner_id: uuid.UUID
 ) -> bool:
-    """Pure decision (no DB) — unit-tested directly against every combination of granted
+    """Pure decision (no DB) - unit-tested directly against every combination of granted
     permissions and owner/non-owner callers."""
     return any_permission_key in granted or user_id == owner_id
 

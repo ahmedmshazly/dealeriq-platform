@@ -19,34 +19,34 @@ new operational runbook (`docs/runbooks/jobs-and-alerts.md`) plus the one missin
 ## Technical Context
 
 **Language/Version**: Python 3.12 (`apps/api`, `packages/analytics`, benchmark script), TypeScript
-(`apps/web`, Playwright suite) — unchanged.
+(`apps/web`, Playwright suite) - unchanged.
 
-**Primary Dependencies**: `@playwright/test` (new devDependency, `apps/web`) — the standard,
+**Primary Dependencies**: `@playwright/test` (new devDependency, `apps/web`) - the standard,
 free, open-source E2E runner named directly by QA-004's own requirement text; `eslint-plugin-jsx-
-a11y` (new devDependency, `apps/web`) — the standard free ESLint accessibility plugin. No new
+a11y` (new devDependency, `apps/web`) - the standard free ESLint accessibility plugin. No new
 Python dependencies: the benchmark script uses `httpx` (already a dependency, already used by
 `TestClient`); the dependency-audit waiver check is a small stdlib-only script (`json` + the
 already-CI-invoked `pip-audit --format json` / `npm audit --json`), not a new scanning tool.
 
-**Storage**: PostgreSQL 16, unchanged. No new tables — the vulnerability waiver list is a
+**Storage**: PostgreSQL 16, unchanged. No new tables - the vulnerability waiver list is a
 committed file (`security/dependency-waivers.json`), not a database table, since it's reviewed
 via PR like code, not managed at runtime.
 
 **Testing**: Playwright (new) for the golden-path E2E suite, run against a real dev-stack
-instance (real Postgres, real API, real Next.js — no mocks, per QA-004's own text). Existing
+instance (real Postgres, real API, real Next.js - no mocks, per QA-004's own text). Existing
 pytest/vitest suites are re-verified, not extended, except where the a11y lint fix requires a
 component change that an existing test already covers.
 
-**Target Platform**: unchanged — Docker Compose local dev, single-instance. The benchmark script
+**Target Platform**: unchanged - Docker Compose local dev, single-instance. The benchmark script
 and Playwright suite both run against `make dev`'s standard local stack.
 
 **Project Type**: Web application (existing `apps/api` + `apps/web` + `packages/analytics`
-monorepo) — no new top-level project; one new top-level `scripts/` directory (the repo has none
+monorepo) - no new top-level project; one new top-level `scripts/` directory (the repo has none
 today) for the benchmark tool and the dependency-waiver checker, matching where such
 cross-cutting tooling conventionally lives.
 
 **Performance Goals**: NFR-003's own targets are what's being measured, not a design goal for
-this phase's own new tooling — the benchmark script itself just needs to run a few hundred
+this phase's own new tooling - the benchmark script itself just needs to run a few hundred
 requests in well under a minute, which is not performance-sensitive.
 
 **Constraints**: NFR-007's 15-minute `make bootstrap && make seed && make dev` budget is
@@ -67,31 +67,31 @@ one new README. No new API routes, no new database tables, no new business featu
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
 - **Principle I (Monorepo & Stack Discipline)**: `@playwright/test` and `eslint-plugin-jsx-a11y`
-  are additive devDependencies within the existing `apps/web` package — no new top-level package,
+  are additive devDependencies within the existing `apps/web` package - no new top-level package,
   no change to the mandated stack (FastAPI/Next.js/Postgres/APScheduler/statsforecast/
   scikit-learn/Recharts remain exactly as-is). New `scripts/` top-level directory is tooling, not
   a stack change.
 - **Principle II (Free, Local-First, Zero Paid Services)**: both new devDependencies are free,
   open-source, and run entirely locally (Playwright drives a local Chromium install; the a11y
-  linter is static analysis) — no paid service, no network call to a third party at test/lint
+  linter is static analysis) - no paid service, no network call to a third party at test/lint
   time. The benchmark script hits only the local dev stack.
 - **Principle III (Security & RBAC by Default)**: the E2E test itself is a direct exercise of
-  this principle — it proves, end-to-end, that a discount above `order_approval_discount_
+  this principle - it proves, end-to-end, that a discount above `order_approval_discount_
   threshold` really does require `orders:approve` (not just `orders:manage_own`) before an order
   can proceed, using real seeded Sales and Manager accounts, not a stubbed permission check.
 - **Principle IV (Migrations & Append-Only Data Integrity)**: no schema changes this phase.
-- **Principle V (Analytics Reproducibility & Scientific Integrity)**: not applicable — no
+- **Principle V (Analytics Reproducibility & Scientific Integrity)**: not applicable - no
   analytics computation is added or changed this phase.
 - **Principle VI (API Contract Discipline)**: User Story 4 re-verifies (via a deliberate,
   discarded throwaway change) that the existing contract-diff CI step still fails closed as
-  QA-005 requires — no change to the mechanism itself.
+  QA-005 requires - no change to the mechanism itself.
 - **Principle VII (Testing & Quality Bar, NON-NEGOTIABLE)**: this phase directly implements the
   constitution's own QA-004 clause ("the golden path... is covered by Playwright E2E") and
   extends the "must be green" quality bar to two previously-non-blocking checks (QA-007).
 - **Principle VIII (Documentation & Traceability)**: the new runbook and `infra/README.md`
   directly satisfy this principle's own "job/alert runbooks... kept current" clause.
 - **Principle IX (Reproducible Onboarding)**: re-verified as part of this phase's own exit demo,
-  per every prior phase's precedent — no new bootstrap/seed step added.
+  per every prior phase's precedent - no new bootstrap/seed step added.
 - **Principle X (Observability & Reliability)**: not modified; the new runbook documents this
   principle's existing behavior (job retry-once-with-backoff, last-successful-run-stays-served)
   rather than changing it.
@@ -163,50 +163,50 @@ infra/
 **Structure Decision**: extends the existing monorepo with one new top-level `scripts/`
 directory (cross-cutting tooling that belongs to no single package) and one new top-level
 `security/` directory (the waiver file, reviewed like code but not part of any package's own
-source tree) — both additive, no existing directory reorganized.
+source tree) - both additive, no existing directory reorganized.
 
 ## Golden-path E2E suite (QA-004)
 
 Single spec file, one full run through the named path, driven through the real UI (form fills,
-real clicks) against a real running dev stack — no API shortcuts, no mocked responses:
+real clicks) against a real running dev stack - no API shortcuts, no mocked responses:
 
 1. Log in as `sales1@dealeriq.dev` via the real login form.
 2. On `/orders`, create a draft order against a real in-stock unit with a discount fraction
-   deliberately above `order_approval_discount_threshold` (0.05) — the exact condition that
+   deliberately above `order_approval_discount_threshold` (0.05) - the exact condition that
    routes the order to `pending_approval` and fires the transactional `discount_approval` alert
    (Phase 6, rule e) inside `submit_order`'s own transaction.
 3. Submit the order via the order detail page's Submit action; confirm its status becomes
    `pending_approval`.
 4. Log out; log in as `manager1@dealeriq.dev`.
-5. Approve the order via its detail page's Approve action (requires `orders:approve` — proves the
+5. Approve the order via its detail page's Approve action (requires `orders:approve` - proves the
    RBAC boundary is real, not just hidden).
 6. Open `/alerts`; confirm a `discount_approval`-rule alert referencing this specific order is
-   present (matched by the order id in the alert's payload, not just "an alert exists" — proving
+   present (matched by the order id in the alert's payload, not just "an alert exists" - proving
    it's *the* alert this test caused, not a stale one from other seeded data).
 7. Acknowledge it via the alerts page's own action; confirm its status updates.
 
 Runs against an already-running `make dev` stack (not a Playwright-managed ephemeral server),
-matching how every prior phase's own exit-demo verification has worked — `make e2e` documents
+matching how every prior phase's own exit-demo verification has worked - `make e2e` documents
 this prerequisite rather than trying to orchestrate it itself.
 
 ## Latency benchmark (NFR-003)
 
 `scripts/benchmark_api.py`: authenticates once (real login), then issues N requests (configurable,
-default enough for a stable p95 — e.g. 100) per endpoint to a small representative CRUD set
+default enough for a stable p95 - e.g. 100) per endpoint to a small representative CRUD set
 (`GET /orders`, `GET /customers`, `GET /leads`, `GET /vehicle-units`) plus
 `GET /dashboards/manager` and `GET /dashboards/sales`, against the real seeded dev database.
-Reports p95/p50/mean per endpoint. This is a measurement tool, not a load generator — sequential
+Reports p95/p50/mean per endpoint. This is a measurement tool, not a load generator - sequential
 requests are sufficient to characterize p95 latency at realistic single-user request rates,
 matching NFR-003's own framing ("p95 API latency... on a laptop"), not a concurrent-load test
 (which NFR-003 does not ask for).
 
 ## Dependency-audit gate (QA-007)
 
-`security/dependency-waivers.json` — a flat list of `{id, package, reason, reviewed_by,
+`security/dependency-waivers.json` - a flat list of `{id, package, reason, reviewed_by,
 review_date, re_review_by}` entries, one per accepted finding. `scripts/check_dependency_audit.py`
 runs `pip-audit --format json` and `npm audit --json`, cross-references each reported
 vulnerability id against the waiver file, and exits non-zero listing every unwaived finding by id
-and package — the CI step becomes `pip-audit ... ; npm audit ... ; python
+and package - the CI step becomes `pip-audit ... ; npm audit ... ; python
 scripts/check_dependency_audit.py` (real invocation order confirmed in tasks.md), replacing the
 current `|| true` no-op. gitleaks' existing block-on-detection behavior is unchanged (already
 correct per QA-007, re-verified not rebuilt).
@@ -215,11 +215,11 @@ correct per QA-007, re-verified not rebuilt).
 
 `eslint-plugin-jsx-a11y`'s `recommended` config added to `apps/web/eslint.config.mjs`, run against
 the full existing component tree. Every real finding is either fixed directly (the expected
-common case — missing `alt`, a click handler on a non-interactive element, a form control missing
+common case - missing `alt`, a click handler on a non-interactive element, a form control missing
 an accessible name) or, for a genuine false positive, suppressed with an inline
 `// eslint-disable-next-line jsx-a11y/<rule> -- <reason>` comment, never a rule-level or
 file-level blanket disable. Chart data-table fallback: satisfied by Phase 8's existing CSV export
-(already wired to every dashboard/analytics chart) per spec.md's Assumptions — documented as a
+(already wired to every dashboard/analytics chart) per spec.md's Assumptions - documented as a
 deliberate interpretation of the constitution's own phrasing ("every chart has a CSV data-table
 fallback," Additional Constraints), not re-litigated with new UI.
 
@@ -231,7 +231,7 @@ schedule, `ENABLE_SCHEDULER`, how to trigger any job on demand via
 NFR-005's retry-once-with-backoff and last-successful-run-stays-served guarantees); alert-engine
 section (the six built-in rules + the two customer-analytics rules, dedup-key semantics
 preventing duplicate open alerts, role-based notification fan-out, `/admin/alert-rules` config,
-verifying the daily digest via MailHog's own HTTP API — matching Phase 6's own exit-demo
+verifying the daily digest via MailHog's own HTTP API - matching Phase 6's own exit-demo
 verification method). `infra/README.md`: what's under `infra/` (docker-compose.yml's two
 services, `seed/generate.py` + `ground_truth/`, any `scripts/`), pointing to
 `docs/runbooks/local-dev.md` for the actual bootstrap/seed/dev walkthrough rather than

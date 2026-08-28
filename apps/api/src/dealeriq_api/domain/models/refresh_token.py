@@ -1,4 +1,4 @@
-"""RefreshToken — rotation-with-reuse-detection (ADR-019).
+"""RefreshToken - rotation-with-reuse-detection (ADR-019).
 
 Only a SHA-256 hash of the raw token is ever persisted. `replaced_by` chains a token to the one
 that replaced it on rotation; reuse of an already-`revoked_at`/replaced token indicates theft and

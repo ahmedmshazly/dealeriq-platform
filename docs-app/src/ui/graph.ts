@@ -4,7 +4,7 @@ import { clear, h, prefersReducedMotion } from "../lib/dom.js";
 /**
  * The link graph, as a force-directed map.
  *
- * 29 nodes and ~200 distinct edges. At that size a Barnes–Hut quadtree is
+ * 29 nodes and ~200 distinct edges. At that size a Barnes-Hut quadtree is
  * ceremony: an O(n²) repulsion pass is 841 comparisons per tick, which a canvas
  * absorbs without noticing. So the whole simulation is forty lines, and every
  * constant in it is legible.
@@ -128,7 +128,7 @@ export function renderGraph(deps: GraphDeps): void {
   /**
    * The camera. The simulation runs in a fixed "world" the size of the viewport
    * at 100%; this maps world → screen. Because every frame is redrawn through
-   * it rather than scaling a finished bitmap, the graph is sharp at any zoom —
+   * it rather than scaling a finished bitmap, the graph is sharp at any zoom -
    * the labels re-hint, the circles re-tessellate.
    */
   const view = { x: 0, y: 0, k: 1 };

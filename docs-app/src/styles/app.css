@@ -306,7 +306,7 @@ body::after {
 
 /* `min-width: 0` on every grid child.
    A grid item's default `min-width: auto` refuses to shrink below its content's
-   intrinsic width — so a 1,100-character table row silently widens the whole
+   intrinsic width - so a 1,100-character table row silently widens the whole
    column and gets clipped by the viewport instead of scrolling inside its own
    `overflow-x` container. This one declaration is what makes wide tables work. */
 .side,
@@ -682,7 +682,7 @@ body::after {
   background: rgba(var(--accent-rgb), 0.09);
 }
 
-/* A term the reader can explain. Dotted, never coloured — the prose must
+/* A term the reader can explain. Dotted, never coloured - the prose must
    still read as prose, or a dense page becomes a minefield. */
 .term {
   border-bottom: 1px dotted var(--faint);
@@ -888,7 +888,7 @@ body::after {
   cursor: grabbing;
 }
 /* The SVG is sized in JS. Zooming re-lays-it-out rather than transforming it,
-   so it stays vector-sharp — see `viewport()` in ui/mermaid.ts. */
+   so it stays vector-sharp - see `viewport()` in ui/mermaid.ts. */
 .mermaid-mount svg {
   max-width: none;
 }
@@ -1050,7 +1050,7 @@ body::after {
 /* A *path* truncates from the left, so `…/code/Constellation.tsx` keeps the part
    that identifies it. `direction: rtl` moves the ellipsis to the start;
    `unicode-bidi: plaintext` keeps the path itself reading left-to-right.
-   Titles must not get this treatment — they identify themselves at the front. */
+   Titles must not get this treatment - they identify themselves at the front. */
 .citelink.path span:first-child {
   direction: rtl;
   text-align: left;
@@ -1462,7 +1462,7 @@ body::after {
   overflow: hidden;
 }
 /* `display: block` is load-bearing. These are spans, and an inline box ignores
-   both `height` and a percentage `width` — the bars simply never drew. */
+   both `height` and a percentage `width` - the bars simply never drew. */
 .bar-fill {
   display: block;
   height: 100%;
@@ -1738,7 +1738,7 @@ mark.find-hit.on {
   }
 }
 
-/* View transitions on doc switch — a cross-fade plus a 6px rise, echoing
+/* View transitions on doc switch - a cross-fade plus a 6px rise, echoing
    the portfolio's theme-toggle transition. */
 @keyframes vt-in {
   from {

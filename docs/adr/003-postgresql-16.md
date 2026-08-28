@@ -21,4 +21,4 @@ Use PostgreSQL 16, run locally via Docker Compose, as the sole datastore.
   separate OLAP engine.
 - Free and open-source, satisfying C-01.
 - Stage-2 hosting (§12.4) swaps to a managed free-tier Postgres (Neon/Supabase) with unchanged
-  Alembic migrations — no code changes required.
+  Alembic migrations - no code changes required.

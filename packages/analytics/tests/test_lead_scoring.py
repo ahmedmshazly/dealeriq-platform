@@ -91,9 +91,9 @@ def test_train_and_score_raises_below_minimum_resolved_leads() -> None:
 
 def test_train_and_score_recovers_a_strong_known_signal() -> None:
     # A population where channel="referral" always wins and channel="social_ad" always loses,
-    # everything else held constant -- the fitted model should recover this near-deterministic
+    # everything else held constant, the fitted model should recover this near-deterministic
     # signal with high discrimination (this is a sign-recovery-style check against a known,
-    # hand-constructed ground truth, not real seeded data -- QA-003(b)'s real-data validation
+    # hand-constructed ground truth, not real seeded data, QA-003(b)'s real-data validation
     # equivalent lives in the integration test against the actual database).
     rng = np.random.default_rng(0)
     rows = []

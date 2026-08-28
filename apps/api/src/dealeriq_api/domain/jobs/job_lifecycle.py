@@ -1,7 +1,7 @@
 """Shared analytics-run lifecycle helpers (FR-070..072).
 
 `begin_run` inserts and *commits* the RUNNING row before any heavy work so the partial unique
-index on `(job_name) WHERE status = 'RUNNING'` is visible to other sessions — concurrent
+index on `(job_name) WHERE status = 'RUNNING'` is visible to other sessions - concurrent
 triggers get 409 instead of serializing then double-executing.
 """
 

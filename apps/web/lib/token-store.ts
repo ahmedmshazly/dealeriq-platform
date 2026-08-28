@@ -1,5 +1,5 @@
 /**
- * The access token lives in memory only — never localStorage/sessionStorage, to limit XSS
+ * The access token lives in memory only - never localStorage/sessionStorage, to limit XSS
  * exposure (ADR-014). This module is the single source of truth both the React auth context
  * and the non-React API-client middleware read/write, so the middleware can always attach the
  * latest token without needing to be a React component itself.

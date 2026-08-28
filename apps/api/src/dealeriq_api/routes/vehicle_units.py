@@ -25,7 +25,7 @@ router = APIRouter(prefix="/api/v1/vehicle-units", tags=["vehicle-units"])
 
 
 def _include_cost(db: Session, user: User) -> bool:
-    # FR-043: acquisition cost enables margin reconstruction — same gate as orders:view_margin.
+    # FR-043: acquisition cost enables margin reconstruction - same gate as orders:view_margin.
     return "orders:view_margin" in get_user_permissions(db, user.role_id)
 
 

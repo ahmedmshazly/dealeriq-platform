@@ -532,7 +532,7 @@ function keys(): void {
   });
 }
 
-/** `n` / `p` walk the sidebar order — which is also the handbook's own order. */
+/** `n` / `p` walk the sidebar order - which is also the handbook's own order. */
 function step(by: number): void {
   const r = current();
   const at = r.view === "doc" ? navOrder.indexOf(r.id) : -1;

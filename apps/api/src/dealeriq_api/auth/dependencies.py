@@ -1,6 +1,6 @@
 """Deny-by-default RBAC dependencies (FR-010, FR-011, constitution Principle III).
 
-`require_permission("x:y")` is the ONLY sanctioned way a route declares what it needs — there is
+`require_permission("x:y")` is the ONLY sanctioned way a route declares what it needs - there is
 no blanket "is Admin" bypass. A request without a valid access token gets 401; a request from an
 authenticated user whose role lacks the permission gets 403 with `error.code == "forbidden"`.
 """

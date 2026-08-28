@@ -8,8 +8,8 @@ last-verified: 2026-07-17
 
 **Audience:** engineers and reviewers.  
 **Last updated:** 2026-07-17  
-**Refs:** SRS §3, ADR-001..028, constitution Principles I–VI  
-**Diagrams:** [catalog D01–D04, D05 overview](../diagrams/README.md)
+**Refs:** SRS §3, ADR-001..028, constitution Principles I-VI  
+**Diagrams:** [catalog D01-D04, D05 overview](../diagrams/README.md)
 
 DealerIQ is a dealership intelligence platform: transactional sales/inventory operations plus
 scheduled analytics (forecasting, inventory intelligence, anomalies, lead scoring) and
@@ -80,14 +80,14 @@ flowchart TB
   models --> pg[(Postgres)]
 ```
 
-- **`auth/`** — JWT access tokens, rotating refresh cookies, `require_permission`, Argon2id
-- **`domain/models`** — SQLAlchemy ORM
-- **`domain/services`** — orders, leads, customers, inventory, dashboards, audit
-- **`domain/jobs`** — forecast, inventory intel, lead scoring, alerts, digest
-- **`domain/alerts`** — rule evaluation
-- **`domain/reports`** — monthly report / sales summary / achieved accuracy
-- **`routes` + `schemas`** — HTTP + Pydantic DTOs
-- **No repository layer** — Session used in services/jobs directly
+- `auth/` - JWT access tokens, rotating refresh cookies, `require_permission`, Argon2id
+- `domain/models` - SQLAlchemy ORM
+- `domain/services` - orders, leads, customers, inventory, dashboards, audit
+- `domain/jobs` - forecast, inventory intel, lead scoring, alerts, digest
+- `domain/alerts` - rule evaluation
+- `domain/reports` - monthly report / sales summary / achieved accuracy
+- `routes` + `schemas` - HTTP + Pydantic DTOs
+- No repository layer: Session is used in services and jobs directly
 
 ## D04 Web layers
 
@@ -103,12 +103,12 @@ flowchart TB
   lib -->|"@dealeriq/api-client"| api[DealerIQ_API]
 ```
 
-- `app/` — thin route shells
-- `features/` — screen UI + data fetching
-- `components/ui` + `components/layout` — primitives and shell/providers
-- `lib/` — API client wrapper, auth context, token store
+- `app/` - thin route shells
+- `features/` - screen UI + data fetching
+- `components/ui` + `components/layout` - primitives and shell/providers
+- `lib/` - API client wrapper, auth context, token store
 
-Auth sequences and RBAC visuals live in [security-model.md](security-model.md) (D07–D09).
+Auth sequences and RBAC visuals live in [security-model.md](security-model.md) (D07-D09).
 
 ## Production overview
 

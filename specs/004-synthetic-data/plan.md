@@ -12,7 +12,7 @@ ground-truth JSON artifacts GEN-006 requires.
 ## Series sizing (why 25 models × 3 branches × 156 weeks isn't arbitrary)
 
 25 models × 3 branches = 75 (model,branch) series; 156 weeks gives
-`floor((156-52-12)/4)+1 = 24` rolling-CV folds per series once Phase 4 needs them (DS-FC-004) —
+`floor((156-52-12)/4)+1 = 24` rolling-CV folds per series once Phase 4 needs them (DS-FC-004) -
 comfortably under NFR-004's 500-series bound.
 
 ## Demand model (GEN-002)
@@ -28,30 +28,30 @@ Y(m,b,t) ~ NegativeBinomial(mean=μ(m,b,t), dispersion=α(m))
 ```
 
 `branch_effect`: A=1.0 (flagship), B≈0.8, C≈0.6 (linear scale). `β_trend ~ N(0, 0.15)` over the
-horizon. Fourier amplitudes `~N(0, 0.15)` (±20-30% seasonal swing — real but modest, so Seasonal
+horizon. Fourier amplitudes `~N(0, 0.15)` (±20-30% seasonal swing - real but modest, so Seasonal
 Naive stays a genuinely competitive floor once DS-FC-006 is exercised in Phase 4, not a
-strawman). 8-15 promo windows/model, 1-3 weeks, `β_promo~Uniform(0.3,0.8)` — unflagged expected
+strawman). 8-15 promo windows/model, 1-3 weeks, `β_promo~Uniform(0.3,0.8)` - unflagged expected
 bumps, explicitly distinct from GEN-004's injected anomalies.
 
 Per-segment `(μ0, α)` targets, with ±25% per-model jitter so models within a segment aren't
 clones. The table below is the **empirically calibrated** version (not the original a priori
 guess): ADI/CV² classification turned out to be far more sensitive to μ0 than expected, and the
 μ0 bands that reliably reach smooth/erratic are materially more expensive in order-volume terms
-than intermittent/lumpy's — see `docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md` for the
+than intermittent/lumpy's - see `docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md` for the
 full calibration trace and the resulting, deliberate departure from GEN-001's ~4-8k estimate
 (actual: ~15.1k orders at seed=42). Model counts are imbalanced across segments for the same
 reason (more economy/sedan models to buy enough independent draws in the expensive bands):
 
 | Segment | Target SBC class | Models | μ0 (units/wk/branch) | dispersion α |
 |---|---|---|---|---|
-| Economy/Compact | Smooth | 7 | 1.65–1.85 | 0.02–0.05 |
-| Sedan/Mid-size | Erratic | 6 | 3.2–3.6 | 0.85–1.0 |
-| SUV/Truck | Intermittent | 3 | 0.3–0.5 | 0.2–0.35 |
-| Luxury/Sports | Lumpy | 3 | 0.35–0.5 | 12–20 |
-| Commercial/Van | Mixed | 3 | 0.15–0.5 | 0.5–2.0 |
+| Economy/Compact | Smooth | 7 | 1.65-1.85 | 0.02-0.05 |
+| Sedan/Mid-size | Erratic | 6 | 3.2-3.6 | 0.85-1.0 |
+| SUV/Truck | Intermittent | 3 | 0.3-0.5 | 0.2-0.35 |
+| Luxury/Sports | Lumpy | 3 | 0.35-0.5 | 12-20 |
+| Commercial/Van | Mixed | 3 | 0.15-0.5 | 0.5-2.0 |
 
 `packages/analytics/src/dealeriq_analytics/sbc.py` implements ADI/CV² + classification
-(ADI=1.32, CV²=0.49 cutoffs) — the DS-FC-002 algorithm, pulled forward now (see spec
+(ADI=1.32, CV²=0.49 cutoffs) - the DS-FC-002 algorithm, pulled forward now (see spec
 Assumptions) purely to validate this table actually produces the required spread, via
 `test_generator_sbc_coverage` (≥10 series/class) before Phase 4 begins. At seed=42 this yields
 smooth=13, erratic=10, intermittent=28, lumpy=15 across 66 series (22 models × 3 branches).
@@ -66,12 +66,12 @@ status with backdated `order_events`/`stock_movements` rows spread across that w
 is what makes DS-FC-001's later "construct weekly demand series from the order ledger" recover
 the same series the NB-GLM actually drew, not a lossy proxy of it. Every order's customer is
 drawn from the customer pool (~70% chance of an existing customer making a repeat purchase, ~30%
-a new one) — this produces the realistic repeat-customer skew RFM segmentation (Phase 7) needs.
+a new one) - this produces the realistic repeat-customer skew RFM segmentation (Phase 7) needs.
 
 ## Lead funnel (GEN-003)
 
 Simulated independently from the order/demand realization above (some leads convert into the
-sales the demand series already accounts for; most don't — real dealership funnels are lossy).
+sales the demand series already accounts for; most don't - real dealership funnels are lossy).
 `logit(P(won)) = γ0 + γ_channel[source] + γ_budget·budget_band + γ_segment[model_segment] +
 γ_days·days_since_creation + γ_interactions·interaction_count + γ_rfm·customer_rfm_score +
 γ_season`, with these exact signed coefficients stored in
@@ -89,15 +89,15 @@ recovery, which is what this table is deliberately structured to make checkable.
 
 - 15-25 demand shocks: the week's NB-GLM draw is overridden with a ×4-8 spike or a near-zero
   drop, sized so the implied robust z-score (median/MAD over that series' STL residuals) lands
-  in the 5-8 range — comfortably past DS-ANO-001's 3.5 threshold, not a coin-flip detection.
+  in the 5-8 range - comfortably past DS-ANO-001's 3.5 threshold, not a coin-flip detection.
 - 10-20 pricing errors: an order's `negotiated_price` is forced below
   `list_price - 5·σ(historical discounts for that model)` (k_inject=5 vs the detector's default
   k=3, DS-ANO-003).
 - A handful of deliberate near-miss points (implied z≈2-3) are left as natural, unflagged
-  variance — without these the false-positive half of QA-003b (Phase 5) is vacuous.
+  variance - without these the false-positive half of QA-003b (Phase 5) is vacuous.
 
 `test_anomalies_are_independently_detectable` (a throwaway-style validation, kept as a real test)
-computes robust z-scores itself and confirms every injected shock clears the target range —
+computes robust z-scores itself and confirms every injected shock clears the target range -
 GEN-004 validated now, not assumed.
 
 ## GEN-006 ground truth artifacts
@@ -105,7 +105,7 @@ GEN-004 validated now, not assumed.
 `infra/seed/ground_truth/`: `generator_config.json` (seed + all parameters above),
 `series_params.json` (per-(model,branch) `β0, β_trend, γ_k, δ_k, branch_effect, α, target_sbc_
 class`), `lead_coefficients.json`, `anomalies.json`. All committed to the repo (small JSON, not
-gitignored) — the paper (Phase 10) and QA-003 tests read these directly.
+gitignored) - the paper (Phase 10) and QA-003 tests read these directly.
 
 ## Project Structure
 
@@ -138,7 +138,7 @@ packages/analytics/tests/
 
 `make seed` gains a step (after migrations) invoking `infra/seed/generate.py`; the existing
 `make bootstrap && make seed && make dev` command sequence is unchanged from the user's
-perspective — it just takes longer and produces a full dataset instead of an empty schema.
+perspective - it just takes longer and produces a full dataset instead of an empty schema.
 
 ## Constitution Check
 

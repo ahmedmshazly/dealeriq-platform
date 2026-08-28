@@ -107,7 +107,7 @@ export function AlertRulesAdminPage() {
                               const parsed = JSON.parse(paramsDraft);
                               saveParams.mutate({ key: rule.key, params: parsed });
                             } catch {
-                              // invalid JSON -- leave editing open, no request sent
+                              // invalid JSON, leave editing open, no request sent
                             }
                           }}
                           disabled={saveParams.isPending}

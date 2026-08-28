@@ -2,7 +2,7 @@
 named behavioral segment per ADR-022's five-segment table.
 
 Quintiles are population-relative (computed fresh against whichever customers are passed in,
-per run), not fixed global thresholds — standard RFM practice. Customers with zero delivered
+per run), not fixed global thresholds - standard RFM practice. Customers with zero delivered
 orders skip quintile scoring entirely (Recency/Frequency/Monetary are undefined without at
 least one transaction) and are assigned the `"New"` segment directly rather than a fabricated
 quintile score, per spec.md's Edge Cases.
@@ -39,7 +39,7 @@ class RfmResult:
 
 def _quintile_scores(values: pd.Series, *, higher_is_better: bool) -> pd.Series:
     """Rank-based quintile scoring (1-5, 5 = best) that never fails on duplicate values or a
-    small population — unlike `pd.qcut`, which raises on duplicate bin edges whenever many
+    small population - unlike `pd.qcut`, which raises on duplicate bin edges whenever many
     customers share the same raw value (e.g. `frequency=1`, extremely common). Ties are broken
     by stable rank order (`method="first"`) over the caller's own row order, so the result is
     deterministic given a deterministic input ordering."""
@@ -56,9 +56,9 @@ def _quintile_scores(values: pd.Series, *, higher_is_better: bool) -> pd.Series:
 
 
 def _segment_for(recency_score: int, frequency_score: int, monetary_score: int) -> str:
-    """ADR-022's four ordered rules — first match wins. At Risk is checked before Loyal: a
+    """ADR-022's four ordered rules - first match wins. At Risk is checked before Loyal: a
     customer who was frequent/high-value but hasn't bought recently (low R) is more usefully
-    flagged as churn-risk than as "loyal" — recency is the more urgent signal for a Manager to
+    flagged as churn-risk than as "loyal" - recency is the more urgent signal for a Manager to
     see, since "loyal" implies ongoing engagement that a low R score contradicts."""
     if recency_score >= 4 and frequency_score >= 4 and monetary_score >= 4:
         return SEGMENT_CHAMPIONS

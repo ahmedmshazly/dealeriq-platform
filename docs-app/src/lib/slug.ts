@@ -9,7 +9,7 @@
  * The rule GitHub actually applies (see `github-slugger`) is:
  *
  *   1. lowercase
- *   2. delete punctuation and symbols — but NOT letters, digits, marks,
+ *   2. delete punctuation and symbols - but NOT letters, digits, marks,
  *      underscores, hyphens or spaces
  *   3. replace each remaining space with a hyphen
  *
@@ -29,7 +29,7 @@ export function slugify(text: string): string {
 }
 
 /**
- * GitHub disambiguates repeated headings with `-1`, `-2`, … in document order.
+ * GitHub disambiguates repeated headings with `-1`, `-2`, ... in document order.
  * One slugger instance per document; never share across files.
  */
 export class Slugger {
@@ -72,7 +72,7 @@ const ENTITIES: Record<string, string> = {
  * Marked hands the heading renderer *already-rendered* inline HTML, so
  * `` ### `POST /api/contact` `` arrives as `<code>POST /api/contact</code>` and
  * `Design decisions & trade-offs` arrives with `&amp;`. Slugging either of those
- * verbatim produces the wrong anchor — hence tags out, entities decoded.
+ * verbatim produces the wrong anchor - hence tags out, entities decoded.
  */
 export function plainText(html: string): string {
   return html

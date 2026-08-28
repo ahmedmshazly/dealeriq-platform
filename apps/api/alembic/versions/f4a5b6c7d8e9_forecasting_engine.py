@@ -5,7 +5,7 @@ Revises: d2b3f4a5c6e7
 Create Date: 2026-07-10 13:40:00.000000
 
 Hand-authored to mirror the AnalyticsRun/SeriesProfile/Forecast/ForecastMetric model
-definitions (reviewed per ADR-011 — verified by running `alembic upgrade head` against a real
+definitions (reviewed per ADR-011 - verified by running `alembic upgrade head` against a real
 Postgres instance, and confirming a subsequent `alembic revision --autogenerate` produces an
 empty diff). Adds jobs:trigger/jobs:view/forecasts:view permission grants (FR-072: only Admins
 trigger jobs; Admin/Manager/Analyst can view forecast output).

@@ -33,7 +33,7 @@
 
 - All items pass. Judgment calls recorded in spec.md's Assumptions, each following direct
   precedent from earlier phases: a standard, documented RFM segment-name mapping (SRS gives
-  examples, not an exact table — same "pick an industry-standard convention, record as ADR"
+  examples, not an exact table - same "pick an industry-standard convention, record as ADR"
   approach as Phase 5's ABC/XYZ cutoffs); lead interaction-count derived from the existing
   status-history audit trail rather than a new persisted concept; the gradient-boosted challenger
   model treated as optional (the SRS itself says "MAY"), deferred to `docs/backlog.md` if it

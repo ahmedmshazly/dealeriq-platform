@@ -1,4 +1,4 @@
-"""SBC classification against hand-computed fixtures (QA-002) — every ADI/CV² value below was
+"""SBC classification against hand-computed fixtures (QA-002) - every ADI/CV² value below was
 computed by hand before being encoded here, not reverse-engineered from the implementation."""
 
 import numpy as np

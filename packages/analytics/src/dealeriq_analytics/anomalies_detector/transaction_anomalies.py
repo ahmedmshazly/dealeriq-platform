@@ -1,13 +1,13 @@
 """Transaction-level anomaly detection (DS-ANO-003): orders whose negotiated price is
 suspiciously below what that model's own historical discounting pattern would predict.
 
-Works in discount *fraction* space (`1 - negotiated_price/list_price`), not raw dollar amount —
+Works in discount *fraction* space (`1 - negotiated_price/list_price`), not raw dollar amount -
 matching Phase 3's own pricing-error injector (`infra/seed/generate.py`'s
 `_inject_pricing_errors`) exactly, since this detector's whole point is to recover that
 injector's ground truth (QA-003b). An order is flagged when its own discount fraction exceeds
-`mean_fraction + k*sigma_fraction` for that model — equivalently, `negotiated_price` falls below
+`mean_fraction + k*sigma_fraction` for that model - equivalently, `negotiated_price` falls below
 `list_price * (1 - mean_fraction - k*sigma_fraction)`. Models with fewer than
-`MIN_ORDERS_FOR_DISCOUNT_STATS` historical orders are skipped — sigma is not meaningfully
+`MIN_ORDERS_FOR_DISCOUNT_STATS` historical orders are skipped - sigma is not meaningfully
 estimable from a handful of points, mirroring the exact floor the generator used when injecting
 these same errors (`MIN_ORDERS_FOR_PRICING_STATS=5`).
 """

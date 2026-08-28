@@ -1,4 +1,4 @@
-"""Champion selection (DS-FC-006) — the Seasonal-Naive-floor invariant and tie-breaking, tested
+"""Champion selection (DS-FC-006) - the Seasonal-Naive-floor invariant and tie-breaking, tested
 directly against hand-built MethodMetrics (no statsforecast/CV dependency needed here)."""
 
 import pytest
@@ -46,7 +46,7 @@ def test_exact_tie_against_seasonal_naive_resolves_to_seasonal_naive() -> None:
 
 
 def test_method_with_no_valid_folds_is_never_champion() -> None:
-    # AutoARIMA isn't even in the dict (every fold failed to converge for this series) --
+    # AutoARIMA isn't even in the dict (every fold failed to converge for this series);
     # champion selection must not crash or accidentally prefer it.
     metrics = {
         SEASONAL_NAIVE_ALIAS: _metrics(1.0),

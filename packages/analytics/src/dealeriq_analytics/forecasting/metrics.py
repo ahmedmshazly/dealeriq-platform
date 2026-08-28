@@ -2,7 +2,7 @@
 hand-computed fixture in tests/test_forecast_metrics.py before being wired into the CV harness.
 
 MASE (Hyndman & Koehler 2006): out-of-sample forecast MAE scaled by the in-sample one-step
-seasonal-naive MAE computed on the *training* window — scale-free and defined even when a series
+seasonal-naive MAE computed on the *training* window - scale-free and defined even when a series
 has long zero runs (unlike MAPE), which is why DS-FC-005 makes it the primary metric for a
 dataset that includes intermittent/lumpy series.
 """
@@ -22,7 +22,7 @@ def mase(
     denominator = float(np.mean(naive_errors))
     if denominator == 0:
         # In-sample seasonal-naive is a perfect predictor (e.g. an exactly-repeating training
-        # window) — MASE's denominator is undefined. A perfect out-of-sample forecast is then
+        # window) - MASE's denominator is undefined. A perfect out-of-sample forecast is then
         # the only sensible "0"; any error is unscoreable, so it's infinite rather than a
         # misleadingly finite number from a 0/0-adjacent division.
         return 0.0 if numerator == 0 else float("inf")

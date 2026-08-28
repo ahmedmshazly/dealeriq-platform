@@ -1,4 +1,4 @@
-# ADR-020: Rate limiting — slowapi, in-memory
+# ADR-020: Rate limiting - slowapi, in-memory
 
 - Status: Accepted
 - Date: 2026-07-10
@@ -15,9 +15,9 @@ Use `slowapi` (Starlette/FastAPI-native) with its in-memory store for v1.0.
 
 ## Consequences
 
-- Free, small, no new infrastructure dependency — consistent with C-01 and with the project's
+- Free, small, no new infrastructure dependency - consistent with C-01 and with the project's
   existing "Stage 2 = config/infra swap only" philosophy used elsewhere (e.g., email provider,
   hosted Postgres).
 - In-memory state means limits are per-process, not shared across horizontally-scaled API
-  instances — not a concern for local, single-instance v1.0 operation. A Redis-backed store is
+  instances - not a concern for local, single-instance v1.0 operation. A Redis-backed store is
   the documented Stage-2 follow-up if the API is ever scaled horizontally.

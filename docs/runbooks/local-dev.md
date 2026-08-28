@@ -1,4 +1,4 @@
-# Runbook: Local Development
+# Runbook: local development
 
 ## Prerequisites
 
@@ -71,7 +71,7 @@ make ci       # lint + test + next build + regenerate/compile the API client
 
 ## Signing in (dev seed accounts)
 
-**Dev only — never use these passwords in production.** Accounts come from the migration
+**Dev only - never use these passwords in production.** Accounts come from the migration
 bootstrap Admin plus `make seed` (`infra/seed/generate.py`). Defaults live in
 `Settings` / `SEED_USER_PASSWORD` and are intentionally predictable for local work.
 
@@ -79,7 +79,7 @@ bootstrap Admin plus `make seed` (`infra/seed/generate.py`). Defaults live in
 |------|-------|----------|-------|
 | Admin | `admin@dealeriq.dev` | `ChangeMe123!` | Full permissions; first login forces password change |
 | Manager | `manager1@dealeriq.dev`, `manager2@dealeriq.dev` | `SeedUser123!` | Manager dashboard, approvals, margin visibility |
-| Sales | `sales1@dealeriq.dev` … `sales8@dealeriq.dev` | `SeedUser123!` | Own leads/orders (intended); Sales dashboard |
+| Sales | `sales1@dealeriq.dev` ... `sales8@dealeriq.dev` | `SeedUser123!` | Own leads/orders (intended); Sales dashboard |
 | Analyst | `analyst1@dealeriq.dev` | `SeedUser123!` | Read analytics/intel; no order/lead writes |
 
 App: http://localhost:3000 · API docs: http://localhost:8000/api/v1/docs · MailHog: http://localhost:8025
@@ -90,7 +90,7 @@ the same emails/passwords (deterministic seed).
 ## Logs
 
 - API logs are structured JSON on stdout (one line per request: request id, method, path,
-  status, latency — NFR-006). When running via `make dev` they print directly to your
+  status, latency - NFR-006). When running via `make dev` they print directly to your
   terminal.
 - Postgres/MailHog container logs: `docker compose -f infra/docker-compose.yml logs -f
   [postgres|mailhog]`.
@@ -107,13 +107,13 @@ git add packages/api-client/src/schema.d.ts
 ```
 
 CI fails the build if the committed schema drifts from what the live API actually serves
-(QA-005) — always regenerate and commit after changing any route/response model.
+(QA-005) - always regenerate and commit after changing any route/response model.
 
 ## Troubleshooting
 
-- **`make dev` fails immediately with a Docker error**: Docker isn't running — start Docker
-  Desktop/the Docker daemon and retry.
+- **`make dev` fails immediately with a Docker error**: Docker isn't running. Start Docker
+  Desktop or the Docker daemon and retry.
 - **Alembic can't connect**: confirm `make seed` has been run at least once and
   `docker compose -f infra/docker-compose.yml ps` shows `postgres` as healthy.
 - **gitleaks pre-commit hook fails on a false positive**: add a narrowly-scoped allowlist entry
-  to `.gitleaks.toml` — never disable the hook.
+  to `.gitleaks.toml` - never disable the hook.

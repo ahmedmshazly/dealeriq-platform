@@ -2,7 +2,7 @@
 (DS-INV-004).
 
 Kaplan-Meier (not a plain histogram of past sale times) is required here specifically because
-of censoring: a unit still in stock hasn't "failed to sell" — it just hasn't sold *yet*, and its
+of censoring: a unit still in stock hasn't "failed to sell" - it just hasn't sold *yet*, and its
 true time-to-sale is unknown but at least its current age. Treating it as a fixed observation
 (or dropping it) would silently bias the curve toward fast-moving stock, which is exactly the
 population least in need of the pricing-review flag this feature exists to produce. `lifelines`
@@ -50,7 +50,7 @@ def sale_probability_within(
     """Conditional probability of selling within `horizon_days`, given survival to
     `current_age_days` already: `1 - S(age+horizon)/S(age)`. If `S(age)` is already 0 (no unit in
     the fitted population survived this long), the conditional probability is undefined by the
-    curve — treated as 0.0 (no further evidence this unit will sell soon) rather than raising,
+    curve - treated as 0.0 (no further evidence this unit will sell soon) rather than raising,
     since this is a real, reachable state for an old outlier unit, not a bug."""
     s_now = float(kmf.predict(current_age_days))
     if s_now <= 0.0:
@@ -60,7 +60,7 @@ def sale_probability_within(
 
 
 def worst_decile_threshold(probabilities: list[float]) -> float:
-    """The sale-probability value at the `WORST_DECILE_PERCENTILE`th percentile — units at or
+    """The sale-probability value at the `WORST_DECILE_PERCENTILE`th percentile - units at or
     below it are the least likely to sell soon and get flagged for pricing review. Uses linear
     interpolation between closest ranks (numpy's default), the standard percentile convention."""
     return float(np.percentile(np.array(probabilities, dtype=float), WORST_DECILE_PERCENTILE))

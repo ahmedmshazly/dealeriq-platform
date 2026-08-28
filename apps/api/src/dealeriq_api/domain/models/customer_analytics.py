@@ -1,4 +1,4 @@
-"""CustomerRfmProfile, LeadScore — Phase 7's analytics tables (DS-CUST-001..005). Schema follows
+"""CustomerRfmProfile, LeadScore - Phase 7's analytics tables (DS-CUST-001..005). Schema follows
 Phase 4/5's exact convention: `run_id`-tagged output tables, never mutating `customers`/`leads`
 in place (DAT-003). Callers always resolve the latest succeeded `job_name="lead_scoring"` run
 first, then join these tables by `run_id`, matching `forecasts`/`inventory_intel`'s own lookup

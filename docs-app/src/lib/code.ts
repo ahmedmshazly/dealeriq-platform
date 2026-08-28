@@ -28,12 +28,12 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const RUN = /(\d+)([A-Za-z])/g;
 
 /**
- * Rebuild one highlighted line from `"6A7B1C"` — decimal run length, then a
+ * Rebuild one highlighted line from `"6A7B1C"` - decimal run length, then a
  * letter indexing the shared palette.
  *
  * Shiki's dual-theme HTML measured 12.3× the source (13.2 MB across 229 files).
  * This encoding is 1.1×, and because the client owns the render it can put a
- * gutter, an annotation marker, and a line anchor around every line — which
+ * gutter, an annotation marker, and a line anchor around every line - which
  * pre-rendered HTML would have made impossible.
  */
 export function renderLine(

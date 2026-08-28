@@ -4,7 +4,7 @@ Revision ID: d2b3f4a5c6e7
 Revises: c1a2f3e4d5b6
 Create Date: 2026-07-10 06:30:00.000000
 
-Hand-authored to mirror the Order/OrderEvent model definitions (reviewed per ADR-011 — verified
+Hand-authored to mirror the Order/OrderEvent model definitions (reviewed per ADR-011 - verified
 by running `alembic upgrade head` against a real Postgres instance). Adds orders:view/
 manage_own/manage_any/approve/view_margin permission grants.
 """

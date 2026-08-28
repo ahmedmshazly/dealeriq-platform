@@ -1,7 +1,7 @@
 """Series-level anomaly detection (DS-ANO-001, DS-ANO-002): STL decomposition + robust z-score,
 confirmed (or not) by the generalized ESD test.
 
-`robust=False` is deliberate, not a default left unexamined — Phase 3's generator
+`robust=False` is deliberate, not a default left unexamined - Phase 3's generator
 (`dealeriq_analytics.generator.anomalies`) empirically verified that `robust=True` degenerates
 (residual MAD collapses towards zero) on this dataset's 156-week/52-week-seasonal shape, since
 STL's seasonal sub-series smoothing only has ~3 points per phase with 3 yearly cycles. This
@@ -26,7 +26,7 @@ MODIFIED_Z_CONSTANT = 0.6745
 Z_THRESHOLD = 3.5
 SEVERITY_CAP = 5.0
 MIN_STABLE_MAD = 0.2
-"""Same floor as `dealeriq_analytics.generator.anomalies.MIN_STABLE_MAD` — a series whose STL
+"""Same floor as `dealeriq_analytics.generator.anomalies.MIN_STABLE_MAD` - a series whose STL
 residual MAD falls below this is numerically unusable for a median/MAD z-score, not a bug to
 route around (see module docstring)."""
 
@@ -34,7 +34,7 @@ MIN_CYCLES_FOR_ESD = 3.0
 """GESD needs enough independent residuals to be meaningful; a series with less than 3 full
 seasonal cycles of history doesn't get an ESD pass (DS-ANO-002: "for series with sufficient
 history"). 3 cycles is also empirically where this dataset shape's STL fit first becomes stable
-at all (see `MIN_STABLE_MAD` and Phase 3's `generator/anomalies.py` finding) — a series that
+at all (see `MIN_STABLE_MAD` and Phase 3's `generator/anomalies.py` finding) - a series that
 barely clears the stability floor at 2-3 cycles still doesn't have enough independent residuals
 for GESD's own critical-value table to be meaningful."""
 
@@ -118,7 +118,7 @@ def generalized_esd_test(
 def detect_series_anomalies(
     series: NDArray[np.float64], *, run_esd: bool = True
 ) -> list[SeriesAnomaly]:
-    """Raises `UnstableSeriesError` if the series' STL fit is too degenerate to score at all —
+    """Raises `UnstableSeriesError` if the series' STL fit is too degenerate to score at all -
     callers skip that series with the recorded reason, per spec.md's Edge Cases."""
     residuals, median_resid, mad = _stl_residuals(series)
     deterministic = series - residuals

@@ -6,7 +6,7 @@ import { api } from "@/lib/api";
 import { ApiRequestError } from "@/lib/api-error";
 import { useQuery } from "@tanstack/react-query";
 
-// FR-013: the permission matrix is DB-stored/migration-seeded; this page just renders it —
+// FR-013: the permission matrix is DB-stored/migration-seeded; this page just renders it -
 // there is no client-side notion of "what a role can do" beyond what the API reports.
 export function PermissionsAdminPage() {
   const matrixQuery = useQuery({

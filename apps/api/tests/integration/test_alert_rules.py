@@ -394,7 +394,7 @@ def _set_lead_idle_score_cutoff(db: Session, score_cutoff: float | None) -> None
 
 
 def test_lead_idle_score_cutoff_only_fires_for_promising_leads(db_session: Session) -> None:
-    # lead_idle's score_cutoff is shared across the whole test suite -- restore it to Phase 6's
+    # lead_idle's score_cutoff is shared across the whole test suite, restore it to Phase 6's
     # default (null) afterward so this doesn't affect any other test in this session-scoped
     # container (ADR-013), matching test_alert_rule_config.py's own restore-in-finally pattern.
     model, _branch = _new_model_and_branch(db_session)

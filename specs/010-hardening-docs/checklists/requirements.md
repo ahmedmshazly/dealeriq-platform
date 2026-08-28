@@ -34,4 +34,4 @@
 - QA-004/QA-005/QA-006/QA-007 and NFR-003/008/009 use the SRS's own requirement IDs directly
   (matching the convention set by `specs/009-dashboards-reports/spec.md`), rather than the
   template's generic FR-00N numbering.
-- All items pass on first draft — no revision iterations were needed.
+- All items pass on first draft - no revision iterations were needed.

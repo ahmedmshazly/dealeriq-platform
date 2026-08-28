@@ -1,4 +1,4 @@
-// Ported from the brand kit Tailwind snippet (see docs/adr — frontend architecture).
+// Ported from the brand kit Tailwind snippet (see docs/adr - frontend architecture).
 // Colors/radius/shadow reference CSS custom properties from tokens.css so theme swapping
 // ([data-theme="dark"]) works live. Breakpoints use Tailwind's stock scale (the brand kit
 // deliberately doesn't define custom ones); the mockups' fixed content widths (1120/1180px)

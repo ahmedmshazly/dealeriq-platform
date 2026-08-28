@@ -1,5 +1,5 @@
 """Monthly report (FR-054): sales, margin, forecast accuracy achieved, and alert statistics for
-one completed calendar month — composes `sales_summary` and `achieved_accuracy` (FR-073's own
+one completed calendar month - composes `sales_summary` and `achieved_accuracy` (FR-073's own
 computation, narrowed to an exact month) plus a straightforward `Alert` aggregate.
 """
 
@@ -16,7 +16,7 @@ from dealeriq_api.domain.reports.sales_summary import month_bounds, monthly_sale
 
 
 class CurrentMonthNotAllowed(ValueError):
-    """The current, in-progress month is never presented as "the month's totals" — its data is
+    """The current, in-progress month is never presented as "the month's totals" - its data is
     necessarily incomplete (spec.md's Edge Cases)."""
 
 

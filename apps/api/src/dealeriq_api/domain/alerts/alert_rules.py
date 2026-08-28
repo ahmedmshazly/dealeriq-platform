@@ -2,7 +2,7 @@
 
 Deliberately in `apps/api`'s domain layer, not `packages/analytics` (spec.md's Assumptions):
 every rule here is a DB read against already-computed Phase 4/5 outputs compared to a configured
-threshold — there is no meaningful DB-free "pure" version of "is this row's value below that
+threshold - there is no meaningful DB-free "pure" version of "is this row's value below that
 row's value," unlike Phases 4-5's genuine statistical computation.
 
 Rules (a)-(d) and (f) are evaluated by `alert_job.py` after an analytics run; rule (e) is called
@@ -51,7 +51,7 @@ def open_alert(
     payload: dict[str, object],
 ) -> Alert | None:
     """Conditional insert: no duplicate *open-or-acknowledged* alert for the same
-    (rule_key, dedup_key) (FR-062). Returns `None` (not an error) when one already exists —
+    (rule_key, dedup_key) (FR-062). Returns `None` (not an error) when one already exists -
     that's the expected, common case on a repeat evaluation, not a failure."""
     from sqlalchemy.exc import IntegrityError
 
@@ -225,7 +225,7 @@ def evaluate_sales_anomaly(db: Session, inventory_run_id: uuid.UUID) -> int:
 
 def evaluate_forecast_stockout(db: Session, forecast_run_id: uuid.UUID) -> int:
     """Rule (d): on-hand stock vs. the champion forecast's point-estimate demand over the
-    lead-time window — a distinct, more urgent signal than rule (a): even *expected* demand
+    lead-time window - a distinct, more urgent signal than rule (a): even *expected* demand
     (not the quantile-inflated reorder point) would exhaust current stock."""
     rule = _get_rule(db, "forecast_stockout")
     if rule is None:
@@ -288,10 +288,10 @@ def _latest_succeeded_lead_scoring_run_id(db: Session) -> uuid.UUID | None:
 
 def evaluate_lead_idle(db: Session, *, as_of: datetime | None = None) -> int:
     """Rule (f): idle-days, plus the score-cutoff completion Phase 7 adds (spec.md's Assumptions)
-    — when `rule.params["score_cutoff"]` is configured (non-null), only idle leads whose latest
+    - when `rule.params["score_cutoff"]` is configured (non-null), only idle leads whose latest
     conversion score is *at or above* the cutoff open an alert (the SRS's literal "score above
     cutoff": a promising lead going quiet is the urgent case, not one that was never likely to
-    convert). When `score_cutoff` is null (Phase 6's shipped default), behavior is unchanged —
+    convert). When `score_cutoff` is null (Phase 6's shipped default), behavior is unchanged -
     idle-days only."""
     rule = _get_rule(db, "lead_idle")
     if rule is None:
@@ -344,7 +344,7 @@ def evaluate_lead_idle(db: Session, *, as_of: datetime | None = None) -> int:
 
 def evaluate_discount_approval(db: Session, order: Order, fraction: float) -> Alert | None:
     """Rule (e): the one FR-061 rule evaluated transactionally (FR-060), inline in
-    `order_service.submit_order` — reuses the exact same `fraction` comparison that already
+    `order_service.submit_order` - reuses the exact same `fraction` comparison that already
     decided the manager-approval requirement, so the alert and the approval can never drift
     apart."""
     rule = _get_rule(db, "discount_approval")
@@ -363,7 +363,7 @@ def evaluate_lead_score_drift(
     db: Session, run_id: uuid.UUID, drifted_features: dict[str, float]
 ) -> Alert | None:
     """FR-074: called by `lead_scoring_job.py` once per run with whichever features (if any)
-    exceeded the PSI drift threshold — empty `drifted_features` means the caller shouldn't call
+    exceeded the PSI drift threshold - empty `drifted_features` means the caller shouldn't call
     this at all, but an empty dict here is handled the same as "no alert" for safety. Distinct
     from FR-061's six built-in rules (this one lives under SRS §5.8 Analytics Operations, not
     §5.7 Alerting), but reuses the exact same rule-lookup/dedup/fan-out machinery."""

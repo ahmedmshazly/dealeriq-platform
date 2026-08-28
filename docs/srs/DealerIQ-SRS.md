@@ -1,12 +1,12 @@
 # Software Requirements Specification (SRS)
 
-## DealerIQ — Dealership Intelligence Platform
+## DealerIQ - Dealership Intelligence Platform
 
 | Field | Value |
 |---|---|
 | Document ID | DIQ-SRS-001 |
 | Version | 1.0.0 |
-| Status | Accepted — v1.0.0 shipped; layout refined per ADR-027 |
+| Status | Accepted - v1.0.0 shipped; layout refined per ADR-027 |
 | Author | Ahmed Elshazly |
 | Date | 2026-07-10 |
 | Standard alignment | ISO/IEC/IEEE 29148:2018 (adapted), IEEE 830 structure |
@@ -39,19 +39,19 @@
 
 ### 1.1 Purpose
 
-This SRS defines the requirements for **DealerIQ**, a dealership intelligence platform that layers automated data science — demand forecasting, inventory optimization, anomaly detection, customer analytics, and an alerting engine — on top of a transactional sales-and-inventory system for automotive dealerships.
+This SRS defines the requirements for **DealerIQ**, a dealership intelligence platform that layers automated data science - demand forecasting, inventory optimization, anomaly detection, customer analytics, and an alerting engine - on top of a transactional sales-and-inventory system for automotive dealerships.
 
 The document serves three purposes:
 
-1. **Build input** — the authoritative specification for the build. Each numbered requirement (FR-xxx / NFR-xxx / DS-xxx) is intended to map to feature specifications and task breakdowns.
-2. **Portfolio artifact** — the specification itself demonstrates enterprise-grade requirements engineering and will be published alongside the project.
-3. **Research protocol** — Section 6 and Section 15 define a reproducible forecasting benchmark suitable for writing up as a short applied paper.
+1. **Build input** - the authoritative specification for the build. Each numbered requirement (FR-xxx / NFR-xxx / DS-xxx) is intended to map to feature specifications and task breakdowns.
+2. **Portfolio artifact** - the specification itself demonstrates enterprise-grade requirements engineering and will be published alongside the project.
+3. **Research protocol** - Section 6 and Section 15 define a reproducible forecasting benchmark suitable for writing up as a short applied paper.
 
 ### 1.2 Background & Motivation
 
 The predecessor system (NaserSalem Motors, 2022) was a Django + PostgreSQL system of record: role-based order entry, stock tracking, and reporting, credited with a ~30% improvement in order-report accuracy. It answered *"what happened?"*
 
-DealerIQ answers *"what will happen, what is abnormal, and what should we do?"* — automatically, on a schedule, with statistically defensible methods. The central technical thesis: **dealership vehicle sales are intermittent, low-volume time series** (frequently 0–3 units per model per week), a regime where classical smoothing/ARIMA methods are known to underperform and specialized intermittent-demand methods (Croston, SBA, TSB) and careful evaluation metrics (MASE, pinball loss) are required. DealerIQ operationalizes that literature in a working product.
+DealerIQ answers *"what will happen, what is abnormal, and what should we do?"* - automatically, on a schedule, with statistically defensible methods. The central technical thesis: **dealership vehicle sales are intermittent, low-volume time series** (frequently 0-3 units per model per week), a regime where classical smoothing/ARIMA methods are known to underperform and specialized intermittent-demand methods (Croston, SBA, TSB) and careful evaluation metrics (MASE, pinball loss) are required. DealerIQ operationalizes that literature in a working product.
 
 ### 1.3 Scope
 
@@ -71,7 +71,7 @@ DealerIQ answers *"what will happen, what is abnormal, and what should we do?"* 
 - Real third-party integrations (payment, DMS/CRM imports beyond CSV, SMS providers).
 - Multi-tenancy / multiple dealership organizations (schema is designed not to preclude it; see NFR-021).
 - Mobile native apps.
-- Deep learning forecasting (N-BEATS/N-HiTS/TFT) — allowed as a Stage-3 challenger only after classical baselines are established (see DS-FC-010 rationale).
+- Deep learning forecasting (N-BEATS/N-HiTS/TFT) - allowed as a Stage-3 challenger only after classical baselines are established (see DS-FC-010 rationale).
 
 ### 1.4 Definitions & Conventions
 
@@ -88,12 +88,12 @@ DealerIQ answers *"what will happen, what is abnormal, and what should we do?"* 
 
 DealerIQ is a greenfield monorepo application composed of:
 
-- **`apps/api`** — FastAPI (Python 3.12) backend: REST API, auth, RBAC, business logic, background job scheduler (APScheduler), alerting engine.
-- **`apps/web`** — Next.js 15 (TypeScript, App Router) frontend: dashboards, operational screens, notification center, admin console.
-- **`packages/analytics`** — Python analytics library: forecasting, inventory intelligence, anomaly detection, customer analytics, benchmark harness. Imported by the API's job runner; also runnable standalone as a CLI for experiments.
-- **`packages/api-client`** — TypeScript client generated from the API's OpenAPI schema (single source of truth for the contract).
-- **`infra/`** — Docker Compose (PostgreSQL 16, MailHog for local email capture), seed scripts.
-- **`docs/`** — this SRS, ADRs (Architecture Decision Records), runbooks, the paper draft.
+- **`apps/api`** - FastAPI (Python 3.12) backend: REST API, auth, RBAC, business logic, background job scheduler (APScheduler), alerting engine.
+- **`apps/web`** - Next.js 15 (TypeScript, App Router) frontend: dashboards, operational screens, notification center, admin console.
+- **`packages/analytics`** - Python analytics library: forecasting, inventory intelligence, anomaly detection, customer analytics, benchmark harness. Imported by the API's job runner; also runnable standalone as a CLI for experiments.
+- **`packages/api-client`** - TypeScript client generated from the API's OpenAPI schema (single source of truth for the contract).
+- **`infra/`** - Docker Compose (PostgreSQL 16, MailHog for local email capture), seed scripts.
+- **`docs/`** - this SRS, ADRs (Architecture Decision Records), runbooks, the paper draft.
 
 ### 2.2 Operating Environment
 
@@ -107,12 +107,12 @@ DealerIQ is a greenfield monorepo application composed of:
 - **C-02** The API MUST be stateless with respect to auth (token-based), so it can later run in serverless contexts.
 - **C-03** Scheduled analytics MUST be triggerable both by the internal scheduler and by an authenticated HTTP endpoint (so Vercel Cron can drive them later without code changes).
 - **C-04** All analytics MUST be reproducible: fixed seeds, versioned parameters, persisted run metadata.
-- **C-05** The frontend MUST consume only the generated typed client — no hand-written fetch calls to undocumented endpoints.
+- **C-05** The frontend MUST consume only the generated typed client - no hand-written fetch calls to undocumented endpoints.
 
 ### 2.4 Assumptions & Dependencies
 
 - Single dealership organization in v1.0; multiple branches supported.
-- Data volume assumptions: ≤ 100k orders, ≤ 10k vehicles, ≤ 50k customers — all analytics must run comfortably on a laptop within these bounds.
+- Data volume assumptions: ≤ 100k orders, ≤ 10k vehicles, ≤ 50k customers - all analytics must run comfortably on a laptop within these bounds.
 - Users access via modern evergreen browsers.
 
 ---
@@ -126,12 +126,12 @@ DealerIQ is a greenfield monorepo application composed of:
 - Atomic commits across API contract + generated client + frontend.
 - One workspace, one CI pipeline, one review surface for portfolio visitors.
 - Vercel natively supports monorepos via Root Directory (`apps/web`).
-- Two repos are justified by independent teams/release cadences — neither applies here.
+- Two repos are justified by independent teams/release cadences - neither applies here.
 
 ### 3.1.1 Visual architecture
 
 Mermaid diagrams for context, containers, deployment, auth, domain state machines, data model,
-and CI live in [`docs/diagrams/README.md`](../diagrams/README.md) (catalog D01–D18). Narrative
+and CI live in [`docs/diagrams/README.md`](../diagrams/README.md) (catalog D01-D18). Narrative
 architecture: [`docs/explanation/architecture.md`](../explanation/architecture.md).
 
 ```mermaid
@@ -196,7 +196,7 @@ dealeriq/
 ### 3.3 Runtime Architecture
 
 - The **web app** talks only to the **API** over REST (JSON, versioned under `/api/v1`).
-- The **API** owns the database. The analytics package receives dataframes/queries through a thin repository layer — analytics code never writes raw SQL against production tables directly; it reads via defined query functions and writes results to dedicated analytics tables (forecasts, anomalies, scores, runs).
+- The **API** owns the database. The analytics package receives dataframes/queries through a thin repository layer - analytics code never writes raw SQL against production tables directly; it reads via defined query functions and writes results to dedicated analytics tables (forecasts, anomalies, scores, runs).
 - **APScheduler** runs inside the API process in local mode (single instance), executing analytics jobs on cron schedules; each job is also exposed as `POST /api/v1/jobs/{job_name}/run` (admin-only) per C-03.
 - **Alert engine** subscribes to analytics-run completion and to transactional events (e.g., order created), evaluates rules, and writes notifications; email dispatch goes to MailHog locally.
 
@@ -279,7 +279,7 @@ RBAC principle: **deny by default**; every endpoint declares required permission
 | FR-040 | P0 | Sales users SHALL create orders linking a customer to a specific vehicle unit with negotiated price, discounts, payment type (cash/finance), and status: draft / pending_approval / approved / delivered / cancelled. |
 | FR-041 | P0 | An order in pending_approval SHALL require Manager approval if discount exceeds a configurable threshold (default 5% of list price); otherwise auto-approve. |
 | FR-042 | P0 | Approving an order SHALL atomically reserve the vehicle unit; delivering it SHALL mark it sold and write the stock-movement ledger row. |
-| FR-043 | P0 | Order margin (negotiated price − acquisition cost) SHALL be computed and visible to Manager+ only. |
+| FR-043 | P0 | Order margin (negotiated price - acquisition cost) SHALL be computed and visible to Manager+ only. |
 | FR-044 | P1 | Order timeline (status changes, actor, timestamp) SHALL be visible on the order page. |
 | FR-045 | P1 | Cancelling an approved order SHALL release the reservation and require a reason. |
 
@@ -320,7 +320,7 @@ RBAC principle: **deny by default**; every endpoint declares required permission
 
 | ID | Priority | Requirement |
 |---|---|---|
-| FR-080 | P0 | The system SHALL maintain an append-only audit log: actor, action, entity, before/after summary, timestamp, IP — for auth events, role changes, approvals, adjustments, rule changes, job triggers. |
+| FR-080 | P0 | The system SHALL maintain an append-only audit log: actor, action, entity, before/after summary, timestamp, IP - for auth events, role changes, approvals, adjustments, rule changes, job triggers. |
 | FR-081 | P0 | Admins SHALL browse/filter/export the audit log. |
 | FR-082 | P1 | System settings (thresholds, schedules, branch definitions) SHALL be editable in an admin console with validation. |
 
@@ -332,17 +332,17 @@ This section is the scientific core. Every method choice is referenced (§17) an
 
 ### 6.1 Forecasting (DS-FC)
 
-**Problem framing.** Forecast weekly unit sales per (vehicle_model, branch) series over a 12-week horizon with prediction intervals. Series are short, low-volume, and frequently intermittent (many zero weeks) — the defining characteristic that drives method selection [1][2][3].
+**Problem framing.** Forecast weekly unit sales per (vehicle_model, branch) series over a 12-week horizon with prediction intervals. Series are short, low-volume, and frequently intermittent (many zero weeks) - the defining characteristic that drives method selection [1][2][3].
 
 | ID | Priority | Requirement |
 |---|---|---|
 | DS-FC-001 | P0 | The system SHALL construct weekly demand series per (model, branch) and per (segment, branch) from the order ledger, with explicit calendar alignment and zero-filling for weeks with no sales. |
-| DS-FC-002 | P0 | The system SHALL classify each series by demand pattern using the Syntetos–Boylan–Croston categorization: smooth / erratic / intermittent / lumpy, based on mean inter-demand interval (ADI) and squared coefficient of variation (CV²) with standard cutoffs ADI = 1.32, CV² = 0.49 [4]. |
-| DS-FC-003 | P0 | The method pool SHALL include: Naive, Seasonal Naive, Simple Exponential Smoothing, ETS (automatic), AutoARIMA, Croston's method [2], Syntetos–Boylan Approximation (SBA) [3], and Teunter–Syntetos–Babai (TSB) [5]; implemented via statsforecast/statsmodels. |
+| DS-FC-002 | P0 | The system SHALL classify each series by demand pattern using the Syntetos-Boylan-Croston categorization: smooth / erratic / intermittent / lumpy, based on mean inter-demand interval (ADI) and squared coefficient of variation (CV²) with standard cutoffs ADI = 1.32, CV² = 0.49 [4]. |
+| DS-FC-003 | P0 | The method pool SHALL include: Naive, Seasonal Naive, Simple Exponential Smoothing, ETS (automatic), AutoARIMA, Croston's method [2], Syntetos-Boylan Approximation (SBA) [3], and Teunter-Syntetos-Babai (TSB) [5]; implemented via statsforecast/statsmodels. |
 | DS-FC-004 | P0 | Evaluation SHALL use rolling-origin (expanding-window) cross-validation [1, ch. 5]: minimum 52-week training window, 4-week step, 12-week horizon. |
 | DS-FC-005 | P0 | Point-forecast accuracy SHALL be measured with MASE (primary; scale-free and defined for intermittent series) and sMAPE (secondary) [6]; interval quality with pinball (quantile) loss at q ∈ {0.1, 0.5, 0.9} and empirical coverage of the 80% interval. |
 | DS-FC-006 | P0 | Champion selection SHALL be per-series: the method minimizing mean MASE across CV folds, with Seasonal Naive as the mandatory floor baseline (a method SHALL NOT be champion if it does not beat Seasonal Naive on MASE). |
-| DS-FC-007 | P0 | The weekly forecast job SHALL produce, per series: 12-week point forecasts, 80% intervals, champion method id, and CV metrics — persisted to `forecasts` and `forecast_metrics` tables keyed by run. |
+| DS-FC-007 | P0 | The weekly forecast job SHALL produce, per series: 12-week point forecasts, 80% intervals, champion method id, and CV metrics - persisted to `forecasts` and `forecast_metrics` tables keyed by run. |
 | DS-FC-008 | P1 | Aggregate coherence: branch-level totals SHOULD be reconciled bottom-up from model-level forecasts; discrepancy with a directly fitted top-level forecast is reported as a diagnostic. |
 | DS-FC-009 | P1 | Forecast plots SHALL show actuals, point forecast, and interval fan; Analyst view adds per-fold CV residual diagnostics. |
 | DS-FC-010 | P2 | A machine-learning challenger (e.g., LightGBM with lag/calendar features) MAY be added only after classical baselines are in place, honoring the finding that simple methods are strong baselines on such data [7]. |
@@ -351,10 +351,10 @@ This section is the scientific core. Every method choice is referenced (§17) an
 
 | ID | Priority | Requirement |
 |---|---|---|
-| DS-INV-001 | P0 | ABC classification SHALL rank models by revenue contribution (A: top 80%, B: next 15%, C: last 5%); XYZ classification SHALL bucket by demand variability (CV of weekly demand: X < 0.5, Y 0.5–1.0, Z > 1.0), producing the standard 9-cell ABC/XYZ matrix [8]. |
+| DS-INV-001 | P0 | ABC classification SHALL rank models by revenue contribution (A: top 80%, B: next 15%, C: last 5%); XYZ classification SHALL bucket by demand variability (CV of weekly demand: X < 0.5, Y 0.5-1.0, Z > 1.0), producing the standard 9-cell ABC/XYZ matrix [8]. |
 | DS-INV-002 | P0 | Reorder point per model/branch SHALL be computed as the champion forecast's q-quantile of lead-time demand (service level configurable, default 90% → q=0.9 quantile summed over lead-time weeks), i.e., safety stock derives from forecast uncertainty, not a fixed multiplier [1][9]. |
 | DS-INV-003 | P0 | Days-on-lot SHALL be tracked per unit; an aging alert threshold (default 90 days) is configurable per segment. |
-| DS-INV-004 | P1 | The system SHALL fit a Kaplan–Meier survival curve of time-to-sale per segment [10], and display per-unit "probability of sale within 30 days" given current age; units in the worst decile are flagged for pricing review. |
+| DS-INV-004 | P1 | The system SHALL fit a Kaplan-Meier survival curve of time-to-sale per segment [10], and display per-unit "probability of sale within 30 days" given current age; units in the worst decile are flagged for pricing review. |
 | DS-INV-005 | P2 | A Cox proportional-hazards model MAY relate time-to-sale to covariates (price-to-list ratio, segment, season) to support price-adjustment suggestions [11]. |
 
 ### 6.3 Anomaly Detection (DS-ANO)
@@ -363,8 +363,8 @@ This section is the scientific core. Every method choice is referenced (§17) an
 |---|---|---|
 | DS-ANO-001 | P0 | For each monitored series (weekly sales per branch/segment, average discount, average margin), the system SHALL apply STL decomposition [12] and score residuals with a robust z-score (median/MAD); |z| > 3.5 flags an anomaly with severity scaled by |z|. |
 | DS-ANO-002 | P1 | For series with sufficient history, the generalized ESD test [13] SHOULD confirm flagged points to reduce false positives; both scores are stored. |
-| DS-ANO-003 | P0 | Transaction-level checks SHALL flag orders with negotiated price below (list − k·σ of historical discounts for that model) — parameter k configurable, default 3. |
-| DS-ANO-004 | P0 | Every anomaly SHALL persist: series/entity, timestamp, observed vs. expected, score, method, run id — and feed rule FR-061(c). |
+| DS-ANO-003 | P0 | Transaction-level checks SHALL flag orders with negotiated price below (list - k·σ of historical discounts for that model) - parameter k configurable, default 3. |
+| DS-ANO-004 | P0 | Every anomaly SHALL persist: series/entity, timestamp, observed vs. expected, score, method, run id - and feed rule FR-061(c). |
 
 ### 6.4 Customer & Lead Analytics (DS-CUST)
 
@@ -397,7 +397,7 @@ Core entities (PostgreSQL; all tables have `id` UUID, `created_at`, `updated_at`
 - **branches** (name, city)
 - **vehicle_models** (make, model, trim, segment, list_price)
 - **vehicle_units** (vin unique, model_id, branch_id, status, acquisition_date, acquisition_cost)
-- **stock_movements** (unit_id, type, from/to branch, actor_id, reason, occurred_at) — append-only
+- **stock_movements** (unit_id, type, from/to branch, actor_id, reason, occurred_at) - append-only
 - **customers** (name, phone, email, city, source_channel)
 - **leads** (customer_id, model_id, budget_band, status, owner_id, last_activity_at)
 - **lead_events** (lead_id, type, notes, actor_id)
@@ -414,7 +414,7 @@ Core entities (PostgreSQL; all tables have `id` UUID, `created_at`, `updated_at`
 - **alert_rules** (key, params_json, severity, enabled, version, updated_by)
 - **alerts** (rule_key, dedup_key, severity, payload_json, status, acknowledged_by/at, resolved_at)
 - **notifications** (user_id, alert_id, channel, read_at, emailed_at)
-- **audit_log** (actor_id, action, entity_type, entity_id, before_json, after_json, ip, at) — append-only
+- **audit_log** (actor_id, action, entity_type, entity_id, before_json, after_json, ip, at) - append-only
 
 | ID | Priority | Requirement |
 |---|---|---|
@@ -461,14 +461,14 @@ Representative resources:
 
 | ID | Priority | Requirement |
 |---|---|---|
-| NFR-001 | P0 | **Security**: OWASP ASVS-informed baseline — parameterized queries only, output encoding, CSRF-safe token pattern, security headers (CSP, HSTS-ready), secrets via environment/.env never committed. |
+| NFR-001 | P0 | **Security**: OWASP ASVS-informed baseline - parameterized queries only, output encoding, CSRF-safe token pattern, security headers (CSP, HSTS-ready), secrets via environment/.env never committed. |
 | NFR-002 | P0 | **Security**: JWT signing key rotation supported via key-id header; tokens carry minimal claims (sub, role, exp, jti). |
 | NFR-003 | P0 | **Performance**: p95 API latency < 300 ms for CRUD endpoints at assumed data volumes (§2.4) on a laptop; dashboard initial load < 2 s. |
 | NFR-004 | P0 | **Performance**: full weekly forecast job over ≤ 500 series completes < 10 min locally. |
 | NFR-005 | P0 | **Reliability**: analytics job failure never corrupts dashboards (last successful run remains served); jobs retried once with backoff. |
 | NFR-006 | P0 | **Observability**: structured JSON logging (request id, user id, latency); every analytics run traceable end-to-end via run id. |
 | NFR-007 | P0 | **Reproducibility**: pinned dependencies (uv/poetry lock + package-lock), seeded randomness, documented `make bootstrap && make seed && make dev` bringing a new machine to a working system in ≤ 15 minutes. |
-| NFR-008 | P0 | **Accessibility**: WCAG 2.1 AA intent — keyboard navigable, labeled forms, sufficient contrast; charts have data-table fallbacks (FR-053 CSV). |
+| NFR-008 | P0 | **Accessibility**: WCAG 2.1 AA intent - keyboard navigable, labeled forms, sufficient contrast; charts have data-table fallbacks (FR-053 CSV). |
 | NFR-009 | P0 | **Documentation**: README per package, ADRs for all §3.4 decisions, runbook for jobs/alerts, CHANGELOG (Conventional Commits + semantic versioning). |
 | NFR-010 | P1 | **i18n-readiness**: user-facing strings centralized; RTL layout not required in v1.0 but no hard-coded LTR assumptions in components. |
 | NFR-011 | P1 | **Privacy**: synthetic data only in the repo; any real-data import path documents PII handling and supports field-level anonymization on export. |
@@ -483,7 +483,7 @@ The generator is itself a documented statistical model (portfolio + paper value)
 
 | ID | Priority | Requirement |
 |---|---|---|
-| GEN-001 | P0 | The generator SHALL simulate 3 branches, ~25 vehicle models across 5 segments, 156 weeks (3 years) of history, ~4–8k orders, ~6–10k customers/leads — fully deterministic given a seed. |
+| GEN-001 | P0 | The generator SHALL simulate 3 branches, ~25 vehicle models across 5 segments, 156 weeks (3 years) of history, ~4-8k orders, ~6-10k customers/leads - fully deterministic given a seed. |
 | GEN-002 | P0 | Weekly demand per (model, branch) SHALL be drawn from a Negative Binomial GLM with log-link: log μ = β₀(model) + trend + Fourier seasonal terms (annual) + promotion effects + branch effect; dispersion tuned so generated series span all four SBC demand classes (smooth→lumpy). |
 | GEN-003 | P0 | Lead funnels SHALL be simulated with per-channel conversion propensities so the scoring model has learnable, known signal; ground-truth coefficients are stored for validation. |
 | GEN-004 | P0 | The generator SHALL inject labeled anomalies (demand shocks, pricing errors) at known timestamps to measure anomaly-detection precision/recall. |
@@ -523,7 +523,7 @@ Trunk-based with short-lived feature branches; Conventional Commits; PR template
 ### 12.4 Stage 2: Vercel Deployment Path (documented now, executed later)
 
 - **Web**: Vercel project, Root Directory `apps/web`. Environment variable `NEXT_PUBLIC_API_URL`.
-- **API**: two documented options — (a) free-tier container host running the FastAPI image with APScheduler intact, or (b) Vercel Python Functions for the REST surface + **Vercel Cron** invoking `POST /jobs/{name}/run` (enabled by C-03), accepting cold-start latency.
+- **API**: two documented options - (a) free-tier container host running the FastAPI image with APScheduler intact, or (b) Vercel Python Functions for the REST surface + **Vercel Cron** invoking `POST /jobs/{name}/run` (enabled by C-03), accepting cold-start latency.
 - **DB**: Neon or Supabase free Postgres; Alembic migrations unchanged.
 - **Email**: swap MailHog SMTP env vars for a free-tier transactional provider.
 - No code changes required by design; only configuration.
@@ -566,35 +566,35 @@ Protocol: (1) generate K seeded datasets via §10 spanning SBC classes; (2) opti
 
 ## 16. Glossary
 
-- **ADI** — Average inter-Demand Interval; mean number of periods between nonzero demands.
-- **CV²** — squared coefficient of variation of nonzero demand sizes.
-- **SBC classification** — Syntetos–Boylan–Croston demand-pattern categorization (smooth/erratic/intermittent/lumpy).
-- **MASE** — Mean Absolute Scaled Error; error scaled by in-sample naive error; scale-free, robust for intermittent data.
-- **Pinball loss** — quantile loss used to evaluate probabilistic forecasts.
-- **PSI** — Population Stability Index; drift measure between feature distributions.
-- **Rolling-origin CV** — time-series cross-validation with expanding training window.
-- **Days-on-lot** — days a vehicle unit has been in stock since acquisition.
-- **Dedup key** — identifier preventing duplicate open alerts for the same condition.
+- **ADI** - Average inter-Demand Interval; mean number of periods between nonzero demands.
+- **CV²** - squared coefficient of variation of nonzero demand sizes.
+- **SBC classification** - Syntetos-Boylan-Croston demand-pattern categorization (smooth/erratic/intermittent/lumpy).
+- **MASE** - Mean Absolute Scaled Error; error scaled by in-sample naive error; scale-free, robust for intermittent data.
+- **Pinball loss** - quantile loss used to evaluate probabilistic forecasts.
+- **PSI** - Population Stability Index; drift measure between feature distributions.
+- **Rolling-origin CV** - time-series cross-validation with expanding training window.
+- **Days-on-lot** - days a vehicle unit has been in stock since acquisition.
+- **Dedup key** - identifier preventing duplicate open alerts for the same condition.
 
 ---
 
 ## 17. References
 
 [1] Hyndman, R.J. & Athanasopoulos, G. (2021). *Forecasting: Principles and Practice* (3rd ed.). OTexts. https://otexts.com/fpp3/
-[2] Croston, J.D. (1972). Forecasting and stock control for intermittent demands. *Operational Research Quarterly*, 23(3), 289–303.
-[3] Syntetos, A.A. & Boylan, J.E. (2005). The accuracy of intermittent demand estimates. *International Journal of Forecasting*, 21(2), 303–314.
-[4] Syntetos, A.A., Boylan, J.E. & Croston, J.D. (2005). On the categorization of demand patterns. *Journal of the Operational Research Society*, 56(5), 495–503.
-[5] Teunter, R.H., Syntetos, A.A. & Babai, M.Z. (2011). Intermittent demand: linking forecasting to inventory obsolescence. *European Journal of Operational Research*, 214(3), 606–615.
-[6] Hyndman, R.J. & Koehler, A.B. (2006). Another look at measures of forecast accuracy. *International Journal of Forecasting*, 22(4), 679–688.
+[2] Croston, J.D. (1972). Forecasting and stock control for intermittent demands. *Operational Research Quarterly*, 23(3), 289-303.
+[3] Syntetos, A.A. & Boylan, J.E. (2005). The accuracy of intermittent demand estimates. *International Journal of Forecasting*, 21(2), 303-314.
+[4] Syntetos, A.A., Boylan, J.E. & Croston, J.D. (2005). On the categorization of demand patterns. *Journal of the Operational Research Society*, 56(5), 495-503.
+[5] Teunter, R.H., Syntetos, A.A. & Babai, M.Z. (2011). Intermittent demand: linking forecasting to inventory obsolescence. *European Journal of Operational Research*, 214(3), 606-615.
+[6] Hyndman, R.J. & Koehler, A.B. (2006). Another look at measures of forecast accuracy. *International Journal of Forecasting*, 22(4), 679-688.
 [7] Makridakis, S., Spiliotis, E. & Assimakopoulos, V. (2018). Statistical and machine learning forecasting methods: concerns and ways forward. *PLoS ONE*, 13(3), e0194889.
 [8] Silver, E.A., Pyke, D.F. & Thomas, D.J. (2016). *Inventory and Production Management in Supply Chains* (4th ed.). CRC Press.
 [9] Boylan, J.E. & Syntetos, A.A. (2021). *Intermittent Demand Forecasting: Context, Methods and Applications*. Wiley.
-[10] Kaplan, E.L. & Meier, P. (1958). Nonparametric estimation from incomplete observations. *JASA*, 53(282), 457–481.
-[11] Cox, D.R. (1972). Regression models and life-tables. *JRSS Series B*, 34(2), 187–220.
-[12] Cleveland, R.B., Cleveland, W.S., McRae, J.E. & Terpenning, I. (1990). STL: a seasonal-trend decomposition procedure based on loess. *Journal of Official Statistics*, 6(1), 3–73.
-[13] Rosner, B. (1983). Percentage points for a generalized ESD many-outlier procedure. *Technometrics*, 25(2), 165–172.
-[14] Fader, P.S., Hardie, B.G.S. & Lee, K.L. (2005). RFM and CLV: using iso-value curves for customer base analysis. *Journal of Marketing Research*, 42(4), 415–430.
-[15] Niculescu-Mizil, A. & Caruana, R. (2005). Predicting good probabilities with supervised learning. *Proc. ICML 2005*, 625–632.
+[10] Kaplan, E.L. & Meier, P. (1958). Nonparametric estimation from incomplete observations. *JASA*, 53(282), 457-481.
+[11] Cox, D.R. (1972). Regression models and life-tables. *JRSS Series B*, 34(2), 187-220.
+[12] Cleveland, R.B., Cleveland, W.S., McRae, J.E. & Terpenning, I. (1990). STL: a seasonal-trend decomposition procedure based on loess. *Journal of Official Statistics*, 6(1), 3-73.
+[13] Rosner, B. (1983). Percentage points for a generalized ESD many-outlier procedure. *Technometrics*, 25(2), 165-172.
+[14] Fader, P.S., Hardie, B.G.S. & Lee, K.L. (2005). RFM and CLV: using iso-value curves for customer base analysis. *Journal of Marketing Research*, 42(4), 415-430.
+[15] Niculescu-Mizil, A. & Caruana, R. (2005). Predicting good probabilities with supervised learning. *Proc. ICML 2005*, 625-632.
 
 ---
 

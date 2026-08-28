@@ -65,7 +65,7 @@ def create_app() -> FastAPI:
     )
 
     app.state.limiter = limiter
-    # slowapi's handler type doesn't perfectly match Starlette's exception-handler stub —
+    # slowapi's handler type doesn't perfectly match Starlette's exception-handler stub -
     # known friction point, not a real type mismatch.
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore[arg-type]
     app.add_middleware(SlowAPIMiddleware)

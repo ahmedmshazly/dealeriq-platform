@@ -2,7 +2,7 @@
 producing the standard 9-cell matrix.
 
 Boundary convention: models are ranked by revenue descending, and a model is assigned the class
-whose cumulative-share ceiling it *first* falls at or under — i.e. the model whose inclusion
+whose cumulative-share ceiling it *first* falls at or under - i.e. the model whose inclusion
 pushes cumulative revenue share past 80% is still an A (its inclusion is what crosses the
 boundary), not a B. This is the standard convention in the inventory-management literature and
 avoids an arbitrary tie-break on models that land exactly on a cutoff.
@@ -31,7 +31,7 @@ class AbcXyzResult:
 
 
 def _abc_letter(cumulative_share_before: float) -> str:
-    """Classifies by the cumulative share accumulated *before* this model — so the model whose
+    """Classifies by the cumulative share accumulated *before* this model - so the model whose
     own share pushes the running total past a cutoff is still counted in the more exclusive
     class (its inclusion is what crosses the boundary), matching the module docstring's stated
     convention. Using the share *after* inclusion instead would misclassify the top revenue
@@ -65,7 +65,7 @@ def classify_abc_xyz(
     revenue_by_model: dict[str, float],
     weekly_demand_by_model: dict[str, pd.Series],
 ) -> dict[str, AbcXyzResult]:
-    """Classifies every model present in `revenue_by_model` — callers exclude models with zero
+    """Classifies every model present in `revenue_by_model` - callers exclude models with zero
     order history before calling this (spec.md Edge Cases: no order history means no revenue
     share and no defined CV, so it can't be ranked, not that it defaults into a spurious cell)."""
     total_revenue = sum(revenue_by_model.values())

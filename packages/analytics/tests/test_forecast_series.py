@@ -1,4 +1,4 @@
-"""Weekly series construction (DS-FC-001) — calendar alignment and zero-fill edge cases."""
+"""Weekly series construction (DS-FC-001) - calendar alignment and zero-fill edge cases."""
 
 import pandas as pd
 

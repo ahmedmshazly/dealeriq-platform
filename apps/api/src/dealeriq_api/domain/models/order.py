@@ -1,4 +1,4 @@
-"""Order + OrderEvent — the sales order lifecycle (FR-040..045)."""
+"""Order + OrderEvent - the sales order lifecycle (FR-040..045)."""
 
 import enum
 import uuid

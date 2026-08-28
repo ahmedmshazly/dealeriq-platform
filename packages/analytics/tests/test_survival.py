@@ -21,7 +21,7 @@ def test_is_aging_threshold_boundary_is_inclusive() -> None:
 
 def test_kaplan_meier_hand_computed_survival_function() -> None:
     # 5 units, durations [5,10,15,20,25], events [T,T,F,T,F] (same toy dataset used to sanity
-    # -check lifelines' own API): standard KM step calculation —
+    # -check lifelines' own API): standard KM step calculation -
     #   S(0)=1
     #   at t=5: 1 death out of 5 at risk -> S(5) = 1 * (4/5) = 0.8
     #   at t=10: 1 death out of 4 at risk -> S(10) = 0.8 * (3/4) = 0.6

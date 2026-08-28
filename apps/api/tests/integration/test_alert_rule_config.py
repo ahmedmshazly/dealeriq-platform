@@ -1,7 +1,7 @@
-"""Integration test: FR-065 admin rule-parameter configuration — versioned, audit-logged, and
+"""Integration test: FR-065 admin rule-parameter configuration - versioned, audit-logged, and
 the next evaluation uses the new parameter.
 
-Both tests that disable `unit_aging` restore it to `enabled=True` afterward — this rule's default
+Both tests that disable `unit_aging` restore it to `enabled=True` afterward - this rule's default
 state is depended on by `test_alert_rules.py`'s own dedicated test, and all integration tests
 share one session-scoped testcontainers Postgres (ADR-013), so leaving it disabled would break
 whichever test happens to run after this file.
@@ -67,7 +67,7 @@ def test_disabling_a_rule_via_admin_config_stops_it_from_firing(
         headers={"Authorization": f"Bearer {token}"},
     )
     try:
-        # Any run_id is fine -- evaluate_unit_aging returns 0 immediately once the rule is
+        # Any run_id is fine, evaluate_unit_aging returns 0 immediately once the rule is
         # disabled, never touching the DB for UnitRisk rows.
         count = evaluate_unit_aging(db_session, uuid.uuid4())
         assert count == 0

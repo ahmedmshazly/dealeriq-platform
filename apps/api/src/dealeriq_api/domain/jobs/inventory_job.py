@@ -1,16 +1,16 @@
 """Inventory intelligence & anomaly detection job orchestration (DS-INV-001..004,
 DS-ANO-001..004). Reads orders/vehicle_units/stock_movements/Phase 4's latest succeeded forecast
 run, calls `dealeriq_analytics`'s inventory + anomaly modules (pure, DB-free computation), and
-writes run/inventory_intel/unit_risk/anomalies — reusing Phase 4's `AnalyticsRun` run-tracking
+writes run/inventory_intel/unit_risk/anomalies - reusing Phase 4's `AnalyticsRun` run-tracking
 table rather than a parallel mechanism (FR-070 already covers "every analytics execution").
 
-Reorder points depend on Phase 4's persisted champion forecasts (DS-INV-002) — a (model, branch)
+Reorder points depend on Phase 4's persisted champion forecasts (DS-INV-002) - a (model, branch)
 with no succeeded forecast run yet gets an `InventoryIntel` row with `abc`/`xyz` still populated
 (those don't depend on forecasts) but `reorder_point`/`safety_stock` left null and
 `skipped_reason` recorded, never a fabricated value (spec.md User Story 2).
 
 Survival analysis (DS-INV-004) only includes IN_STOCK/RESERVED units (right-censored, still on
-lot) and SOLD units (the observed event, timed by their `StockMovement(type=SALE)` row) —
+lot) and SOLD units (the observed event, timed by their `StockMovement(type=SALE)` row) -
 TRANSFERRED units are excluded from the risk pool entirely, since they didn't sell from this
 branch and their fate afterward isn't this phase's concern (a documented simplification).
 """
@@ -74,7 +74,7 @@ DEFAULT_AGING_THRESHOLD_DAYS = 90
 DEFAULT_DISCOUNT_K = 3.0
 MIN_OBSERVATIONS_FOR_SURVIVAL = 5
 """A segment's Kaplan-Meier curve needs at least this many time-to-sale observations (sold or
-still-in-stock) to be worth fitting at all — below this, p_sale_30d/risk_decile are left null
+still-in-stock) to be worth fitting at all - below this, p_sale_30d/risk_decile are left null
 rather than fit to a near-empty, meaningless curve."""
 
 
@@ -353,8 +353,8 @@ def _assign_risk_deciles(probabilities: dict[uuid.UUID, float]) -> dict[uuid.UUI
 
 def _write_series_anomalies(db: Session, run_id: uuid.UUID, orders_df: pd.DataFrame) -> int:
     """Monitors sales at *both* granularities DS-ANO-001's "per branch/segment" wording admits:
-    (model, branch) — the same granularity Phase 3's demand shocks were injected into and Phase
-    4's champion forecasts are keyed by, so this is what actually catches that ground truth — and
+    (model, branch) - the same granularity Phase 3's demand shocks were injected into and Phase
+    4's champion forecasts are keyed by, so this is what actually catches that ground truth - and
     (segment, branch) aggregates, for average-discount/average-margin operational monitoring
     where a per-model series would be too sparse to be meaningful."""
     week_start = compute_week_start(pd.Series([orders_df["at"].min()])).iloc[0]

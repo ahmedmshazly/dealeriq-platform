@@ -160,7 +160,7 @@ def test_high_discount_order_requires_manager_approval(client: TestClient) -> No
     assert manager_approve.json()["status"] == "approved"
     assert manager_approve.json()["margin"] == 17000.0 - 17000.0  # negotiated - acquisition_cost
 
-    # Approving twice is rejected — the order is no longer pending_approval.
+    # Approving twice is rejected - the order is no longer pending_approval.
     second_approve = client.post(
         f"/api/v1/orders/{order_id}/approve",
         headers={"Authorization": f"Bearer {manager_bearer}"},

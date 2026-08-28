@@ -24,8 +24,8 @@ transactional current-state columns except via documented side effects (e.g. ope
 
 ## Append-only ledgers
 
-- **`stock_movements`** — inventory level derived from ledger, not overwritten in place.
-- **`audit_log`** — security/business event trail; insert only.
+- `stock_movements`: inventory level is derived from the ledger, never overwritten in place.
+- `audit_log`: security and business event trail; insert only.
 - Order/lead **event** tables record state transitions.
 
 ## D15 Expanded data model

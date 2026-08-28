@@ -9,7 +9,7 @@ last-verified: 2026-07-17
 **Audience:** engineers, operators, auditors.  
 **Last updated:** 2026-07-17  
 **Refs:** Constitution III, FR-001..012, ADR-006/009/010/019/020, SEC/NFR in SRS  
-**Diagrams:** [catalog D07–D09](../diagrams/README.md)
+**Diagrams:** [catalog D07-D09](../diagrams/README.md)
 
 ## Principles
 
@@ -49,7 +49,7 @@ sequenceDiagram
 
 ### D08 Refresh-token rotation and reuse detection
 
-**Purpose:** ADR-019 — each refresh issues a new opaque token; presenting a already-rotated
+**Purpose:** ADR-019 - each refresh issues a new opaque token; presenting a already-rotated
 token is treated as theft (family revoke).
 
 ```mermaid
@@ -124,7 +124,7 @@ Never commit production secrets. Gitleaks runs in pre-commit and CI. See [`SECUR
 
 ## Threat notes (v1.0 scope)
 
-- Synthetic / portfolio data — not a multi-tenant SaaS isolation model (NFR-021 future).
+- Synthetic / portfolio data - not a multi-tenant SaaS isolation model (NFR-021 future).
 - Frontend never trusted for authorization decisions.
 - OpenAPI/docs disabled outside `APP_ENV=development`.
 - Dependency findings gated by `scripts/ci/check_dependency_audit.py` +

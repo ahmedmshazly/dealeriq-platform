@@ -1,4 +1,4 @@
-"""Anomaly injection (GEN-004) — independent detectability validation (spec.md SC-004)."""
+"""Anomaly injection (GEN-004) - independent detectability validation (spec.md SC-004)."""
 
 import numpy as np
 from statsmodels.tsa.seasonal import STL
@@ -20,7 +20,7 @@ N_NEAR_MISS = 5
 
 
 def _independent_z_score(series: np.ndarray, week_index: int) -> float:
-    """Recomputes the robust z-score from scratch on the given (already-injected) series — does
+    """Recomputes the robust z-score from scratch on the given (already-injected) series - does
     not reuse any stats from the injection step, so this is a genuine independent check."""
     stl = STL(series.astype(np.float64), period=STL_PERIOD, robust=False)
     residuals = stl.fit().resid

@@ -19,7 +19,7 @@ interface BadgeProps {
 }
 
 /** Two distinct badge shapes per the Brand Guidelines: `chip` (6-8px radius) for order/entity
- * status, `pill` (fully rounded) for temperature/priority tags — never interchange them. */
+ * status, `pill` (fully rounded) for temperature/priority tags - never interchange them. */
 export function Badge({ severity = "neutral", shape = "chip", children, className = "" }: BadgeProps) {
   const shapeClass = shape === "pill" ? "rounded-full" : "rounded-sm";
   return (

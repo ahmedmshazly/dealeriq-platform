@@ -1,4 +1,4 @@
-# apps/api — DealerIQ API
+# apps/api - DealerIQ API
 
 FastAPI (Python 3.12) backend. Owns the database; the sole security boundary (RBAC is enforced
 here only, never trusted from the frontend). See `docs/srs/DealerIQ-SRS.md` §5, §7, §8 and
@@ -27,14 +27,14 @@ tests/
 └── conftest.py
 ```
 
-There is **no repository layer** — services and jobs use SQLAlchemy `Session` directly
+There is **no repository layer** - services and jobs use SQLAlchemy `Session` directly
 (intentional; see ADR-027).
 
 ## Auth
 
 Deny-by-default: every route declares `Depends(require_permission("resource:action"))`. Access
 tokens are short-lived JWTs (`Authorization: Bearer`); refresh tokens are opaque, httpOnly-cookie
-values with rotation and reuse detection (ADR-019). Self-registration is disabled — the first
+values with rotation and reuse detection (ADR-019). Self-registration is disabled - the first
 Admin account is seeded by the auth RBAC migration from `BOOTSTRAP_ADMIN_EMAIL`/
 `BOOTSTRAP_ADMIN_PASSWORD` (see `.env.example`) with `must_change_password=true`.
 
@@ -48,7 +48,7 @@ uv run uvicorn dealeriq_api.main:app --reload --port 8000
 
 Interactive API docs: `http://localhost:8000/api/v1/docs`. OpenAPI schema:
 `http://localhost:8000/api/v1/openapi.json` (this is what `packages/api-client` generates
-against — see ADR-012).
+against - see ADR-012).
 
 ## Tests
 

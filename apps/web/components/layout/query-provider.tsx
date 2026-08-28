@@ -11,7 +11,7 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
         defaultOptions: {
           queries: {
             retry: (failureCount, error) => {
-              // 4xx errors (wrong permission, bad request, not found) are permanent — retrying
+              // 4xx errors (wrong permission, bad request, not found) are permanent - retrying
               // won't help and only delays the UI reaching a usable error state.
               if (error instanceof ApiRequestError && error.status >= 400 && error.status < 500) {
                 return false;

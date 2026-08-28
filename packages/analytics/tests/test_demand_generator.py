@@ -1,4 +1,4 @@
-"""NB-GLM demand generator (GEN-001, GEN-002) — determinism and SBC-class-coverage tests
+"""NB-GLM demand generator (GEN-001, GEN-002) - determinism and SBC-class-coverage tests
 (spec.md SC-002, SC-005)."""
 
 from collections import Counter
@@ -50,7 +50,7 @@ def test_generate_demand_differs_across_seeds() -> None:
 
 def test_generator_sbc_coverage() -> None:
     """SC-002: the default (seed=42) config must produce >= 10 series in each of the four SBC
-    classes — see docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md for why the model
+    classes - see docs/adr/021-synthetic-demand-volume-vs-sbc-coverage.md for why the model
     counts and mu0 ranges in config.py look the way they do."""
     demand = generate_demand(GeneratorConfig())
     counts = _classify_all(demand.series)

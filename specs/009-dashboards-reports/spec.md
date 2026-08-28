@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 8 — "FR-050..054, FR-073"
+**Input**: SRS DIQ-SRS-001 v1.0.0 §13 Phase 8 - "FR-050..054, FR-073"
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -14,7 +14,7 @@
 
 As a Manager, I open a single dashboard and immediately see how this month's sales compare to
 what was forecast, which models are selling best and worst, the state of my inventory (aging,
-risk), any open anomalies, and any alerts I haven't yet dealt with — without visiting five
+risk), any open anomalies, and any alerts I haven't yet dealt with - without visiting five
 different pages.
 
 **Why this priority**: This is the phase's own named exit criterion ("Manager/Sales dashboards
@@ -23,7 +23,7 @@ complete") and the SRS's own top-priority requirement (FR-050, P0).
 **Independent Test**: Log in as a Manager with real seeded data; confirm the dashboard shows a
 real sales-vs-forecast comparison for the current month (with a visible prediction-interval
 band), a real top/bottom models list, a real ABC/XYZ + aging summary, real open anomalies, and a
-real unacknowledged-alerts count — all sourced from actual data, none fabricated or hardcoded.
+real unacknowledged-alerts count - all sourced from actual data, none fabricated or hardcoded.
 
 **Acceptance Scenarios**:
 
@@ -42,7 +42,7 @@ real unacknowledged-alerts count — all sourced from actual data, none fabricat
 ### User Story 2 - A Salesperson sees their own pipeline and performance (Priority: P1)
 
 As a Salesperson, I open my dashboard and see my own open leads ranked by how likely they are to
-convert, how my sales this month compare to my target, and my own notifications — everything I
+convert, how my sales this month compare to my target, and my own notifications - everything I
 need to prioritize my day.
 
 **Why this priority**: The phase's other named exit criterion (Sales dashboard), P0 in the SRS
@@ -50,7 +50,7 @@ need to prioritize my day.
 
 **Independent Test**: Log in as a Salesperson with real seeded leads and orders assigned to them;
 confirm their dashboard shows only their own open leads ranked by real conversion scores, a real
-sales-vs-target comparison for the current month, and their own real notifications — never
+sales-vs-target comparison for the current month, and their own real notifications - never
 another salesperson's data.
 
 **Acceptance Scenarios**:
@@ -69,11 +69,11 @@ another salesperson's data.
 
 As an Analyst, beyond the champion/challenger comparison already available from training-time
 cross-validation, I want to see how forecasts have actually performed against real results after
-the fact — a rolling accuracy view — alongside the diagnostics, leaderboard, and anomaly explorer
+the fact - a rolling accuracy view - alongside the diagnostics, leaderboard, and anomaly explorer
 already available to me, so I can judge model health with real outcomes, not just held-out
 validation.
 
-**Why this priority**: FR-073's own requirement (P1) — a genuinely new capability not covered by
+**Why this priority**: FR-073's own requirement (P1) - a genuinely new capability not covered by
 any earlier phase, layered onto the workbench earlier phases already built.
 
 **Independent Test**: With multiple months of real forecast history and real actuals available,
@@ -99,7 +99,7 @@ cross-validation-based leaderboard metrics.
 As any dashboard user, I can export a chart I'm looking at as an image, and its underlying data
 as a spreadsheet-readable file, so I can drop it into a slide deck or analyze it further myself.
 
-**Why this priority**: P2 in the SRS (FR-053) — a real, useful convenience layered on top of
+**Why this priority**: P2 in the SRS (FR-053) - a real, useful convenience layered on top of
 User Stories 1-3's charts, not required for any of them to be independently valuable.
 
 **Independent Test**: With any dashboard chart on screen, trigger its export controls; confirm a
@@ -121,13 +121,13 @@ As any dashboard user, I can open a monthly report summarizing last month's sale
 forecast accuracy achieved, and alert statistics, so I don't have to reconstruct the month from
 several different views.
 
-**Why this priority**: P2 in the SRS (FR-054) — depends on User Story 3's rolling-accuracy
+**Why this priority**: P2 in the SRS (FR-054) - depends on User Story 3's rolling-accuracy
 computation and is a summary/convenience layer, not required for the phase's own named exit
 criterion.
 
 **Independent Test**: With a full prior month of real seeded data, open the monthly report;
 confirm it shows real sales and margin totals for that month, a real forecast-accuracy figure
-for that month, and real alert statistics — all computed, not fabricated placeholders.
+for that month, and real alert statistics - all computed, not fabricated placeholders.
 
 **Acceptance Scenarios**:
 
@@ -147,11 +147,11 @@ for that month, and real alert statistics — all computed, not fabricated place
 - What happens for a Salesperson with zero open leads or zero orders this month? Their dashboard
   shows an honest empty state ("no open leads" / "$0 this month"), not an error.
 - What happens to the monthly report for the current, still-in-progress month? The report is
-  scoped to *completed* prior months only — the current month's data is incomplete by definition,
+  scoped to *completed* prior months only - the current month's data is incomplete by definition,
   so showing it as "the month's totals" would be misleading; the report always defaults to the
   most recently completed calendar month.
 - What happens to "my monthly sales vs. target" if no target has been configured? A single
-  admin-configurable default target applies to every salesperson this phase (see Assumptions) —
+  admin-configurable default target applies to every salesperson this phase (see Assumptions) -
   never a missing/undefined comparison.
 - What happens to the rolling-accuracy diagnostic for a series with no forecast old enough to
   have real actuals yet (a newly-onboarded series)? It shows "not enough history yet" rather than
@@ -181,7 +181,7 @@ for that month, and real alert statistics — all computed, not fabricated place
 *(names describe the concepts introduced; exact schema is a planning-phase decision.)*
 
 - **Achieved accuracy record**: a computed (not stored ground-truth) figure per series per
-  evaluation window — how a past forecast's point estimates compared to the actuals that
+  evaluation window - how a past forecast's point estimates compared to the actuals that
   materialized after the forecast was made, distinct from the training-time cross-validation
   metrics Phase 4 already persists.
 - **Monthly sales target**: the single configurable figure a Salesperson's monthly sales are
@@ -195,7 +195,7 @@ for that month, and real alert statistics — all computed, not fabricated place
   performance ranking, inventory health, open anomalies, and unacknowledged alerts within a
   single page load, with zero fabricated or placeholder values against real seeded data.
 - **SC-002**: A Salesperson can see only their own open leads (ranked by real conversion score),
-  their own monthly sales vs. target, and their own notifications — verified that another
+  their own monthly sales vs. target, and their own notifications - verified that another
   salesperson's data never leaks into their view.
 - **SC-003**: An Analyst can distinguish, per series, training-time (cross-validation) accuracy
   from actually-achieved (rolling, out-of-sample) accuracy, both backed by real computation
@@ -203,9 +203,9 @@ for that month, and real alert statistics — all computed, not fabricated place
 - **SC-004**: Any dashboard chart can be exported as a real PNG matching what's on screen, and its
   data as a real, correctly-populated CSV.
 - **SC-005**: The monthly report, opened for a completed prior month with real data, shows real
-  sales, margin, forecast-accuracy, and alert-statistics figures for that month — verified against
+  sales, margin, forecast-accuracy, and alert-statistics figures for that month - verified against
   independently hand-computed totals from the same underlying data.
-- **SC-006**: The phase's own exit demo — a Manager and a Salesperson can each open their
+- **SC-006**: The phase's own exit demo - a Manager and a Salesperson can each open their
   respective dashboard and see it fully populated with real data, with zero manual steps beyond
   logging in.
 
@@ -220,22 +220,22 @@ for that month, and real alert statistics — all computed, not fabricated place
   cross-linking between the existing pages so they read as one coherent workbench rather than
   three separately-discovered routes. This is a scope-narrowing observation, not a shortcut:
   every part of FR-052's literal wording is met, just mostly by work already delivered.
-- **"Sales this month vs. forecast" (FR-050) needs no new "target" concept** — it compares real
+- **"Sales this month vs. forecast" (FR-050) needs no new "target" concept** - it compares real
   delivered-order revenue this month against the sum of the relevant series' already-persisted
   forecast point estimates (and interval band) for the same weeks, both already available from
   Phase 2 (orders) and Phase 4 (forecasts).
 - **"My monthly sales vs. target" (FR-051) introduces the simplest viable target concept**: a
   single admin-configurable default monthly sales figure applied uniformly to every Salesperson,
   not a full per-salesperson quota-management system (which would be a genuine, unscoped
-  expansion — no such concept exists anywhere in the domain today). Proper per-salesperson quota
+  expansion - no such concept exists anywhere in the domain today). Proper per-salesperson quota
   management is recorded as a P2 backlog item, the same pattern used for prior phases' own scope
   traps (e.g. FR-034, FR-082).
 - **Rolling/achieved accuracy (FR-073) is computed on demand from already-persisted data** (past
   `Forecast` rows plus real actuals reconstructed the same way Phase 4's fan chart already does),
-  not as a new standalone scheduled job — it reads history that already exists rather than
+  not as a new standalone scheduled job - it reads history that already exists rather than
   requiring a new analytics-run lifecycle of its own.
 - **The monthly report (FR-054) always defaults to the most recently fully-completed calendar
-  month** — the current, in-progress month is never presented as "the month's totals," since its
+  month** - the current, in-progress month is never presented as "the month's totals," since its
   data is necessarily incomplete.
 - **CSV/PNG export (FR-053) is built once as reusable utility code** and wired into every chart
   introduced or touched by this phase; retrofitting it onto every chart from every earlier phase

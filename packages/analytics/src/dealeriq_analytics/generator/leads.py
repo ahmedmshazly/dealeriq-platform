@@ -1,4 +1,4 @@
-"""Lead funnel logit simulation (GEN-003). Pure numpy — no DB dependency.
+"""Lead funnel logit simulation (GEN-003). Pure numpy - no DB dependency.
 
 logit(P(won)) = gamma0 + gamma_channel[source] + gamma_budget*budget_level +
                 gamma_segment[model_segment] + gamma_days*days_since_creation +
@@ -8,13 +8,13 @@ logit(P(won)) = gamma0 + gamma_channel[source] + gamma_budget*budget_level +
 The five coefficient groups explicitly pinned by specs/004-synthetic-data/plan.md (channel,
 budget's *existence* as a feature, days-since-creation, interaction count, RFM quintile, and
 economy-vs-luxury for segment) are marked below. Plan.md's prose didn't give exact values for the
-intercept, the non-economy segment levels, the per-level budget slope, or a seasonal term — those
+intercept, the non-economy segment levels, the per-level budget slope, or a seasonal term - those
 are filled in here as reasonable, documented defaults (see phase report
 03-synthetic-data.md's deviations section), chosen so every coefficient still has an
 unambiguous, recoverable sign for SC-003's logistic-regression sign-recovery check.
 
 RFM quintile is generated as an exogenous input here, not derived from a customer's real order
-history — GEN-003 is explicitly "simulated independently from the order/demand realization"
+history - GEN-003 is explicitly "simulated independently from the order/demand realization"
 (plan.md), so the pure-stats layer treats it as one more drawn feature. The seed-time orchestrator
 (infra/seed) is what ties simulated leads to real Customer/Order rows.
 """
@@ -160,7 +160,7 @@ def leads_to_design_matrix(
     leads: list[SimulatedLead],
 ) -> tuple[NDArray[np.float64], NDArray[np.int64], list[str]]:
     """Encodes simulated leads into an (X, y, feature_names) design matrix suitable for fitting a
-    logistic regression — used by the sign-recovery validation test (SC-003)."""
+    logistic regression - used by the sign-recovery validation test (SC-003)."""
     feature_names = (
         [f"channel__{c}" for c in CHANNELS if c != "web_form"]
         + [

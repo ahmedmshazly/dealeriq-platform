@@ -1,8 +1,8 @@
 /*
-  DealerIQ — Design Tokens
+  DealerIQ - Design Tokens
   Light mode is the default (:root / [data-theme="light"]); dark mode via [data-theme="dark"].
   Author in oklch conceptually (hue-consistent accents); shipped as hex for broad rendering + contrast-verified pairs.
-  All text-pair tokens below are WCAG 2.1 AA verified — see brand guidelines §3 for the full contrast table.
+  All text-pair tokens below are WCAG 2.1 AA verified - see brand guidelines §3 for the full contrast table.
 */
 
 :root,
@@ -21,7 +21,7 @@
   --color-neutral-800: #29333A;
   --color-neutral-900: #131B20;
 
-  /* ---------- Primary — "Signal" teal-blue ---------- */
+  /* ---------- Primary - "Signal" teal-blue ---------- */
   --color-primary-50:  #EAF3F6;
   --color-primary-100: #CFE6EC;
   --color-primary-200: #9ECEDA;
@@ -32,7 +32,7 @@
   --color-primary-700: #124559;
   --color-primary-800: #0D323F;
 
-  /* ---------- Secondary — "Ember" amber (restrained; sparing use) ---------- */
+  /* ---------- Secondary - "Ember" amber (restrained; sparing use) ---------- */
   --color-secondary-50:  #F8F0E7;
   --color-secondary-100: #EEDCC0;
   --color-secondary-300: #D4A464;
@@ -57,7 +57,7 @@
   --color-critical-border: #F0BFBE;
   --color-critical-fg:     #B23B36;
 
-  /* Forecast — reserved exclusively for prediction lines / interval fans, never for UI chrome */
+  /* Forecast - reserved exclusively for prediction lines / interval fans, never for UI chrome */
   --color-forecast-line: #7C6FD1;
   --color-forecast-text: #5B4FB5; /* AA-safe on light surfaces */
   --color-forecast-fill-opacity: 0.16;
@@ -151,7 +151,7 @@
   --link-color:       #6BB2C4;
   --link-color-hover: #9ECEDA;
 
-  /* ---------- Elevation (dark) — lean on hairline borders; shadows read as pure-black depth, not softness ---------- */
+  /* ---------- Elevation (dark) - lean on hairline borders; shadows read as pure-black depth, not softness ---------- */
   --shadow-1: 0 1px 2px rgba(0,0,0,0.28);
   --shadow-2: 0 2px 10px rgba(0,0,0,0.36);
   --shadow-3: 0 16px 40px rgba(0,0,0,0.48);
@@ -159,7 +159,7 @@
 }
 
 :root {
-  /* ---------- Data visualization — categorical (Okabe–Ito, colorblind-safe for deuteranopia/protanopia) ---------- */
+  /* ---------- Data visualization - categorical (Okabe-Ito, colorblind-safe for deuteranopia/protanopia) ---------- */
   --chart-cat-1: #131B20; /* ink */
   --chart-cat-2: #E69F00; /* orange */
   --chart-cat-3: #56B4E9; /* sky blue */
@@ -176,7 +176,7 @@
   --chart-cat-7-onlight: #BF4E00;
   --chart-cat-8-onlight: #A85D89;
 
-  /* Sequential ramp (reuses primary scale — ties data intensity to brand hue) */
+  /* Sequential ramp (reuses primary scale - ties data intensity to brand hue) */
   --chart-seq-1: #EAF3F6;
   --chart-seq-2: #CFE6EC;
   --chart-seq-3: #9ECEDA;
@@ -185,7 +185,7 @@
   --chart-seq-6: #1C6E8C;
   --chart-seq-7: #124559;
 
-  /* Diverging ramp (blue ↔ neutral ↔ vermillion — colorblind-safe pair, safer than red/green) */
+  /* Diverging ramp (blue ↔ neutral ↔ vermillion - colorblind-safe pair, safer than red/green) */
   --chart-div-neg-2: #0072B2;
   --chart-div-neg-1: #6FA9CE;
   --chart-div-mid:   #EEF0F2;

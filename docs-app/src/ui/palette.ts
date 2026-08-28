@@ -13,7 +13,7 @@ import { bumpFreq, state } from "../lib/store.js";
  *
  * With no prefix it searches everything at once, ranked by fuzzy score and then
  * by how often you have chosen that item before. Typing `contact` surfaces the
- * *route* `POST /api/contact`, not merely prose containing the word — because
+ * *route* `POST /api/contact`, not merely prose containing the word - because
  * `docs/index.md` already enumerates every route, and the indexer read it.
  */
 export interface Command {
@@ -317,7 +317,7 @@ function buildItems(deps: PaletteDeps): Item[] {
       sub: e.detail,
       // Entities outrank symbols that merely share a name. Searching "contact"
       // should offer the route `/api/contact` before the React component that
-      // posts to it — the route is the thing you were looking up.
+      // posts to it - the route is the thing you were looking up.
       weight: e.kind === "route" ? 12 : 9,
       run: () => deps.openDoc(e.doc, e.anchor),
     });

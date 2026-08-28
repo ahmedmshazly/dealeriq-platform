@@ -1,7 +1,7 @@
-# Runbook: Analytics Jobs & the Alert Engine
+# Runbook: analytics jobs and the alert engine
 
 Operational reference for the five scheduled analytics jobs and the alert-rule engine that reads
-their output. For general local setup, see [`local-dev.md`](./local-dev.md) — this document
+their output. For general local setup, see [`local-dev.md`](./local-dev.md) - this document
 covers what happens once the stack is running.
 
 ## The five scheduled jobs
@@ -24,20 +24,20 @@ alerts.
 **The scheduler only starts when `ENABLE_SCHEDULER=true`.** It defaults off (see
 `core/config.py`'s docstring) because a scheduled job opens its own DB session directly, which
 would otherwise hit the live dev database during a test run and bypass the test suite's `get_db`
-override. `make dev` is the only place that sets it — a plain `uv run uvicorn ...` (e.g. for
+override. `make dev` is the only place that sets it - a plain `uv run uvicorn ...` (e.g. for
 manual API-only testing) does **not** run the scheduler unless you export the variable yourself.
 
 ## Triggering a job on demand
 
 Every scheduled job is also triggerable via an authenticated HTTP endpoint (`jobs:trigger`
-permission — Admin/Manager), which is what the cron callbacks call internally too:
+permission - Admin/Manager), which is what the cron callbacks call internally too:
 
 ```
 POST /api/v1/jobs/{job_name}/run
 ```
 
 `job_name` is one of `forecast`, `inventory`, `alerts`, `digest`, `lead_scoring`. This is the
-normal way to run a job outside its schedule — after a fresh reseed, to re-check a fix, or to
+normal way to run a job outside its schedule - after a fresh reseed, to re-check a fix, or to
 populate a freshly-seeded dev environment (which starts with zero forecast/inventory/alert
 history until something runs a job).
 
@@ -45,9 +45,9 @@ history until something runs a job).
 cron or another manual trigger) returns `409 Conflict` rather than starting a second, colliding
 run.
 
-## Reading job status — the `AnalyticsRun` table
+## Reading job status - the `AnalyticsRun` table
 
-Every job execution — cron or manual — writes one row to `analytics_runs` before doing any real
+Every job execution - cron or manual - writes one row to `analytics_runs` before doing any real
 work, and updates it when it finishes:
 
 ```
@@ -65,15 +65,15 @@ returns every run for that job, newest first. Key fields:
 
 **Diagnosing a stuck run:** if a row has been `status="running"` far longer than the job
 normally takes, the process that was running it likely crashed or was killed without reaching
-its `finally` cleanup. Check the API server's logs for the job's start time — a genuinely stuck
+its `finally` cleanup. Check the API server's logs for the job's start time - a genuinely stuck
 row does not resolve itself and will keep returning `409` on every trigger attempt for that job
 name until you resolve it directly (or restart with a fresh reseed in a dev environment).
 
-**Diagnosing a failed run:** read `metrics["error"]` on the latest `failed` row — every job
+**Diagnosing a failed run:** read `metrics["error"]` on the latest `failed` row - every job
 function lets its own exception propagate up to the trigger route, which is what leaves the row
 `failed` rather than stuck `running`.
 
-**A failed or missing run never corrupts what's already being served** — every route that reads
+**A failed or missing run never corrupts what's already being served** - every route that reads
 job output (dashboards, forecasts, inventory, alerts) explicitly filters to the latest
 `status="succeeded"` run, so a failure just means "still serving yesterday's numbers," never a
 crash or stale-but-wrong data silently presented as current.
@@ -94,34 +94,34 @@ into `alert_rules` (six from FR-061, plus `lead_score_drift` from FR-074):
 | `unit_aging` | A unit has been on the lot longer than its threshold | `alerts` job |
 | `sales_anomaly` | The anomaly detector flags a series (severity from its own score) | `alerts` job, reads latest `inventory` run |
 | `forecast_stockout` | Forecasted demand implies a stockout within the reorder lead time | `alerts` job, reads latest `forecast` run |
-| `discount_approval` | An order is submitted with a discount above `order_approval_discount_threshold` | **Synchronous** — inside `order_service.submit_order`'s own transaction, not the `alerts` job |
+| `discount_approval` | An order is submitted with a discount above `order_approval_discount_threshold` | **Synchronous** - inside `order_service.submit_order`'s own transaction, not the `alerts` job |
 | `lead_idle` | A lead has had no activity for `idle_days_threshold` days (optionally gated by `score_cutoff`) | `alerts` job, reads latest `lead_scoring` run |
 | `lead_score_drift` | PSI drift on a lead-scoring run's monitored features exceeds `psi_threshold` | `lead_scoring` job itself, not `alerts` |
 
-**`discount_approval` is the one rule that fires immediately, not on the next `alerts` run** —
+**`discount_approval` is the one rule that fires immediately, not on the next `alerts` run** -
 reusing the exact same discount-fraction comparison that already decided the order needs
 Manager approval, so the alert and the approval requirement can never drift apart. This is also
 what `apps/web/e2e/golden-path.spec.ts` (QA-004) exercises to get a real alert without waiting
 for a scheduled job.
 
 **Configuration:** `GET`/`PATCH /api/v1/alert-rules` (Admin/Manager, `/admin/alert-rules` in the
-UI) — editing `enabled`, `severity`, or `params` (e.g. `idle_days_threshold`) is versioned and
+UI) - editing `enabled`, `severity`, or `params` (e.g. `idle_days_threshold`) is versioned and
 audit-logged.
 
 **Dedup:** every rule evaluation calls `open_alert(rule_key, dedup_key, ...)`, which is a
-conditional insert — if an alert with the same `(rule_key, dedup_key)` already exists and isn't
+conditional insert - if an alert with the same `(rule_key, dedup_key)` already exists and isn't
 `resolved`, nothing new is created (FR-062). This is why re-running the `alerts` job repeatedly
 against unchanged data doesn't produce duplicate alerts; it's the expected, common case, not an
 error.
 
 **Notification fan-out:** each `alert_rules` row has a `subscribed_roles` param (e.g.
 `discount_approval` → `["admin", "manager"]`). When an alert opens, one `Notification` row is
-written per user whose role is in that list — this is what scopes `GET /api/v1/alerts` to "only
+written per user whose role is in that list - this is what scopes `GET /api/v1/alerts` to "only
 alerts I'm actually subscribed to," and what the Manager/Sales dashboards' "unacknowledged
 alerts" counts read.
 
 **Lifecycle:** `open` → `acknowledged` (`POST /alerts/{id}/acknowledge`) → `resolved`
-(`POST /alerts/{id}/resolve`). Only a resolved alert is excluded from the dedup check above —
+(`POST /alerts/{id}/resolve`). Only a resolved alert is excluded from the dedup check above -
 re-triggering the same condition after acknowledging (but not resolving) will not open a
 duplicate.
 
@@ -136,7 +136,7 @@ GET http://localhost:8025/api/v2/messages
 ```
 
 (MailHog's own UI is also at `http://localhost:8025`.) Each entry is a real captured SMTP
-message — check the recipient and rendered HTML body directly, the same way
+message - check the recipient and rendered HTML body directly, the same way
 `apps/api/tests/integration/test_digest_job.py` and Phase 6's own exit demo verified it. MailHog
-never delivers anywhere external; it's a local-only SMTP capture tool (Principle II — zero paid
+never delivers anywhere external; it's a local-only SMTP capture tool (Principle II - zero paid
 services).

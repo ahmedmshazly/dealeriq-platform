@@ -1,8 +1,8 @@
-"""Role/Permission/RolePermission/User — the RBAC core (FR-004, FR-010..013).
+"""Role/Permission/RolePermission/User - the RBAC core (FR-004, FR-010..013).
 
 Permissions are granular strings grouped into roles via RolePermission, not hardcoded per-role
 branches in application code, so custom roles remain possible later without a schema change
-(NFR-020) — `roles.key` is a plain unique string, not a CHECK-constrained enum, deliberately.
+(NFR-020) - `roles.key` is a plain unique string, not a CHECK-constrained enum, deliberately.
 """
 
 import uuid

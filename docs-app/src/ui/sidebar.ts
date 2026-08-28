@@ -15,7 +15,7 @@ export interface SidebarDeps {
   openDoc: (id: string) => void;
 }
 
-/** Doc ids in sidebar order — `1`–`9` jump here, and `n`/`p` walk it. */
+/** Doc ids in sidebar order - `1`-`9` jump here, and `n`/`p` walk it. */
 export let navOrder: string[] = [];
 
 export function renderSidebar(deps: SidebarDeps, activeId: string): void {
@@ -103,7 +103,7 @@ function ring(docId: string): SVGElement {
   return el;
 }
 
-/** Repaint a single ring without rebuilding the tree — called on every scroll tick. */
+/** Repaint a single ring without rebuilding the tree - called on every scroll tick. */
 export function refreshRing(side: HTMLElement, docId: string): void {
   const el = side.querySelector<SVGElement>(`svg.ring[data-doc="${docId}"]`);
   const fg = el?.querySelector<SVGCircleElement>(".ring-fg");
