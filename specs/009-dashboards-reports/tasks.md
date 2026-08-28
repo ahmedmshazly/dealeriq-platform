@@ -142,7 +142,7 @@
       `docker compose down -v && up -d` then reseeded clean, migrating through all 9 revisions
       including this phase's own `d4e5f6a7b8c9` (dashboard permissions) with no errors. `make
       dev` itself: web started cleanly on :3000; the API's uvicorn failed `Address already in
-      use` on :8000 — this machine has a persistent, unrelated `edubridge_api` process
+      use` on :8000 - this machine has a persistent, unrelated `edubridge_api` process
       (different project, different Postgres user, started before this phase) squatting
       that port; not something this work created or should kill. Verified the dev stack itself
       is unaffected by starting the identical `uvicorn --reload` / `next dev` commands on

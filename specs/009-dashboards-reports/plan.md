@@ -109,13 +109,13 @@ apps/api/src/dealeriq_api/
 │   │                                # forecast_job.get_series_actuals, calls
 │   │                                # dealeriq_analytics.forecasting.metrics.mase
 │   ├── dashboard_service.py         # NEW: manager_dashboard(db, as_of) and
-│   │                                # sales_dashboard(db, user_id, as_of) — each composes
+│   │                                # sales_dashboard(db, user_id, as_of) - each composes
 │   │                                # several already-existing service/query functions into one
 │   │                                # aggregate payload
 │   ├── sales_summary.py              # NEW: monthly delivered-order revenue/margin by branch and
 │   │                                 # by salesperson (delivery date from OrderEvent
 │   │                                 # to_status="delivered", matching the existing timeline
-│   │                                 # convention — Order itself has no delivered_at column);
+│   │                                 # convention - Order itself has no delivered_at column);
 │   │                                 # top/bottom models by recent revenue
 │   └── monthly_report.py              # NEW: composes sales_summary + achieved_accuracy +
 │                                       # alert-statistics for one completed calendar month
@@ -144,7 +144,7 @@ apps/api/tests/
 apps/web/
 ├── lib/
 │   └── chart-export.ts                    # NEW: exportChartAsPng(svgRef), downloadCsv(filename,
-│                                           # rows) — reusable, wired into this phase's new charts
+│                                           # rows) - reusable, wired into this phase's new charts
 └── app/(authenticated)/
     ├── dashboard/page.tsx                  # REWRITTEN: role-branches (admin/manager -> Manager
     │                                       # dashboard; sales -> Sales dashboard; analyst ->

@@ -185,7 +185,7 @@ dealeriq/
 │   ├── ops/                  # backup / restore
 │   └── ci/                   # audit gate, latency benchmark
 ├── deploy/                   # systemd units for prod backups
-├── docs/                     # Diataxis portal — see docs/README.md
+├── docs/                     # Diataxis portal - see docs/README.md
 │   ├── getting-started/ how-to/ reference/ explanation/
 │   ├── srs/ adr/ runbooks/ paper/
 ├── specs/                    # planning archive (not product docs)

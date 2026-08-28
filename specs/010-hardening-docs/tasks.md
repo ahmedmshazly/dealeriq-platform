@@ -94,7 +94,7 @@
 - [x] T014 `apps/web/package.json` + `apps/web/eslint.config.mjs` MODIFIED: add
       `eslint-plugin-jsx-a11y`'s `recommended` config to the existing eslint config. Real gotcha:
       `next/core-web-vitals` already registers the `jsx-a11y` plugin itself (a `Cannot redefine
-      plugin` error on first attempt) — fixed by spreading only `flatConfigs.recommended.rules`
+      plugin` error on first attempt) - fixed by spreading only `flatConfigs.recommended.rules`
       rather than the whole flat-config object.
 - [x] T015 Ran the new rule: 5 real violations, all `jsx-a11y/label-has-associated-control`
       (admin/users, change-password ×2, login ×2) - every flagged `<label>` genuinely wraps a

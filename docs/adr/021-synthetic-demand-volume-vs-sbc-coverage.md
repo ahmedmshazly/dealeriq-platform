@@ -6,7 +6,7 @@
 
 ## Context
 
-GEN-001 says the generator SHALL produce "~4–8k orders" across 3 branches, ~25 vehicle models,
+GEN-001 says the generator SHALL produce "~4-8k orders" across 3 branches, ~25 vehicle models,
 156 weeks. GEN-002 says weekly demand SHALL be drawn from an NB-GLM with "dispersion tuned so
 generated series span all four SBC demand classes (smooth→lumpy)". `spec.md`'s own operational
 reading of GEN-002 (SC-002) requires ≥10 series in each of the four classes, so that Phase 4's
@@ -44,7 +44,7 @@ smooth), sedan 6 models (μ₀ 3.2-3.6, target erratic), suv_truck/luxury/commer
 Deterministic result at seed=42: **15,147 total orders**, smooth=13, erratic=10, intermittent=28,
 lumpy=15 - all four classes clear the ≥10 floor with margin.
 
-This is a deliberate, evidence-based departure from GEN-001's "~4–8k" figure, not a bug: the
+This is a deliberate, evidence-based departure from GEN-001's "~4-8k" figure, not a bug: the
 tension was verified mathematically (NB zero-probability floors) and empirically (grid search
 across model counts, branch-effect spreads, and μ₀/α bands - see phase report
 `03-synthetic-data.md` for the calibration trace) to be structural under the SRS-fixed generator

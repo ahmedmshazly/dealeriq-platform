@@ -20,7 +20,7 @@ src/dealeriq_api/
 ├── schemas/              # Pydantic request/response DTOs (non-auth)
 ├── jobs/                 # thin registry re-exports (job name SSOT for scheduler + HTTP)
 └── core/                 # config, logging, db session, errors, rate limiter, scheduler
-alembic/                  # migrations — schema changes ONLY via reviewed Alembic revisions
+alembic/                  # migrations - schema changes ONLY via reviewed Alembic revisions
 tests/
 ├── unit/                 # no DB
 ├── integration/          # real ephemeral Postgres via testcontainers (ADR-013)
@@ -60,7 +60,7 @@ uv run pytest apps/api/tests --cov=dealeriq_api --cov-report=term-missing
 
 ```bash
 cd apps/api && uv run --project .. alembic revision --autogenerate -m "describe the change"
-# review the generated migration before committing — autogenerate drafts, it does not decide
+# review the generated migration before committing - autogenerate drafts, it does not decide
 # (ADR-011)
 cd apps/api && uv run --project .. alembic upgrade head
 ```

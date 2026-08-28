@@ -31,7 +31,7 @@ Replace `<az>`, `<instance-id>`, and region to match the production EC2
 (`eu-central-1`).
 
 ```bash
-# Create (example: 20 GiB gp3 in the instance AZ — enough for showcase scale)
+# Create (example: 20 GiB gp3 in the instance AZ - enough for showcase scale)
 VOL_ID=$(aws ec2 create-volume \
   --availability-zone <az> \
   --size 20 \
@@ -43,12 +43,12 @@ aws ec2 wait volume-available --volume-ids "$VOL_ID"
 aws ec2 attach-volume --volume-id "$VOL_ID" --instance-id <instance-id> --device /dev/xvdf
 
 # On the instance (device name may appear as /dev/nvme1n1 on Nitro):
-sudo mkfs.ext4 /dev/xvdf   # only on first attach — never format a volume that already has data
+sudo mkfs.ext4 /dev/xvdf   # only on first attach - never format a volume that already has data
 sudo mkdir -p /var/lib/dealeriq
 echo '/dev/xvdf /var/lib/dealeriq ext4 defaults,nofail 0 2' | sudo tee -a /etc/fstab
 sudo mount -a
 sudo mkdir -p /var/lib/dealeriq/pgdata
-# Postgres image runs as uid 999 (debian); empty pgdata is fine — the entrypoint
+# Postgres image runs as uid 999 (debian); empty pgdata is fine - the entrypoint
 # chowns on first boot. Do not seed random files into pgdata.
 ```
 

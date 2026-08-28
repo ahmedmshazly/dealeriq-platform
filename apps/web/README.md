@@ -8,11 +8,11 @@ undocumented endpoints.
 
 ```
 apps/web/
-├── app/                    # App Router — thin route shells only
+├── app/                    # App Router - thin route shells only
 │   ├── (authenticated)/    # Protected routes (layout + page.tsx re-exports)
 │   ├── login/
 │   └── change-password/
-├── features/               # Screen UI — one primary export per route
+├── features/               # Screen UI - one primary export per route
 │   ├── dashboard/
 │   ├── inventory/
 │   ├── inventory-intel/
@@ -25,7 +25,7 @@ apps/web/
 │   ├── admin/              # users, permissions, audit-log, alert-rules
 │   └── auth/               # login, change-password
 ├── components/
-│   ├── ui/                 # Shared primitives (Button, Card, …)
+│   ├── ui/                 # Shared primitives (Button, Card, ...)
 │   └── layout/             # App shell and root providers
 └── lib/                    # API client wiring, auth context, helpers
 ```

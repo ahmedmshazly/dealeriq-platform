@@ -30,8 +30,8 @@ flowchart LR
 ## Repository layout
 
 ```
-apps/api/              FastAPI — auth, RBAC, domain, jobs, OpenAPI
-apps/web/              Next.js — app routes + features/
+apps/api/              FastAPI - auth, RBAC, domain, jobs, OpenAPI
+apps/web/              Next.js - app routes + features/
 packages/analytics/    Forecasting, inventory intel, anomalies, scoring
 packages/api-client/   Generated TypeScript client
 infra/                 Compose, Dockerfile, seed generator

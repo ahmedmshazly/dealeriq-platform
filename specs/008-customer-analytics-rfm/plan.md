@@ -108,7 +108,7 @@ packages/analytics/src/dealeriq_analytics/customer/
 │                                    # LogisticRegression + CalibratedClassifierCV(isotonic)
 │                                    # (ADR-023), temporal train/val split, top-3 contribution
 │                                    # extraction (DS-CUST-004)
-└── psi.py                            # Population Stability Index — a small, hand-implemented,
+└── psi.py                            # Population Stability Index - a small, hand-implemented,
                                        # unit-tested primitive (ADR-017's precedent)
 
 apps/api/src/dealeriq_api/
@@ -134,7 +134,7 @@ apps/api/src/dealeriq_api/
 │   ├── leads.py                        # MODIFIED: joins the latest succeeded run's LeadScore
 │   │                                   # row to populate conversion_probability/rfm_segment/
 │   │                                   # top_features on LeadResponse
-│   └── customers.py                     # NEW: GET /customers/{id} — RFM segment + order
+│   └── customers.py                     # NEW: GET /customers/{id} - RFM segment + order
 │                                        # (purchase) history
 └── schemas/
     ├── leads.py                        # MODIFIED: LeadResponse.top_features: list[FeatureContribution]

@@ -84,14 +84,14 @@ specs/005-forecasting-engine/
 
 ```text
 packages/analytics/src/dealeriq_analytics/
-├── sbc.py                       # existing (Phase 3) — reused as-is
-├── generator/                   # existing (Phase 3) — untouched
+├── sbc.py                       # existing (Phase 3) - reused as-is
+├── generator/                   # existing (Phase 3) - untouched
 └── forecasting/
     ├── __init__.py
     ├── series.py                 # DS-FC-001: build weekly (model,branch) and
     │                              # (segment,branch) series from an orders dataframe,
     │                              # explicit calendar alignment + zero-fill
-    ├── metrics.py                 # DS-FC-005: MASE, sMAPE, pinball loss, 80%-coverage —
+    ├── metrics.py                 # DS-FC-005: MASE, sMAPE, pinball loss, 80%-coverage -
     │                              # unit-tested against hand-computed fixtures first
     ├── methods.py                  # DS-FC-003: thin wrapper around statsforecast's
     │                               # model pool (Naive, SeasonalNaive, SES, AutoETS,
@@ -116,7 +116,7 @@ apps/api/src/dealeriq_api/
 │                                   # write run/forecasts/metrics, inside one DB transaction
 │                                   # per run for the run-row lifecycle (running->succeeded/failed)
 ├── jobs/
-│   └── forecast.py                 # APScheduler job registration (ADR-004) — registers the
+│   └── forecast.py                 # APScheduler job registration (ADR-004) - registers the
 │                                    # job so it's addressable by job_name; no cron trigger yet
 ├── routes/
 │   ├── jobs.py                      # POST /jobs/{job_name}/run, GET /jobs/{job_name}/runs

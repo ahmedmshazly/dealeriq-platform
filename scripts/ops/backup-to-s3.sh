@@ -65,7 +65,7 @@ if ! compose ps --status running --services 2>/dev/null | grep -qx postgres; the
   exit 1
 fi
 
-echo "backup: pg_dump -Fc …"
+echo "backup: pg_dump -Fc ..."
 compose exec -T postgres \
   pg_dump -U "${POSTGRES_USER}" -Fc --no-owner --no-acl "${POSTGRES_DB}" \
   >"${DUMP_PATH}"

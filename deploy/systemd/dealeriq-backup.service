@@ -7,7 +7,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-# Install path on the production host — adjust WorkingDirectory if the clone lives elsewhere.
+# Install path on the production host - adjust WorkingDirectory if the clone lives elsewhere.
 WorkingDirectory=/opt/dealeriq/src
 EnvironmentFile=-/etc/dealeriq/prod.env
 EnvironmentFile=-/etc/dealeriq/backup.env

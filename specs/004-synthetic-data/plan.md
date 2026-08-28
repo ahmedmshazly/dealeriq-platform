@@ -124,7 +124,7 @@ infra/seed/
 │                                  # + ground_truth/ via SQLAlchemy models imported from
 │                                  # dealeriq_api (bulk inserts, no HTTP/service-layer calls)
 ├── ground_truth/                # GEN-006 output (committed)
-└── notebooks/profile.md          # GEN's required "profile notebook" — a markdown report
+└── notebooks/profile.md          # GEN's required "profile notebook" - a markdown report
                                    # (no Jupyter dependency) summarizing the generated dataset:
                                    # SBC class histogram, volume counts, lead funnel conversion
                                    # rates by channel, anomaly list

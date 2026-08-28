@@ -13,7 +13,7 @@ make ci                                  # full local CI parity when touching co
 
 ## Branch and PR
 
-1. Branch from `main` with a short descriptive name (`docs/portal`, `fix/…`).
+1. Branch from `main` with a short descriptive name (`docs/portal`, `fix/...`).
 2. Keep PRs focused; separate refactors from behavior changes when possible.
 3. PR description: **why**, how to test, link SRS/ADR IDs if relevant.
 4. CI (`.github/workflows/ci.yml`) must be green: lint, tests, Next build, OpenAPI client drift,

@@ -79,7 +79,7 @@ Domain state machines: [domain-lifecycles.md](domain-lifecycles.md).
 
 ```bash
 cd apps/api && uv run --project .. alembic upgrade head
-cd apps/api && uv run --project .. alembic revision --autogenerate -m "…"
+cd apps/api && uv run --project .. alembic revision --autogenerate -m "..."
 # review before commit
 ```
 

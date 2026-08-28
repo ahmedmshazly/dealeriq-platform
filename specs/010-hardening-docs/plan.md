@@ -128,7 +128,7 @@ apps/web/
 
 scripts/                              # NEW top-level directory (none exists today)
 ├── benchmark_api.py                  # NEW: httpx-based p95 latency benchmark against a real
-│                                     # running API — representative CRUD endpoints (list/get on
+│                                     # running API - representative CRUD endpoints (list/get on
 │                                     # orders, customers, leads, vehicle-units) plus
 │                                     # GET /dashboards/manager and GET /dashboards/sales
 └── check_dependency_audit.py         # NEW: runs pip-audit and npm audit (already invoked in CI),
@@ -137,13 +137,13 @@ scripts/                              # NEW top-level directory (none exists tod
 
 security/
 └── dependency-waivers.json           # NEW: [{id, package, reason, reviewed_by, review_date,
-                                       # re_review_by}] — committed, reviewed like code
+                                       # re_review_by}] - committed, reviewed like code
 
 .github/workflows/ci.yml               # MODIFIED: pip-audit/npm audit steps now pipe through
                                         # check_dependency_audit.py instead of `|| true`
 
 Makefile                               # MODIFIED: + `make e2e` (Playwright), + `make benchmark`,
-                                        # + `make audit` (the waiver-aware check) — none added to
+                                        # + `make audit` (the waiver-aware check) - none added to
                                         # the default `ci`/`dev` targets' critical path except
                                         # the now-blocking audit step, which `make ci` already runs
 

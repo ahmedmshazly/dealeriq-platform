@@ -94,7 +94,7 @@ specs/006-inventory-anomalies/
 
 ```text
 packages/analytics/src/dealeriq_analytics/
-├── sbc.py, generator/, forecasting/    # existing (Phases 3-4) — untouched
+├── sbc.py, generator/, forecasting/    # existing (Phases 3-4) - untouched
 ├── inventory/
 │   ├── __init__.py
 │   ├── abc_xyz.py            # DS-INV-001: revenue-share ABC + demand-CV XYZ classification

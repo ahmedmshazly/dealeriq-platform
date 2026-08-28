@@ -36,7 +36,7 @@ apps/web/blob-report/
 !infra/seed/ground_truth/**/*.parquet
 !docs/paper/results/*.parquet
 
-# LaTeX build artifacts (docs/paper/) -- paper.tex, references.bib, and the compiled paper.pdf
+# LaTeX build artifacts (docs/paper/): paper.tex, references.bib, and the compiled paper.pdf
 # are committed; the intermediate build files are not.
 docs/paper/*.aux
 docs/paper/*.bbl
@@ -55,10 +55,10 @@ docs/paper/*.toc
 # Docker volumes (bind-mounted local data, not committed)
 infra/pgdata/
 
-# Locally-fetched pinned tool binaries (gitleaks etc.) — fetched by `make bootstrap`
+# Locally-fetched pinned tool binaries (gitleaks etc.) - fetched by `make bootstrap`
 .tools/
 
-# Handbook reader (docs-app) — generated site is served from Next public/
+# Handbook reader (docs-app) - generated site is served from Next public/
 docs-app/node_modules/
 docs-app/dist/
 docs-app/src/generated/

@@ -1,6 +1,6 @@
 ---
 title: Reading path
-description: Three sittings to learn DealerIQ — onboarding, architecture/security, analytics/ops.
+description: Three sittings to learn DealerIQ - onboarding, architecture/security, analytics/ops.
 last-verified: 2026-07-17
 ---
 

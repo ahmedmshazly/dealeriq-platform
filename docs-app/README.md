@@ -18,7 +18,7 @@ scripts/     indexer + verify
 src/ui/      reader, palette, graph, code view, mermaid
 src/lib/     router, search, store
 src/lexicon/ app-authored definitions (not derived from the indexer)
-src/generated/   corpus.json, code.json — gitignored
+src/generated/   corpus.json, code.json - gitignored
 ```
 
 See the portfolio `docs-app/README.md` for the full design rationale; this tree keeps that

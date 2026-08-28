@@ -143,7 +143,7 @@ list endpoints, idempotency-safe mutations, rate limiting already covers auth pe
   segment, are genuinely analytics outputs (DS-INV, DS-CUST) that don't exist until Phases 5 and
   7. This phase adds the schema columns/relations needed to display them later
   (`unit_risk`/`lead_scores` tables are analytics tables per DAT-003 and are NOT created here -
-  they arrive with their owning phase) and the UI renders "—" / "not yet scored" placeholders
+  they arrive with their owning phase) and the UI renders "-" / "not yet scored" placeholders
   where a later phase's analytics haven't run yet.
 - FR-034 (bulk lead reassignment, P2) and FR-025 (CSV import dry-run, P1) remain backlogged per
   `docs/backlog.md`, unchanged from the existing entries.

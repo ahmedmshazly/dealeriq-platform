@@ -1,6 +1,6 @@
 ---
 title: Visual documentation catalog
-description: Index of Mermaid diagrams D01–D18 with deep links into topic pages.
+description: Index of Mermaid diagrams D01-D18 with deep links into topic pages.
 last-verified: 2026-07-17
 ---
 

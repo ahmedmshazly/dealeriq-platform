@@ -79,7 +79,7 @@ job output (dashboards, forecasts, inventory, alerts) explicitly filters to the 
 crash or stale-but-wrong data silently presented as current.
 
 > **Known gap (tracked in `docs/backlog.md`):** NFR-005 also calls for jobs to retry once with
-> backoff on failure. That part is **not implemented** — a failed job stays `failed` until you
+> backoff on failure. That part is **not implemented** - a failed job stays `failed` until you
 > either trigger it again manually or wait for its next scheduled run. Don't assume a transient
 > failure self-heals.
 
