@@ -99,3 +99,6 @@ jobs:
 
       - name: Identity gate (local paths, personal email, private hostnames)
         run: uv run python scripts/ci/check_identity_strings.py
+
+      - name: Handbook corpus audit (docs-verify)
+        run: npm run docs:verify

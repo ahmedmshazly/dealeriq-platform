@@ -59,12 +59,21 @@ def run_pip_audit() -> list[dict[str, str]]:
     return findings
 
 
-def run_npm_audit() -> list[dict[str, str]]:
+# npm audit only sees the tree rooted at the directory it runs in. docs-app is deliberately
+# NOT an npm workspace (the root package.json shells out to it via `npm --prefix`), so a
+# root-only audit is blind to every dependency it ships, and docs-app's bundle is served
+# from production at /handbook/. Audit each project root that has its own lockfile.
+NPM_PROJECTS = ["", "docs-app"]
+
+
+def run_npm_audit(project: str = "") -> list[dict[str, str]]:
     """Returns a list of {id, package} for every real finding, one per GHSA id found in each
-    vulnerable package's `via` advisory entries."""
+    vulnerable package's `via` advisory entries. `project` is a repo-relative directory with
+    its own package-lock.json; the empty string means the workspace root."""
+    root = REPO_ROOT / project if project else REPO_ROOT
     result = subprocess.run(
         ["npm", "audit", "--json"],
-        cwd=REPO_ROOT,
+        cwd=root,
         capture_output=True,
         text=True,
         check=False,
@@ -72,7 +81,8 @@ def run_npm_audit() -> list[dict[str, str]]:
     try:
         data = json.loads(result.stdout)
     except json.JSONDecodeError:
-        print("npm audit did not return parsable JSON:", file=sys.stderr)
+        label = project or "workspace root"
+        print(f"npm audit in {label} did not return parsable JSON:", file=sys.stderr)
         print(result.stdout, file=sys.stderr)
         print(result.stderr, file=sys.stderr)
         raise
@@ -85,13 +95,16 @@ def run_npm_audit() -> list[dict[str, str]]:
             url = via.get("url", "")
             match = GHSA_RE.search(url)
             if match:
-                findings.append({"id": match.group(0), "package": package})
+                name = f"{project}/{package}" if project else package
+                findings.append({"id": match.group(0), "package": name})
     return findings
 
 
 def main() -> int:
     waivers = load_waivers()
-    findings = run_pip_audit() + run_npm_audit()
+    findings = run_pip_audit()
+    for project in NPM_PROJECTS:
+        findings += run_npm_audit(project)
 
     unwaived = [f for f in findings if f["id"] not in waivers]
 

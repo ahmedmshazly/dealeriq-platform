@@ -30,6 +30,12 @@ NFR-009).
 - **Dependency audit:** `npm audit fix` resolved 7 advisories in range (`next` 15.5.20 ->
   15.5.24, `postcss` -> 8.5.26). Removed 5 waivers the fix made obsolete; added 3 for
   `postcss` vendored inside Next, which only a Next 16 major would change.
+- **Dependency audit was blind to `docs-app`:** npm audit only sees the tree rooted where it
+  runs, and `docs-app` is deliberately not an npm workspace, so 12 advisories in the bundle
+  served at `/handbook/` (mermaid, undici, shell-quote, nanoid) went unreported. The gate now
+  audits every project root with its own lockfile, and those advisories are fixed in range.
+- **`make docs-verify` was advertised as a CI gate but never ran in CI.** Now a step in
+  `.github/workflows/ci.yml` and a dependency of `make ci`.
 - **Stale `packages/api-client/src/schema.d.ts`** regenerated; it had drifted from the API.
 - **Stale production deploy runbook:** canonical web URL and the Vercel build command.
 

@@ -74,7 +74,7 @@ test:
 # Starts the API standalone (no DB required to serve OpenAPI schema) just long enough to
 # regenerate the API client against it, then tears it down - mirrors what the GitHub
 # Actions workflow does with a service container.
-ci: lint test audit
+ci: lint test audit docs-verify
 	@echo "==> next build"
 	@npm run build:web
 	@echo "==> generate + compile API client"

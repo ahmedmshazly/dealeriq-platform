@@ -66,7 +66,9 @@ See [`SECURITY.md`](SECURITY.md). Never commit secrets. Use waivers in
 Two audit gates run in pre-commit and CI, both waiver-aware:
 
 - `scripts/ci/check_dependency_audit.py` cross-references pip-audit and npm audit against
-  `security/dependency-waivers.json`.
+  `security/dependency-waivers.json`. It audits every npm project root that has its own
+  lockfile, not just the workspace root: `docs-app` is not an npm workspace, and its bundle
+  ships to production at `/handbook/`, so a root-only audit would never see it.
 - `scripts/ci/check_identity_strings.py` keeps local home paths, personal email addresses,
   LAN hostnames and private IPs out of the repository. It matches on shape, not on literal
   values, so `security/identity-policy.json` never has to contain the strings it rejects.
