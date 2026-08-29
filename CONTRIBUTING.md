@@ -82,7 +82,7 @@ Keep punctuation plain ASCII: no em dashes, en dashes, curly quotes or ellipsis 
 Headings are sentence case. Bold marks a term being defined, not every noun in a list.
 
 Generated and historical files are out of scope: `CHANGELOG.md`, `LICENSE`, `SECURITY.md`,
-`docs/paper/results/`, `docs/paper/references.bib`, and anything under `apps/web/public/handbook/`.
+`docs/paper/results/`, `docs/paper/references.bib`, `docs-app/src/generated/`, and anything under `apps/web/public/handbook/`.
 
 ## Attribution
 
